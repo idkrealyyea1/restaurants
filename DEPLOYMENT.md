@@ -1,60 +1,44 @@
-# 🚀 Step-by-step Deployment Guide — Wasmer Edge
+# 🚀 Deployment Guide — 100% Wasmer (App + Database)
 
-This guide takes you from **zero** to a **live restaurant ordering platform** on the internet.
+This guide takes you from **zero** to a **live restaurant ordering platform** using **only Wasmer** — the app **and** its PostgreSQL database both live inside your Wasmer Pro account. No Neon, no third-party database needed.
 
-You do not need to understand everything. Just follow the steps in order, copy-paste the commands, and replace anything written like `<LIKE_THIS>` with your own values.
+You do not need to understand everything. Follow the steps in order, copy-paste the commands, and replace anything written like `<LIKE_THIS>` with your own values.
 
 ---
 
 ## What you will set up
 
 ```
-Your customers  ──▶  Wasmer Edge (the app, https://something.wasmer.app)
-                              │
-                              ▼
-                     Neon (managed PostgreSQL database, in the cloud)
+Your customers ──▶ Wasmer Edge app (https://your-app.wasmer.app)
+                          │
+                          ▼
+              Wasmer managed PostgreSQL        ← same platform, created automatically
+              (auto-backed-up for 14 days)
 ```
 
-| Piece | What it is | Cost to start |
+| Piece | Where it runs | Your plan |
 |---|---|---|
-| **Wasmer Edge** | Runs the app on the internet | Free tier |
-| **Neon** | Hosts the database (PostgreSQL) | Free tier |
-| **Wasmer account** | Your login for deploying | Free |
+| The application | Wasmer Edge | Pro ($10/mo) |
+| PostgreSQL database | Wasmer Edge (managed) | Included with Pro (1 GB storage included) |
+
+> 📍 **One thing to know:** Wasmer databases only exist in two regions:
+> - `fr-roub1` — France (best for Europe/Africa/Middle East)
+> - `ca-beau1` — Canada (best for the Americas)
+>
+> You choose once, below. It cannot be changed later without recreating the database.
 
 ### Before you start, you need
 
-- [ ] A computer with internet (this one is fine — deploying only uploads files, nothing heavy runs here)
-- [ ] Node.js 20+ installed (`node --version` should print `v20...` or higher)
-- [ ] A terminal (Terminal app on Mac/Linux; on Windows use WSL or Git Bash)
+- [ ] This project folder on your computer
+- [ ] Node.js 20+ installed (`node --version` prints v20 or higher)
+- [ ] A terminal (Terminal on Mac/Linux; WSL or Git Bash on Windows)
+- [ ] Your **Wasmer Pro** account
 
 ---
 
-# Part A — Create the database (Neon)
+# Part A — Install the CLI and log in
 
-The app needs a remote PostgreSQL database. We'll use Neon because it's free and takes ~3 minutes.
-
-1. Go to **https://neon.tech** and click **Sign Up** (use Google/GitHub — easiest).
-2. Click **Create project** (or "New Project").
-   - Name: `restaurants`
-   - Postgres version: leave the default
-   - Region: pick the one closest to your restaurants' customers
-3. After it's created, Neon shows a **connection string**. It looks like this:
-
-   ```
-   postgresql://user:password@ep-cool-name-123456-pooler.region.aws.neon.db/neondb?sslmode=require
-   ```
-
-4. Copy that string and save it somewhere private (notepad). This is your `<DATABASE_URL>`.
-
-> 💡 Use the connection string that says **"pooled"** if Neon offers a choice. It handles more connections.
->
-> ⚠️ Never share this string. Anyone who has it can read your whole database.
-
----
-
-# Part B — Install the Wasmer CLI and create an account
-
-### B1. Install the CLI
+### A1. Install
 
 Mac or Linux (including WSL):
 
@@ -62,42 +46,52 @@ Mac or Linux (including WSL):
 curl https://get.wasmer.io -sSfL | sh
 ```
 
-Close and reopen your terminal afterwards, then check it worked:
+Close and reopen your terminal, then check:
 
 ```bash
 wasmer --version
 ```
 
-(Windows without WSL: get the installer from https://docs.wasmer.io/install)
+(Windows without WSL: installer at https://docs.wasmer.io/install)
 
-### B2. Create your account
-
-Go to **https://wasmer.io/signup** and sign up (Google/GitHub works).
-
-### B3. Log in from the terminal
+### A2. Log in
 
 ```bash
 wasmer login
 ```
 
-It prints a link and opens your browser → click **Approve / Confirm**.
-When the terminal says you're logged in, continue.
+A link opens in your browser → click **Approve**. Terminal confirms you're logged in.
 
 ---
 
-# Part C — First deploy
+# Part B — Choose your database region (one-time)
 
-> The first deploy creates your app on Wasmer. It will run *unhealthy* for a few minutes because we haven't given it the database password yet — that's expected, we fix it in Part D.
+Open the file **`app.yaml`** in this folder with any text editor and find these lines at the bottom:
 
-Open a terminal **in this project folder**, then:
+```yaml
+locality:
+  regions:
+    - fr-roub1
+```
+
+- Customers mostly in **Europe / Africa / Middle East**? → keep `fr-roub1`
+- Customers mostly in **North / South America**? → change it to `ca-beau1`
+
+Save the file. ⚠️ After the first deploy this choice is effectively permanent — the database lives in that region forever.
+
+---
+
+# Part C — First deploy (creates the app AND the database)
+
+In the terminal, inside this project folder:
 
 ```bash
-cd Desktop/restaurants     # adjust if your folder lives elsewhere
+cd Desktop/restaurants     # adjust to wherever the folder is
 npm install                # downloads dependencies (~1 minute)
 wasmer deploy
 ```
 
-`wasmer deploy` will ask a few questions. Safe answers:
+Answer the prompts:
 
 | Prompt | Answer |
 |---|---|
@@ -105,6 +99,8 @@ wasmer deploy
 | Bump version? | **yes** |
 | App owner | press Enter (your username) |
 | App name | press Enter (`restaurants-platform`) |
+
+Because of the `capabilities.database` section in `app.yaml`, Wasmer now **automatically provisions your managed PostgreSQL database**. Provisioning takes a few minutes on the first deploy.
 
 When it finishes it prints your live URL:
 
@@ -115,109 +111,137 @@ https://restaurants-platform-<your-username>.wasmer.app
 
 📌 **Write that URL down.** Call it `<YOUR_APP_URL>`.
 
-If it asks anything else unusual, see the [Troubleshooting](#troubleshooting) section at the bottom.
+> ❓ Opening the URL now shows an error page? **Expected.** The app refuses to start until we give it its session secret — next part fixes that.
 
 ---
 
-# Part D — Give the app its secrets
+# Part D — Add the session secret and redeploy
 
-The app must never keep passwords in its code. Instead we register them as **secrets** on Wasmer. Secrets only take effect on the *next* deployment — that's why we deploy again right after this part.
+The app needs one secret to protect logins.
 
-### D1. Create a session secret
-
-This protects logins. Generate a long random value:
+### D1. Generate it
 
 ```bash
 openssl rand -base64 48
 ```
 
-(If `openssl` isn't available: `node -e "console.log(require('crypto').randomBytes(48).toString('base64'))"`)
+(If `openssl` is missing: `node -e "console.log(require('crypto').randomBytes(48).toString('base64'))"`)
 
-Copy the output. This is your `<SESSION_SECRET>`.
+Copy the output → that's your `<SESSION_SECRET>`.
 
-### D2. Register both secrets
+### D2. Register it with Wasmer
 
-Run these two commands (stay inside the project folder so Wasmer knows which app you mean):
-
-```bash
-wasmer app secrets create DATABASE_URL "postgresql://user:password@ep-cool-name-123456-pooler.region.aws.neon.db/neondb?sslmode=require"
-```
+Stay inside the project folder so Wasmer knows which app you mean:
 
 ```bash
-wasmer app secrets create SESSION_SECRET "the-long-random-string-you-generated"
+wasmer app secrets create SESSION_SECRET "paste-the-long-random-string-here"
 ```
 
-Replace the parts in quotes with **your** values from Part A and step D1. Keep the quotes.
+Keep the quotes.
 
-### D3. Deploy again so the secrets go live
+### D3. Redeploy
+
+Secrets only activate on the next deployment:
 
 ```bash
 wasmer deploy
 ```
 
-(Accept the version bump again with yes.)
+(Confirm the version bump with yes.)
+
+Now open `<YOUR_APP_URL>/api/healthz` → you should see:
+
+```json
+{"ok":true}
+```
+
+✅ The app is running and connected to its Wasmer database (the connection details are injected into the app automatically — no passwords in any file).
 
 ---
 
-# Part E — Prepare the database and create your owner account
+# Part E — Create the tables and your owner account
 
-Now we create the tables inside Neon and your platform-owner login. These commands are lightweight — they just send instructions over the internet to Neon — so it's safe to run them from here.
+The database is empty right now. We'll send it the schema, then create your boss account. These commands just talk to the remote database over the internet — safe to run from here.
 
-Still in the project folder:
+### E1. Get the database credentials
 
 ```bash
-npm run migrate
+wasmer app database list --with-password
 ```
 
-But wait — migrate reads `DATABASE_URL` from the environment, so run it like this instead (one line):
+It prints something like:
 
-**Mac/Linux:**
+```
+NAME        HOST                       PORT   USERNAME   PASSWORD
+db_ab12cd34 psql.fr-roub1.db.wasmer.cc 12345  db_user    S3cret...
+```
+
+📌 Keep this terminal output handy. You can also see the same values in the wasmer.io dashboard → your app → **Databases** tab (click the eye icon for the password).
+
+### E2. Run the migration (creates all tables)
+
+Set the five values from the previous step as environment variables, then run migrate.
+
+**Mac/Linux (one line):**
 
 ```bash
-DATABASE_URL="postgresql://user:password@ep-cool-name-123456-pooler.region.aws.neon.db/neondb?sslmode=require" npm run migrate
+DB_HOST="psql.fr-roub1.db.wasmer.cc" DB_PORT="12345" DB_NAME="db_ab12cd34" DB_USERNAME="db_user" DB_PASSWORD="S3cret..." npm run migrate
 ```
 
 **Windows PowerShell:**
 
 ```powershell
-$env:DATABASE_URL="postgresql://...same string..."; npm run migrate
+$env:DB_HOST="psql.fr-roub1.db.wasmer.cc"; $env:DB_PORT="12345"; $env:DB_NAME="db_ab12cd34"; $env:DB_USERNAME="db_user"; $env:DB_PASSWORD="S3cret..."; npm run migrate
 ```
 
-You should see `apply 001_init.sql` then `Migrations up to date.` ✅
+Success looks like:
 
-Now create your owner (boss) account:
+```
+apply 001_init.sql
+Migrations up to date.
+```
+
+(The app connects with encryption even though Wasmer uses a private certificate — the code already handles that.)
+
+### E3. Create your platform-owner account
+
+Same pattern, plus your chosen username/password (min 10 characters):
+
+**Mac/Linux:**
 
 ```bash
-DATABASE_URL="postgresql://...same string..." SUPER_ADMIN_USERNAME=owner SUPER_ADMIN_PASSWORD="pick-a-password-at-least-10-chars" npm run seed:admin
+DB_HOST="..." DB_PORT="..." DB_NAME="..." DB_USERNAME="..." DB_PASSWORD="..." SUPER_ADMIN_USERNAME=owner SUPER_ADMIN_PASSWORD="pick-a-strong-password" npm run seed:admin
 ```
 
-Choose a strong password — this account controls every restaurant on your platform.
+**Windows PowerShell:**
 
-> 🔐 After running this, consider clearing your terminal history or at least don't screenshot it.
+```powershell
+$env:DB_HOST="..."; ... ; $env:SUPER_ADMIN_USERNAME="owner"; $env:SUPER_ADMIN_PASSWORD="pick-a-strong-password"; npm run seed:admin
+```
+
+This account controls every restaurant on your platform — make the password strong.
 
 ---
 
-# Part F — Verify everything works
+# Part F — Test everything
 
-1. Open **`<YOUR_APP_URL>/api/healthz`** in a browser → you should see `{"ok":true}`.
-2. Open **`<YOUR_APP_URL>/login.html`** and log in with the owner username/password from Part E.
-3. In the owner dashboard:
-   - Click **New restaurant** → give it a name (e.g. "Burger House"), set max menu items (e.g. 30), fill the admin username + password → **Create restaurant**
-   - Save the generated admin password if one was auto-generated (shown only once!)
-4. Log out → log back in as the **restaurant admin** you just created.
-5. Add categories and menu items in the **Menu** tab.
-6. Open **Share & QR** tab → open the public page → add items to cart → place an order as a test customer.
-7. Back in the dashboard → **Orders** tab → you should see the order appear (live!).
+1. Open **`<YOUR_APP_URL>/login.html`** → log in with the owner username/password from E3.
+2. Click **New restaurant** → name it (e.g. "Burger House"), set max menu items (e.g. 30), fill in an admin username + password → **Create restaurant**.
+   - If a password was auto-generated, save it NOW — shown only once.
+3. Log out → log back in as that **restaurant admin**.
+4. **Menu** tab → add categories and items with prices.
+5. **Share & QR** tab → open the public page → add items to cart → place a test order.
+6. Back in the dashboard → **Orders** tab → the order appears (live!).
 
-🎉 Congratulations — your SaaS is live.
+🎉 Live SaaS, fully on Wasmer.
 
 ---
 
 # Part G — Final touches
 
-### G1. Point QR codes at your real URL (important!)
+### G1. Point QR codes at your real URL
 
-Edit `app.yaml` in the project folder and uncomment/set:
+Edit `app.yaml`, uncomment and set `APP_URL` under `env:`:
 
 ```yaml
 env:
@@ -226,37 +250,43 @@ env:
   APP_URL: "https://restaurants-platform-<your-username>.wasmer.app"
 ```
 
-Then redeploy:
+Redeploy:
 
 ```bash
 wasmer deploy
 ```
-
-Without this, QR codes would encode the wrong address.
 
 ### G2. Custom domain (optional)
 
-In https://wasmer.io → open your app → **Settings → Domains** → add your domain (e.g. `order.yourrestaurantbrand.com`) and follow its DNS instructions. Then update `APP_URL` again and redeploy.
+wasmer.io dashboard → your app → **Settings → Domains** → follow the DNS instructions. Update `APP_URL` afterwards and redeploy.
 
-### G3. Know the current limitations
+### G3. Things worth knowing about your Wasmer database
 
-- **Uploaded images are stored temporarily.** Wasmer apps are stateless — uploaded logos/photos can disappear when the app redeploys or restarts. For production use, image storage should be moved to a cloud bucket (planned improvement — ask me to wire it up).
-- **Scale-to-zero**: Wasmer puts idle apps to sleep; they wake automatically on the next visitor (first request may take a couple of seconds).
-- Live order notifications use one server instance; fine for starting out.
+| Fact | Detail |
+|---|---|
+| **Backups** | Automatic, kept ≥14 days. Restore = contact Wasmer support. Export anytime with `pg_dump`. |
+| **Credential rotation** | Dashboard → Databases → *Rotate Credentials*. The app picks up new credentials instantly; external tools (your laptop) need the new values. |
+| **Database explorer** | Dashboard → Databases → *Go to DB Explorer* — browse tables in the browser, auto-logged-in. |
+| **Limits** | One database per app; engine can never change (it's PostgreSQL ✅); only regions `fr-roub1` / `ca-beau1`. |
+| **Storage quota** | Pro includes 1 GB of database storage (then ~$10/GB overage) — thousands of orders fit in 1 GB. |
+
+### G4. Known limitation: uploaded images
+
+Menu photos/logo uploads currently store on the app's ephemeral disk and can disappear on redeploy. Two fixes when you're ready (ask me):
+- Wire **Wasmer Volumes** (persistent disk, available in `fr-roub1`/`ca-beau1`) as the upload directory, or
+- Plug in cloud object storage.
 
 ---
 
-# Updating the app later
+# Updating later
 
-Made changes to the code? Just:
+Code changed?
 
 ```bash
 wasmer deploy
 ```
 
-That's it. Old versions stay available for instant rollback in the Wasmer dashboard (App → Versions).
-
-Database changes later = add a new file in `database/migrations/` (e.g. `002_....sql`), then run the same `DATABASE_URL=... npm run migrate` command once.
+Database changes = new file in `database/migrations/` → re-run the E2 command once. Old deployments stay rollback-ready in the dashboard.
 
 ---
 
@@ -264,28 +294,30 @@ Database changes later = add a new file in `database/migrations/` (e.g. `002_...
 
 | Problem | Fix |
 |---|---|
-| **App shows error page / 503 after Part C** | Normal until Part D is done. Still broken after D3? Open your app in the wasmer.io dashboard → check **Logs**. Usually a typo in `DATABASE_URL`. |
-| `password authentication failed` during migrate/seeds | Wrong Neon password inside the connection string. Re-copy it from the Neon dashboard. |
-| `self signed certificate ... ssl` | Make sure the URL ends with `?sslmode=require`. |
-| Migrate says `ENOTFOUND` / `getaddrinfo` | The host part of the connection string is wrong or you have no internet. |
-| `wasmer deploy` complains about the manifest | Delete `wasmer.toml` from the folder and run `wasmer deploy` again — Wasmer can auto-detect Express apps from `package.json`. |
-| Deployed but `/api/healthz` returns nothing | Wait ~30 seconds (cold start) and refresh. |
-| Login doesn't stick after refreshing | Confirm secret name is exactly `SESSION_SECRET` and you redeployed afterwards. |
-| Forgot owner password | Run the Part E seed again with a new `SUPER_ADMIN_PASSWORD` using a **new username**, or ask me to add a reset flow. |
+| Error page after Part C | Expected until Part D done. Still broken after D3? Dashboard → Logs. Usually a missing/misspelled `SESSION_SECRET`. |
+| `Unsupported database engine 'psql'` on deploy | In `app.yaml` the value must be exactly `engine: postgres` (not `psql`). |
+| `Region ... does not support databases` | Use only `fr-roub1` or `ca-beau1` in `locality.regions`. |
+| `Apps with databases must specify a single region` | Keep exactly ONE region listed in `app.yaml`. |
+| `conflict: App already has an active database` | One DB per app — delete it in the dashboard first (⚠️ destroys data). |
+| Migration fails with certificate/TLS error | Make sure you're running the current code (`git pull`) — `config/index.js` handles Wasmer's private CA automatically. |
+| Migration fails with `ENOTFOUND` / timeout | Wrong `DB_HOST`/`DB_PORT` — copy them again via `wasmer app database list --with-password`. Also check your network allows outbound connections. |
+| `password authentication failed` | Password rotated or mistyped — fetch fresh values with `--with-password`. |
+| Deploy asks weird manifest questions | Delete `wasmer.toml` and run `wasmer deploy` again — Express apps auto-detect from `package.json`. |
+| Cold start slow on first visit after idle | Normal scale-to-zero behavior (~a second). |
 
 ---
 
-# Quick reference — what lives where
+# Quick reference
 
 | Thing | Where |
 |---|---|
-| App config (non-secret env vars) | `app.yaml` in this repo |
-| Package info | `wasmer.toml` in this repo |
-| Secrets | Wasmer dashboard → your app → Settings → Secrets |
-| Database data | Neon dashboard |
-| App logs | Wasmer dashboard → your app → Logs |
-| Official docs | https://docs.wasmer.io/edge |
+| App + env config | `app.yaml` in this repo |
+| Secrets (`SESSION_SECRET`) | `wasmer app secrets create …` or dashboard → Settings → Secrets |
+| Database + credentials | Dashboard → your app → **Databases** tab (or `wasmer app database list --with-password`) |
+| Logs | Dashboard → your app → Logs |
+| DB browser | Dashboard → Databases → Go to DB Explorer |
+| Official docs | https://docs.wasmer.io/edge/learn/databases |
 
 ---
 
-*Last verified against Wasmer docs: August 2026.*
+*Verified against Wasmer documentation: August 2026.*

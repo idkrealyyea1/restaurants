@@ -85,19 +85,18 @@ The suite refuses to run without an explicit `TEST_DATABASE_URL`. It migrates th
 - status transition rules, tracking by code, price snapshotting after menu changes
 - upload sniffing (MIME + magic bytes), QR, SSE auth, malformed bodies, cross-origin rejection, order rate limiting
 
-## Deployment (Wasmer Edge + managed Postgres)
+## Deployment (Wasmer Edge + Wasmer managed PostgreSQL)
 
 > **Full beginner-friendly walkthrough: [DEPLOYMENT.md](DEPLOYMENT.md)** — every click and command, no experience needed.
 
-Short version:
+The app runs on Wasmer Edge with **Wasmer's own managed PostgreSQL** (`capabilities.database` in `app.yaml`). Wasmer injects `DB_HOST/DB_PORT/DB_NAME/DB_USERNAME/DB_PASSWORD` at runtime and `config/index.js` builds the connection automatically (TLS with Wasmer's private CA is handled). A `DATABASE_URL` for any other Postgres provider also works.
 
-1. Provision a managed PostgreSQL instance; note the connection string.
-2. From your remote build environment: set secrets (`DATABASE_URL`, `SESSION_SECRET`, `APP_URL`, `NODE_ENV=production`) via the Wasmer dashboard or `wasmer deploy` env config — never in the repo.
-3. Run `npm run migrate` once against the managed DB.
-4. `wasmer deploy` (uses `wasmer.toml` / `app.yaml`; verify current schema against [Wasmer docs](https://docs.wasmer.com/edge)).
-5. Create the owner: run `npm run seed:admin` locally against the production DB URL (then unset those env vars).
+1. Provision a database region in `app.yaml` (`fr-roub1` Europe / `ca-beau1` Americas) — done once, permanently.
+2. `wasmer deploy` → app + database are created; credentials via `wasmer app database list --with-password`.
+3. Set the `SESSION_SECRET` secret, run `npm run migrate` + `npm run seed:admin` against the injected `DB_*` values.
+4. `wasmer deploy` again.
 
-The app is stateless apart from `UPLOAD_DIR` images — see limitations below. `process.env.PORT` is used everywhere; no hardcoded ports.
+Wasmer keeps automatic database backups ≥14 days; Pro includes 1 GB of DB storage.
 
 ## Security model (summary)
 
@@ -112,7 +111,6 @@ The app is stateless apart from `UPLOAD_DIR` images — see limitations below. `
 
 ## Known limitations / roadmap
 
-- Uploaded images live on the server filesystem. On ephemeral hosts they vanish on redeploy — wire object storage (e.g. S3-compatible) into `server/middleware/upload.js` before relying on it in production.
+- Uploaded images live on the server filesystem. On ephemeral hosts (e.g. Wasmer Edge) they vanish on redeploy — wire Wasmer Volumes or S3-compatible storage into `server/middleware/upload.js` before relying on it in production.
 - Rate limiting and the SSE hub are in-process (single instance). Add a shared store/bus before horizontal scaling.
 - Analytics are basic aggregates; no exports yet.
-- `wasmer.toml`/`app.yaml` should be validated against the Wasmer docs version you deploy with.

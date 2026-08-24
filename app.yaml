@@ -1,12 +1,15 @@
-# Wasmer Edge app configuration (verified against https://docs.wasmer.io/edge/configuration/)
+# Wasmer Edge app configuration (verified against https://docs.wasmer.io/edge/configuration)
 #
-# Non-secret environment variables live here.
-# SECRETS (DATABASE_URL, SESSION_SECRET) must NOT go here — create them with:
-#   wasmer app secrets create DATABASE_URL "postgresql://..."
+# The managed PostgreSQL database is created AUTOMATICALLY on the first deploy
+# via `capabilities.database` below. Wasmer injects DB_HOST / DB_PORT /
+# DB_NAME / DB_USERNAME / DB_PASSWORD into the app at runtime and
+# config/index.js picks them up — no DATABASE_URL needed anywhere.
+#
+# SECRETS: only SESSION_SECRET is required. Create it with:
 #   wasmer app secrets create SESSION_SECRET "..."
 # Secrets become active on the NEXT deployment.
 #
-# See DEPLOYMENT.md for the full step-by-step guide.
+# Full guide: DEPLOYMENT.md
 
 kind: wasmer.io/App.v0
 name: restaurants-platform
@@ -19,3 +22,15 @@ env:
   # After the FIRST deploy you know your public URL — set it here and redeploy
   # so QR codes and share links point to the right address:
   # APP_URL: "https://your-app-name.wasmer.app"
+
+# Managed PostgreSQL — provisioned automatically on first deploy.
+# One database per app; the engine cannot be changed later.
+capabilities:
+  database:
+    engine: postgres
+
+# Databases only exist in these regions — pick ONE and keep it forever:
+#   fr-roub1  = France (Europe)     ca-beau1 = Canada (Americas)
+locality:
+  regions:
+    - fr-roub1

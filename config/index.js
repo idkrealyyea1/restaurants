@@ -43,10 +43,45 @@ if (!sessionSecret && !isProd) {
 const uploadDir = path.resolve(process.env.UPLOAD_DIR || './data/uploads');
 const maxUploadMb = Math.min(intEnv('MAX_UPLOAD_MB', 2), 5);
 
+// Database connection. Two supported styles:
+//  1. DATABASE_URL (any managed Postgres provider), or
+//  2. Wasmer Edge managed database — Wasmer injects DB_HOST / DB_PORT /
+//     DB_NAME / DB_USERNAME / DB_PASSWORD automatically when the app.yaml
+//     declares `capabilities.database.engine: postgres`.
+function resolveDbConfig() {
+  if (process.env.DATABASE_URL) {
+    return { connectionString: process.env.DATABASE_URL };
+  }
+  if (process.env.DB_HOST && process.env.DB_NAME) {
+    // Wasmer managed Postgres: TLS is mandatory and the certificate comes
+    // from a private CA, so chain verification must stay off (per Wasmer docs).
+    return {
+      host: process.env.DB_HOST,
+      port: Number.parseInt(process.env.DB_PORT || '5432', 10),
+      database: process.env.DB_NAME,
+      user: process.env.DB_USERNAME || '',
+      password: process.env.DB_PASSWORD || '',
+      ssl: { rejectUnauthorized: false },
+      max: 10,
+    };
+  }
+  // Nothing configured — pool creation succeeds, queries fail loudly later.
+  return { connectionString: '' };
+}
+
+const dbConfig = resolveDbConfig();
+const dbHostForGuard = process.env.DB_HOST || '';
+
+if (isProd && (!process.env.DATABASE_URL && !dbHostForGuard)) {
+  throw new Error('Production requires a database: set DATABASE_URL or attach a Wasmer managed database (capabilities.database in app.yaml).');
+}
 // In production the database must be remote; refuse obvious local defaults.
-const databaseUrl = process.env.DATABASE_URL || '';
-if (isProd && /@localhost[:/]|@127\.0\.0\.1[:/]|@::1/.test(databaseUrl)) {
-  throw new Error('Refusing to use a localhost database in production. Set DATABASE_URL to a remote PostgreSQL instance.');
+if (
+  isProd &&
+  (/@localhost[:/]|@127\.0\.0\.1[:/]|@::1/.test(process.env.DATABASE_URL || '') ||
+    /^(localhost|127\.0\.0\.1|::1)$/.test(dbHostForGuard))
+) {
+  throw new Error('Refusing to use a localhost database in production.');
 }
 
 const config = Object.freeze({
@@ -57,7 +92,7 @@ const config = Object.freeze({
   appUrl,
   trustProxy,
 
-  databaseUrl,
+  dbConfig,
 
   sessionSecret,
   sessionTtlMs: intEnv('SESSION_TTL_HOURS', 12) * 60 * 60 * 1000,
