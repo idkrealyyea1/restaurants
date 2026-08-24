@@ -22,3 +22,6 @@ Thumbs.db
 .idea/
 .vscode/
 *.swp
+
+# Exported AI chat transcripts
+session-*.md
