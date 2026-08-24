@@ -1,0 +1,30 @@
+{
+  "name": "restaurants-platform",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Multi-restaurant online ordering SaaS - Express + PostgreSQL API with a vanilla JS frontend.",
+  "main": "server.js",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "migrate": "node database/migrate.js",
+    "seed:admin": "node database/seeds/seed-admin.js",
+    "seed:demo": "node database/seeds/seed-demo.js",
+    "check": "node scripts/check-syntax.js",
+    "test": "node --test tests/"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "connect-pg-simple": "^10.0.0",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "express-session": "^1.18.1",
+    "helmet": "^8.1.0",
+    "multer": "^2.0.1",
+    "pg": "^8.14.1",
+    "qrcode": "^1.5.4"
+  }
+}

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Restaurant logo placeholder">
+  <rect width="64" height="64" rx="14" fill="#e5e7eb"/>
+  <path d="M24 12v16a6 6 0 0 0 4 5.66V52h4V33.66A6 6 0 0 0 36 28V12h-3v14h-2V12h-2v14h-2V12Z" fill="#9ca3af"/>
+  <circle cx="45" cy="18" r="6" fill="#9ca3af"/>
+  <path d="M42 26h6l-1 8v18h-4V34Z" fill="#9ca3af"/>
+</svg>

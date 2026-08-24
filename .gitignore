@@ -1,0 +1,24 @@
+# Environment / secrets
+.env
+.env.local
+.env.production
+
+# Dependencies
+node_modules/
+
+# Runtime data (uploaded images)
+data/uploads/
+data/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.idea/
+.vscode/
+*.swp

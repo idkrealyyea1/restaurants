@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Restaurant</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <!-- Hero is rendered by JS -->
+  <div id="hero"></div>
+
+  <main class="container">
+    <div id="notice-zone"></div>
+    <div class="chips-row" id="chips"></div>
+
+    <div id="menu-zone" class="mt-1"></div>
+    <p class="footer-note">Powered by Restaurants Platform</p>
+  </main>
+
+  <!-- Floating cart bar -->
+  <div id="cart-bar" class="cart-bar hidden">
+    <div class="cart-bar-inner">
+      <span id="cart-summary"></span>
+      <button id="open-cart-btn" type="button">View cart</button>
+    </div>
+  </div>
+
+  <!-- Cart / checkout / success sheet -->
+  <div id="sheet-backdrop" class="sheet-backdrop"></div>
+  <div id="sheet" class="sheet">
+    <div class="sheet-handle"></div>
+    <div id="sheet-content"></div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/restaurant.js"></script>
+</body>
+</html>

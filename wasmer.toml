@@ -1,0 +1,17 @@
+# Wasmer package manifest.
+# `wasmer deploy` publishes this directory as a package and runs it with the
+# Node.js runtime detected from package.json ("start" script).
+#
+# Full guide: DEPLOYMENT.md — docs: https://docs.wasmer.io/edge
+
+[package]
+name = "restaurants-platform"
+version = "0.1.0"
+description = "Multi-restaurant online ordering SaaS (Express + PostgreSQL)"
+license = "UNLICENSED"
+
+authors = ["you"]
+
+# NOTE: if `wasmer deploy` ever fails while reading this manifest,
+# you can delete this file entirely — Wasmer's auto-detection can package
+# Express apps from package.json alone.

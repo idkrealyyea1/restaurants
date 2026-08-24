@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Platform owner</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner container">
+      <span class="brand">Platform owner</span>
+      <span class="spacer"></span>
+      <button id="logout-btn" type="button" class="btn btn-outline btn-sm">Log out</button>
+    </div>
+  </header>
+
+  <main class="container mt-2">
+    <div id="overview-zone"></div>
+
+    <section class="card">
+      <div class="flex-between mb-2">
+        <h1 class="section-title">Restaurants</h1>
+        <button id="new-restaurant-btn" type="button" class="btn">New restaurant</button>
+      </div>
+      <div class="form-row form-row-2 mb-2">
+        <input id="search-input" type="text" placeholder="Search by name or slug&hellip;" maxlength="80" autocomplete="off">
+        <select id="status-filter">
+          <option value="">All statuses</option>
+          <option value="active">Active only</option>
+          <option value="inactive">Deactivated only</option>
+        </select>
+      </div>
+
+      <div id="restaurants-zone"></div>
+
+      <div class="flex-between mt-2">
+        <button id="page-prev" type="button" class="btn btn-outline btn-sm">Prev</button>
+        <span id="page-info" class="muted small"></span>
+        <button id="page-next" type="button" class="btn btn-outline btn-sm">Next</button>
+      </div>
+    </section>
+  </main>
+
+  <div id="modal-backdrop" class="modal-backdrop">
+    <div class="modal" id="modal-box" role="dialog" aria-modal="true"></div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/owner.js"></script>
+</body>
+</html>

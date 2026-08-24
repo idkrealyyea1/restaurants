@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Track your order</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner container">
+      <a class="brand" href="/">Order tracking</a>
+    </div>
+  </header>
+
+  <main class="container mt-2">
+    <div class="card">
+      <div id="lookup-box">
+        <h1>Track your order</h1>
+        <p class="muted small">Enter the tracking code you received when placing the order (e.g. K7M2XQ4B).</p>
+        <form id="track-form" novalidate>
+          <div class="field">
+            <input id="code-input" type="text" maxlength="12" placeholder="Tracking code" autocomplete="off" required>
+          </div>
+          <button class="btn btn-block" type="submit">Track order</button>
+        </form>
+      </div>
+
+      <div id="order-box" class="hidden">
+        <div id="order-head"></div>
+        <ol id="timeline" class="timeline"></ol>
+        <div id="order-items"></div>
+        <div class="mt-2 flex-between">
+          <span id="auto-refresh-note" class="muted small"></span>
+          <button id="reset-btn" class="btn btn-outline btn-sm">Track another order</button>
+        </div>
+      </div>
+
+      <div id="error-box" class="notice notice-error hidden mt-1"></div>
+    </div>
+  </main>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/track.js"></script>
+</body>
+</html>
