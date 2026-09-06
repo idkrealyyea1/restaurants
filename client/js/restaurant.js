@@ -519,7 +519,7 @@
       '<h2 class="sf-sheet-title">' + esc(I.t('placedHead')) + '</h2>' +
       '<div class="notice notice-ok">' + esc(I.t('showCode')) + '</div>' +
       '<div class="sf-success-code">' + esc(order.code) + '</div>' +
-      '<p class="muted small sf-success-total">' + esc(I.t('totalLabel')) + ' <strong>' + fmtMoney(order.total_cents, view.settings.currency) + '</strong></p>' +
+      '<p class="muted small sf-success-total">' + esc(I.t('totalLabel')) + ' <strong>' + fmtMoney(order.total_cents ?? order.totalCents ?? 0, view.settings.currency) + '</strong></p>' +
       '<a class="sf-link-cta" href="/track?code=' + encodeURIComponent(order.code) + '">' + esc(I.t('trackMyOrder')) + '</a>' +
       '<button type="button" id="close-sheet-btn" class="btn btn-outline btn-block mt-1">' + esc(I.t('done')) + '</button>';
     document.getElementById('close-sheet-btn').addEventListener('click', closeSheet);

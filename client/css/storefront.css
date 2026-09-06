@@ -189,14 +189,17 @@
   top: 58px;
   z-index: 30;
   display: flex;
-  gap: 10px;
+  gap: 8px;
   overflow-x: auto;
-  padding: 16px 20px 12px;
+  padding: 10px 12px;
   scrollbar-width: none;
-  background: color-mix(in srgb, var(--bg) 88%, transparent);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  margin: -6px 0 6px;
+  background: color-mix(in srgb, var(--surface) 96%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  margin: 10px 0 14px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(27,30,28,.06);
 }
 .sf-chips::-webkit-scrollbar { display: none; }
 .sf-chip {
