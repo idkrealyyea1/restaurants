@@ -25,15 +25,18 @@
   position: relative;
   padding: 0;
   margin: 0;
-  background: linear-gradient(
-    150deg,
-    color-mix(in srgb, var(--secondary) 88%, #14120f),
-    color-mix(in srgb, var(--secondary) 64%, #181512) 55%,
-    #14120f
-  );
+  background:
+    radial-gradient(420px 220px at 18% 0%, rgba(233,180,76,.14), transparent 60%),
+    linear-gradient(
+      160deg,
+      color-mix(in srgb, var(--secondary) 92%, #14120f),
+      color-mix(in srgb, var(--secondary) 68%, #181512) 52%,
+      #1b1e1c
+    );
   color: #fff;
-  border-radius: 0 0 30px 30px;
+  border-radius: 0 0 28px 28px;
   overflow: hidden;
+  border-top: 4px solid var(--saffron);
 }
 .sf-hero::before,
 .sf-hero::after { display: none; }
@@ -241,13 +244,14 @@
   margin: 28px 4px 12px;
 }
 .sf-section-h .bar {
-  width: 13px;
-  height: 13px;
+  width: 14px;
+  height: 14px;
   border-radius: 4px;
-  background: linear-gradient(135deg, var(--primary), color-mix(in srgb, var(--primary) 55%, var(--secondary)));
-  transform: rotate(-6deg);
-  box-shadow: 0 1px 0 color-mix(in srgb, var(--primary) 40%, transparent);
+  background: linear-gradient(135deg, var(--saffron), var(--primary));
+  transform: rotate(-7deg);
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--saffron) 45%, transparent);
   flex-shrink: 0;
+  border: 1px solid color-mix(in srgb, var(--saffron) 35%, transparent);
 }
 .sf-section-h h2 {
   margin: 0;

@@ -11,36 +11,39 @@
 
 :root {
   /* Restaurant brand (overridden per-restaurant on the storefront) */
-  --primary: #e11d48;
-  --secondary: #111827;
+  --primary: #c73d18;
+  --secondary: #2f3f2e;
   /* Pattern fill for primary/secondary brand graphics */
-  --primary-pattern: #e11d48;
-  --secondary-pattern: #6b7280;
+  --primary-pattern: #c73d18;
+  --secondary-pattern: #2f3f2e;
   /* Derived brand shades (computed from primary/secondary) */
-  --primary-dark: #be123c;
-  --primary-light: #fde8ef;
-  --primary-soft: #fddfe8;
-  --secondary-dark: #000000;
-  --secondary-soft: #f3f4f6;
+  --primary-dark: #a33214;
+  --primary-light: #fde9e2;
+  --primary-soft: #fef0e8;
+  --secondary-dark: #1f2a1f;
+  --secondary-soft: #e8ece8;
   /* Contrast-aware text: --on-primary sits on --primary, --on-secondary on --secondary */
   --on-primary: #ffffff;
   --on-secondary: #ffffff;
 
-  /* Neutral palette — warm "menu paper" & olive-ink (restaurant-independent) */
-  --bg: #f5f0e6;
-  --surface: #fffdf7;
-  --surface-muted: #faf5ea;
-  --ink: #22211d;
-  --text: #2c2a25;
-  --muted: #6f6a5c;
-  --border: #e7dfce;
-  --border-strong: #d7ccb2;
+  /* Souq palette — parchment, ink, sumac, olive, saffron */
+  --bg: #fdf6ec;
+  --surface: #fffdf5;
+  --surface-muted: #fdf1d8;
+  --ink: #1b1e1c;
+  --text: #2a2e26;
+  --muted: #7a756e;
+  --border: #e8ddd0;
+  --border-strong: #d9c8b0;
+  --saffron: #e9b44c;
+  --saffron-soft: #fef3d6;
+  --saffron-ink: #7a5a12;
   --danger: #c23a26;
   --danger-soft: #f9e4df;
   --danger-ink: #94301f;
-  --success: #417a4b;
-  --success-soft: #e8f1e5;
-  --success-ink: #2f623c;
+  --success: #3a7a4b;
+  --success-soft: #e6f0e6;
+  --success-ink: #2f5a3a;
   --warning: #a3741c;
   --warning-soft: #f7ecd3;
   --warning-ink: #7c5510;
@@ -65,7 +68,11 @@ html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0;
   font-family: var(--font-body);
-  background: var(--bg);
+  background:
+    radial-gradient(1px 1px at 20% 30%, rgba(27,30,28,.035) 1px, transparent 0),
+    radial-gradient(1px 1px at 80% 70%, rgba(199,61,24,.04) 1px, transparent 0),
+    var(--bg);
+  background-size: 42px 42px, 64px 64px, auto;
   color: var(--text);
   line-height: 1.5;
   font-size: 16px;
@@ -102,9 +109,10 @@ a:hover { text-decoration: underline; }
   position: sticky;
   top: 0;
   z-index: 40;
-  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  background: color-mix(in srgb, var(--surface) 94%, transparent);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  border-top: 3px solid var(--primary);
   border-bottom: 1px solid var(--border);
 }
 .topbar-inner {
@@ -285,7 +293,27 @@ textarea { resize: vertical; min-height: 80px; }
 
 /* ---------------- shared storefront chrome (superseded by storefront.css for items) ---------------- */
 
-.section-title { margin: 20px 0 10px; font-size: 1.15rem; font-weight: 800; font-family: var(--font-ui); }
+.section-title {
+  margin: 22px 0 12px;
+  font-size: 1.18rem;
+  font-weight: 800;
+  font-family: var(--font-display);
+  color: var(--ink);
+  letter-spacing: -0.01em;
+  position: relative;
+  display: inline-block;
+  padding-bottom: 6px;
+}
+.section-title::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 3px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--saffron) 0%, var(--primary) 55%, transparent 100%);
+  opacity: .9;
+}
+[dir="rtl"] .section-title::after { left: 0; right: 0; }
 
 .search-input { margin: 12px 0 0; }
 
@@ -694,45 +722,78 @@ input[type="color"] { width: 52px; height: 38px; padding: 2px; border: 1px solid
   position: relative;
   overflow: hidden;
   text-align: center;
-  padding: 44px 22px 38px;
+  padding: 52px 22px 56px;
   margin-bottom: 22px;
   background:
-    radial-gradient(520px 240px at 50% -40%, color-mix(in srgb, var(--primary) 9%, transparent), transparent),
-    linear-gradient(180deg, var(--surface), var(--surface-muted));
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow);
+    radial-gradient(720px 360px at 50% -10%, rgba(233,180,76,.18), transparent 65%),
+    linear-gradient(160deg, #c73d18 0%, #a33214 58%, #2f3f2e 100%);
+  border: 0;
+  border-radius: 0 0 28px 28px;
+  box-shadow: 0 12px 40px -12px rgba(27,30,28,.45);
+  color: #fffdf5;
+}
+.home-hero::before {
+  content: "سوق";
+  position: absolute;
+  inset-inline-start: 50%;
+  top: 50%;
+  transform: translate(-50%, -58%) rotate(-4deg);
+  font-family: var(--font-display);
+  font-size: clamp(7rem, 22vw, 13rem);
+  font-weight: 700;
+  line-height: 1;
+  color: rgba(255,253,245,.07);
+  pointer-events: none;
+  letter-spacing: -0.04em;
 }
 .home-hero::after {
   content: "";
   position: absolute;
-  left: 50%;
-  bottom: 0;
-  transform: translateX(-50%);
-  width: 64px;
-  height: 4px;
-  border-radius: 4px;
-  background: linear-gradient(90deg, var(--primary), color-mix(in srgb, var(--primary) 45%, var(--secondary)));
+  left: 0; right: 0; bottom: -1px;
+  height: 14px;
+  background: radial-gradient(circle at 7px 0, transparent 7px, var(--bg) 7.5px);
+  background-size: 14px 14px;
+  background-repeat: repeat-x;
+  opacity: 1;
 }
 .home-eye {
-  display: inline-block;
-  margin-bottom: 10px;
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
   font-family: var(--font-ui);
-  font-size: .8rem;
+  font-size: .72rem;
   font-weight: 800;
-  letter-spacing: .22em;
+  letter-spacing: .18em;
   text-transform: uppercase;
-  color: var(--muted);
+  color: var(--saffron);
+  background: rgba(255,253,245,.12);
+  border: 1px solid rgba(255,253,245,.22);
+  padding: 5px 12px;
+  border-radius: 999px;
+}
+.home-eye::before {
+  content: "";
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--saffron);
+  box-shadow: 0 0 0 4px rgba(233,180,76,.25);
 }
 .home-hero h1 {
+  position: relative;
+  z-index: 1;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: clamp(1.7rem, 5vw, 2.6rem);
-  line-height: 1.25;
-  color: var(--ink);
-  margin: 0 0 10px;
+  font-size: clamp(1.85rem, 5.8vw, 2.85rem);
+  line-height: 1.12;
+  letter-spacing: -0.018em;
+  color: #fffdf5;
+  margin: 0 0 12px;
+  text-shadow: 0 2px 18px rgba(27,30,28,.35);
 }
-.home-hero p { color: var(--muted); max-width: 46ch; margin: 0 auto; font-size: .98rem; }
+.home-hero p { position: relative; z-index: 1; color: rgba(255,253,245,.86); max-width: 48ch; margin: 0 auto; font-size: 1rem; line-height: 1.6; }
 .home-rest-head { flex-wrap: wrap; gap: 10px; }
 .home-rest-head .section-title { margin: 0; }
 .home-rest-head .search-input { margin: 0; max-width: 260px; }
@@ -747,16 +808,18 @@ input[type="color"] { width: 52px; height: 38px; padding: 2px; border: 1px solid
   display: block;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
+  border-top: 3px solid var(--saffron);
+  border-radius: 16px;
   overflow: hidden;
   text-decoration: none;
   color: inherit;
-  box-shadow: var(--shadow);
-  transition: transform .18s ease, box-shadow .18s ease;
+  box-shadow: 0 1px 0 var(--border-strong), var(--shadow);
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
 }
 .rest-card:hover {
   transform: translateY(-4px);
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 4px 0 var(--border-strong), var(--shadow-lg);
+  border-top-color: var(--primary);
 }
 .rest-card:hover .rest-cover-img { transform: scale(1.05); }
 
