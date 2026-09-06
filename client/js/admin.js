@@ -36,6 +36,41 @@
         return;
       }
       me = meData.user;
+      if (me.role === 'staff' && !new URLSearchParams(location.search).get('restaurantId')) {
+        location.href = '/owner.html';
+        return;
+      }
+      if (me.role === 'staff') {
+        // hide delete UI for staff (server still enforces)
+        const s = document.createElement('style');
+        s.textContent = '[data-del-cat],[data-del-item],[data-del-order],[data-del-booking],[data-delete] { display:none !important; }';
+        document.head.appendChild(s);
+        // auto-append ?restaurantId= to all admin API calls for platform staff
+        const rid = new URLSearchParams(location.search).get('restaurantId');
+        if (rid) {
+          const wrap = (fn) => function(path, ...args) {
+            if (typeof path === 'string' && path.startsWith('/api/admin')) {
+              const sep = path.includes('?') ? '&' : '?';
+              path = path + sep + 'restaurantId=' + encodeURIComponent(rid);
+            }
+            return fn.call(this, path, ...args);
+          };
+          api.get = wrap(api.get.bind(api));
+          api.post = wrap(api.post.bind(api));
+          api.patch = wrap(api.patch.bind(api));
+          api.put = wrap(api.put.bind(api));
+          api.del = wrap(api.del.bind(api));
+          api.request = wrap(api.request.bind(api));
+          const origUpload = api.uploadWithProgress;
+          api.uploadWithProgress = function(path, fd, cb) {
+            if (path.startsWith('/api/admin')) {
+              const sep = path.includes('?') ? '&' : '?';
+              path = path + sep + 'restaurantId=' + encodeURIComponent(rid);
+            }
+            return origUpload.call(api, path, fd, cb);
+          };
+        }
+      }
 
       await reloadInfo();
       bindChrome();
@@ -334,6 +369,10 @@
     } catch (err) {
       list.innerHTML = errorHtml(err);
     }
+  }
+
+  function refreshCurrentOrdersView() {
+    if (!document.getElementById('tab-orders').classList.contains('hidden')) fetchOrders();
   }
 
   /* --------------------------- bookings ------------------------------ */

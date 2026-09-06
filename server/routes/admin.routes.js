@@ -2,7 +2,7 @@
 
 const express = require('express');
 const admin = require('../controllers/admin.controller');
-const { requireAuth, requireRestaurantAdmin } = require('../middleware/auth');
+const { requireAuth, requireRestaurantAdmin, forbidStaffDelete } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -24,25 +24,25 @@ router.get('/events', admin.events);
 router.get('/categories', admin.listCategories);
 router.post('/categories', admin.createCategory);
 router.patch('/categories/:id', admin.updateCategory);
-router.delete('/categories/:id', admin.deleteCategory);
+router.delete('/categories/:id', forbidStaffDelete, admin.deleteCategory);
 
 // Menu items
 router.get('/items', admin.listItems);
 router.post('/items', admin.createItem);
 router.patch('/items/:id', admin.updateItem);
-router.delete('/items/:id', admin.deleteItem);
+router.delete('/items/:id', forbidStaffDelete, admin.deleteItem);
 
 // Orders
 router.get('/orders', admin.listOrders);
 router.get('/orders/:id', admin.getOrder);
 router.patch('/orders/:id/status', admin.changeOrderStatus);
-router.delete('/orders/:id', admin.deleteOrder);
+router.delete('/orders/:id', forbidStaffDelete, admin.deleteOrder);
 
 // Bookings
 router.get('/bookings', admin.listBookings);
 router.get('/bookings/:id', admin.getBooking);
 router.patch('/bookings/:id/status', admin.changeBookingStatus);
-router.delete('/bookings/:id', admin.deleteBooking);
+router.delete('/bookings/:id', forbidStaffDelete, admin.deleteBooking);
 
 // Settings + opening hours
 router.get('/settings', admin.getSettings);

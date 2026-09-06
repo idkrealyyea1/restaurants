@@ -90,6 +90,43 @@ async function listAdminsForRestaurant(restaurantId) {
   return rows;
 }
 
+async function createStaff({ username, email, password }) {
+  const hash = await hashPassword(password);
+  const { rows } = await query(
+    `INSERT INTO users (role, username, email, password_hash)
+     VALUES ('staff', $1, $2, $3)
+     RETURNING id, role, username, email, is_active, created_at`,
+    [username, email || null, hash]
+  );
+  return publicUser(rows[0]);
+}
+
+async function setStaffActive(userId, isActive) {
+  await withTx(async (client) => {
+    const { rowCount } = await client.query(
+      'UPDATE users SET is_active = $2 WHERE id = $1 AND role = $3',
+      [userId, isActive, 'staff']
+    );
+    if (rowCount === 0) return null;
+    if (!isActive) {
+      await client.query(`DELETE FROM "session" WHERE sess->>'userId' = $1`, [userId]);
+    }
+    return true;
+  });
+}
+
+async function deleteStaff(userId) {
+  const { rowCount } = await query(`DELETE FROM users WHERE id = $1 AND role = 'staff'`, [userId]);
+  return rowCount > 0;
+}
+
+async function listStaffs() {
+  const { rows } = await query(
+    `SELECT id, username, email, is_active, created_at FROM users WHERE role = 'staff' ORDER BY created_at ASC`
+  );
+  return rows;
+}
+
 /* ------------------------- delivery accounts ------------------------- */
 
 /**
@@ -158,6 +195,10 @@ module.exports = {
   setIsActive,
   deleteAdmin,
   listAdminsForRestaurant,
+  createStaff,
+  setStaffActive,
+  deleteStaff,
+  listStaffs,
   createDelivery,
   setDeliveryActive,
   deleteDelivery,

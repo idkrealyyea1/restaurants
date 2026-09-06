@@ -257,17 +257,16 @@ async function updateStatus(orderId, restaurantId, nextStatus) {
        RETURNING id, code, status`,
       [orderId, restaurantId, nextStatus]
     );
-    if (!rows[0]) {
-      const existing = (
-        await client.query(
-          'SELECT status FROM orders WHERE id = $1 AND restaurant_id = $2',
-          [orderId, restaurantId]
-        )
-      ).rows[0];
-      if (!existing) throw notFound('Order not found');
-      throw conflict('SAME_STATUS', `Order status is already "${existing.status}"`);
-    }
-    return rows[0];
+    if (rows[0]) return rows[0];
+    const existing = (
+      await client.query(
+        'SELECT status, code FROM orders WHERE id = $1 AND restaurant_id = $2',
+        [orderId, restaurantId]
+      )
+    ).rows[0];
+    if (!existing) throw notFound('Order not found');
+    if (existing.status === nextStatus) return { id: orderId, code: existing.code, status: existing.status };
+    throw conflict('SAME_STATUS', `Order status is already "${existing.status}"`);
   });
 }
 

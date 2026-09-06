@@ -12,6 +12,7 @@
   let page = 1;
   let search = '';
   let statusFilter = '';
+  let currentRole = null;
 
   /* ---------------------------- bootstrap ---------------------------- */
 
@@ -22,10 +23,11 @@
         location.href = '/login.html';
         return;
       }
-      if (me.user.role !== 'owner') {
+      if (me.user.role !== 'owner' && me.user.role !== 'staff') {
         location.href = '/admin.html';
         return;
       }
+      currentRole = me.user.role;
     } catch (_) {
       location.href = '/login.html';
       return;
@@ -93,6 +95,33 @@
     });
 
     await Promise.all([loadOverview(), loadRestaurants(), loadDeliveryGroups()]);
+
+    // Staff: hide delete/password UI, owner: load staff panel
+    if (currentRole === 'owner') {
+      loadStaff();
+      const sf = document.getElementById('staff-form');
+      if (sf && !sf.dataset.bound) {
+        sf.dataset.bound = '1';
+        sf.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          try {
+            await api.post('/api/owner/staff', {
+              username: document.getElementById('staff-user').value.trim(),
+              password: document.getElementById('staff-pass').value,
+            });
+            toast('Staff added', 'success');
+            document.getElementById('staff-user').value = '';
+            document.getElementById('staff-pass').value = '';
+            loadStaff();
+          } catch (err) { toast(err.message, 'error'); }
+        });
+      }
+    } else if (currentRole === 'staff') {
+      const sc = document.getElementById('staff-card');
+      if (sc) sc.style.display = 'none';
+      // hide delete buttons (server still blocks)
+      document.querySelectorAll('[data-delete],[data-del]').forEach((b) => { b.style.display = 'none'; });
+    }
   }
 
   function closeModal() {
@@ -549,6 +578,42 @@
         }));
     } catch (err) {
       toast(err.message, 'error');
+    }
+  }
+
+  async function loadStaff() {
+    const zone = document.getElementById('staff-zone');
+    if (!zone) return;
+    try {
+      const data = await api.get('/api/owner/staff');
+      zone.innerHTML = data.staff.length
+        ? data.staff.map((u) =>
+            '<div class="rank-row"><span><strong>' + esc(u.username) + '</strong> ' + (u.is_active ? '' : '<span class="badge badge-closed">disabled</span>') + '</span>' +
+            '<span>' +
+              (u.is_active
+                ? '<button type="button" class="btn btn-outline btn-sm" data-disable-staff="' + esc(u.id) + '">Disable</button> '
+                : '<button type="button" class="btn btn-success btn-sm" data-enable-staff="' + esc(u.id) + '">Enable</button> ') +
+              '<button type="button" class="btn btn-danger btn-sm" data-del-staff="' + esc(u.id) + '">Delete</button> ' +
+              '<button type="button" class="btn btn-outline btn-sm" data-reset-staff="' + esc(u.id) + '">Reset pw</button>' +
+            '</span></div>'
+          ).join('')
+        : '<p class="muted small">No staff yet.</p>';
+      zone.querySelectorAll('[data-disable-staff]').forEach((b) => b.addEventListener('click', async () => {
+        await api.patch('/api/owner/staff/' + b.dataset.disableStaff, { isActive: false }); loadStaff();
+      }));
+      zone.querySelectorAll('[data-enable-staff]').forEach((b) => b.addEventListener('click', async () => {
+        await api.patch('/api/owner/staff/' + b.dataset.enableStaff, { isActive: true }); loadStaff();
+      }));
+      zone.querySelectorAll('[data-del-staff]').forEach((b) => b.addEventListener('click', async () => {
+        if (!confirm('Delete staff ' + b.dataset.delStaff + '?')) return;
+        await api.del('/api/owner/staff/' + b.dataset.delStaff); loadStaff();
+      }));
+      zone.querySelectorAll('[data-reset-staff]').forEach((b) => b.addEventListener('click', async () => {
+        const res = await api.post('/api/owner/staff/' + b.dataset.resetStaff + '/reset-password', {});
+        openModal('<div class="modal-head"><h2>New password</h2></div><p class="order-code">' + esc(res.password) + '</p><button type="button" class="btn btn-block" onclick="location.reload()">OK</button>');
+      }));
+    } catch (err) {
+      zone.innerHTML = '<p class="muted small">' + esc(err.message) + '</p>';
     }
   }
 

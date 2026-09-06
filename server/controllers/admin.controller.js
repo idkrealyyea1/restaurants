@@ -23,9 +23,10 @@ const { asyncHandler } = require('../utils/errors');
 const v = require('../validators');
 
 function tenantId(req) {
-  if (req.user.role === 'owner') {
-    // Platform owner may inspect a specific restaurant via ?restaurantId=
-    const id = req.query.restaurantId;
+  if (req.user.role === 'owner' || req.user.role === 'staff') {
+    // Platform roles may inspect a specific restaurant via ?restaurantId=
+    // Staff without a restaurant_id must provide it; owner/staff with a fixed restaurant_id fall back to it
+    const id = req.query.restaurantId || req.user.restaurant_id;
     if (!id) throw forbidden('RESTAURANT_REQUIRED', 'Specify ?restaurantId=');
     return id;
   }

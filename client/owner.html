@@ -19,6 +19,17 @@
   <main class="container mt-2">
     <div id="overview-zone"></div>
 
+    <section class="card mt-2" id="staff-card">
+      <h1 class="section-title">Platform Staff — Add-only</h1>
+      <p class="muted small">Staff can see everything and create restaurants, but cannot delete and cannot see passwords.</p>
+      <form id="staff-form" class="form-row form-row-3 mb-2" novalidate autocomplete="off">
+        <input id="staff-user" type="text" placeholder="Username" maxlength="40" required>
+        <input id="staff-pass" type="password" placeholder="Password (10+ chars)" maxlength="200" required>
+        <button type="submit" class="btn">Add staff</button>
+      </form>
+      <div id="staff-zone"></div>
+    </section>
+
     <section class="card mt-2">
       <h1 class="section-title" data-i18n="deliveryGroupsT">Delivery companies</h1>
       <form id="delivery-form" class="form-row form-row-3 mb-2" novalidate autocomplete="off">

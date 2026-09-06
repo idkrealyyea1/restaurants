@@ -323,6 +323,8 @@
       return;
     }
 
+    const hasDelivery = Array.isArray(view.deliveryGroups) && view.deliveryGroups.length > 0;
+    if (!hasDelivery) orderType = 'pickup';
     const fee = deliveryFeeCents();
     const sub = subtotalCents();
 
@@ -339,10 +341,12 @@
           '<strong class="sf-cart-price">' + fmtMoney(e.item.price_cents * e.qty, view.settings.currency) + '</strong>' +
         '</div>'
       ).join('') +
-      '<div class="sf-type-toggle">' +
-        '<button type="button" data-type="pickup"' + (orderType === 'pickup' ? ' class="active"' : '') + '>' + esc(I.t('pickup')) + '</button>' +
-        '<button type="button" data-type="delivery"' + (orderType === 'delivery' ? ' class="active"' : '') + '>' + esc(I.t('delivery')) + '</button>' +
-      '</div>' +
+      (hasDelivery
+        ? '<div class="sf-type-toggle">' +
+          '<button type="button" data-type="pickup"' + (orderType === 'pickup' ? ' class="active"' : '') + '>' + esc(I.t('pickup')) + '</button>' +
+          '<button type="button" data-type="delivery"' + (orderType === 'delivery' ? ' class="active"' : '') + '>' + esc(I.t('delivery')) + '</button>' +
+        '</div>'
+        : '') +
       '<div class="sf-total-box">' +
         '<div class="sf-total-row"><span>' + esc(I.t('subtotal')) + '</span><span>' + fmtMoney(sub, view.settings.currency) + '</span></div>' +
         (orderType === 'delivery'

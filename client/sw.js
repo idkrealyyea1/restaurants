@@ -5,7 +5,7 @@
    - Static assets: cache-first.
    - API + uploads: never cached (must stay live/fresh). */
 
-const CACHE = 'restaurants-v7';
+const CACHE = 'restaurants-v8';
 const SHELL = [
   '/',
   '/css/style.css',

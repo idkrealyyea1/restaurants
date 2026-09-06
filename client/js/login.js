@@ -9,7 +9,7 @@
   const submitBtn = document.getElementById('submit-btn');
 
   function dashboardPath(role) {
-    if (role === 'owner') return '/owner.html';
+    if (role === 'owner' || role === 'staff') return '/owner.html';
     if (role === 'delivery') return '/delivery.html';
     return '/admin.html';
   }

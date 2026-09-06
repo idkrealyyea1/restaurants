@@ -239,6 +239,47 @@ async function deleteAdminUser(req, res) {
   res.json({ ok: true });
 }
 
+/* --------------------------- platform staff -------------------------- */
+
+async function listStaff(req, res) {
+  res.json({ staff: await users.listStaffs() });
+}
+
+async function createStaff(req, res) {
+  const username = v.validateUsername(req.body.username);
+  const email = v.validateEmailOptional(req.body.email);
+  const password = v.validatePassword(req.body.password);
+  const staff = await users.createStaff({ username, email, password });
+  res.status(201).json({ staff });
+}
+
+async function resetStaffPassword(req, res) {
+  const userId = assertUuid(req.params.id, 'id');
+  const target = await users.findById(userId);
+  if (!target || target.role !== 'staff') throw notFound('Staff account not found');
+  const generated = !req.body.password;
+  const password = generated ? crypto.randomBytes(12).toString('base64url') : v.validatePassword(req.body.password);
+  await users.setPassword(userId, password);
+  res.json({ ok: true, ...(generated ? { password } : {}) });
+}
+
+async function toggleStaffActive(req, res) {
+  const userId = assertUuid(req.params.id, 'id');
+  const target = await users.findById(userId);
+  if (!target || target.role !== 'staff') throw notFound('Staff account not found');
+  const result = await users.setStaffActive(userId, Boolean(req.body.isActive));
+  if (!result) throw badRequest('Nothing changed');
+  res.json({ ok: true, isActive: Boolean(req.body.isActive) });
+}
+
+async function deleteStaff(req, res) {
+  const userId = assertUuid(req.params.id, 'id');
+  const target = await users.findById(userId);
+  if (!target || target.role !== 'staff') throw notFound('Staff account not found');
+  await users.deleteStaff(userId);
+  res.json({ ok: true });
+}
+
 /* --------------------------- orders view -------------------------- */
 
 async function listOrdersForRestaurant(req, res) {
@@ -358,6 +399,11 @@ module.exports = {
   resetAdminPassword: asyncHandler(resetAdminPassword),
   toggleAdminActive: asyncHandler(toggleAdminActive),
   deleteAdminUser: asyncHandler(deleteAdminUser),
+  listStaff: asyncHandler(listStaff),
+  createStaff: asyncHandler(createStaff),
+  resetStaffPassword: asyncHandler(resetStaffPassword),
+  toggleStaffActive: asyncHandler(toggleStaffActive),
+  deleteStaff: asyncHandler(deleteStaff),
   listOrdersForRestaurant: asyncHandler(listOrdersForRestaurant),
   listDeliveryGroups: asyncHandler(listDeliveryGroups),
   createDeliveryGroup: asyncHandler(createDeliveryGroup),

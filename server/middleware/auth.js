@@ -51,14 +51,27 @@ function requireOwner(req, res, next) {
   next();
 }
 
+function requireOwnerOrStaff(req, res, next) {
+  if (!req.user) return next(unauthorized());
+  if (req.user.role !== 'owner' && req.user.role !== 'staff') return next(forbidden());
+  next();
+}
+
 function requireRestaurantAdmin(req, res, next) {
   if (!req.user) return next(unauthorized());
-  if (req.user.role !== 'owner' && req.user.role !== 'admin') return next(forbidden());
+  if (req.user.role !== 'owner' && req.user.role !== 'admin' && req.user.role !== 'staff') return next(forbidden());
   if (req.user.role === 'admin') {
     if (!req.user.restaurant_id) return next(forbidden('NO_RESTAURANT', 'Account is not linked to a restaurant'));
     if (req.user.restaurant_is_active === false) {
       return next(forbidden('RESTAURANT_DISABLED', 'This restaurant has been deactivated by the platform owner'));
     }
+  }
+  next();
+}
+
+function forbidStaffDelete(req, res, next) {
+  if (req.user && req.user.role === 'staff' && req.method === 'DELETE') {
+    return next(forbidden('STAFF_NO_DELETE', 'Staff cannot delete'));
   }
   next();
 }
@@ -75,8 +88,8 @@ function requireDelivery(req, res, next) {
 
 /** Resolve the tenant id strictly from the authenticated user (multi-tenant guard). */
 function tenantIdOf(req) {
-  if (req.user.role === 'owner') return null; // owners act across tenants explicitly
+  if (req.user.role === 'owner' || req.user.role === 'staff') return null; // platform roles act across tenants explicitly
   return req.user.restaurant_id;
 }
 
-module.exports = { attachUser, requireAuth, requireOwner, requireRestaurantAdmin, requireDelivery, tenantIdOf };
+module.exports = { attachUser, requireAuth, requireOwner, requireOwnerOrStaff, requireRestaurantAdmin, requireDelivery, forbidStaffDelete, tenantIdOf };
