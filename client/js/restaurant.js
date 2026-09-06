@@ -401,8 +401,15 @@
     if (!entries.length) return;
     if (!name || !wa) {
       const errBox = document.getElementById('checkout-error');
-      errBox.textContent = I.t('enterBoth') || 'Enter name and WhatsApp';
+      errBox.textContent = I.t('enterNameAndWa');
       errBox.classList.remove('hidden');
+      return;
+    }
+    if (orderType === 'delivery' && !address) {
+      const errBox = document.getElementById('checkout-error');
+      errBox.textContent = I.t('deliveryAddress');
+      errBox.classList.remove('hidden');
+      document.getElementById('co-address').focus();
       return;
     }
     const restaurantWa = (view.settings && view.settings.whatsapp || '').replace(/[^0-9]/g, '');
