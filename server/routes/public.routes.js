@@ -4,6 +4,7 @@ const express = require('express');
 const config = require('../../config');
 const restaurants = require('../services/restaurants.service');
 const ordersService = require('../services/orders.service');
+const bookingsService = require('../services/bookings.service');
 const sse = require('../middleware/sse');
 const { orderLimiter } = require('../middleware/ratelimit');
 const { notFound } = require('../utils/errors');
@@ -61,6 +62,20 @@ router.post(
         createdAt: order.created_at,
       },
     });
+  })
+);
+
+/** Book a table (public, no account). */
+router.post(
+  '/restaurants/:slug/bookings',
+  orderLimiter,
+  asyncHandler(async (req, res) => {
+    const payload = v.validateBooking(req.body);
+    const restaurant = await restaurants.getBySlug(String(req.params.slug).toLowerCase());
+    if (!restaurant || !restaurant.is_active) throw notFound('Restaurant not found');
+    const booking = await bookingsService.create({ restaurantId: restaurant.id, payload });
+    sse.broadcast(restaurant.id, 'booking:new', { bookingId: booking.id, code: booking.code, tablesCount: booking.tables_count, bookedAt: booking.booked_at });
+    res.status(201).json({ booking: { code: booking.code, status: booking.status, bookedAt: booking.booked_at, tablesCount: booking.tables_count } });
   })
 );
 

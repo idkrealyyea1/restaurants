@@ -12,6 +12,7 @@ const restaurants = require('../services/restaurants.service');
 const categoriesService = require('../services/categories.service');
 const menu = require('../services/menu.service');
 const orders = require('../services/orders.service');
+const bookings = require('../services/bookings.service');
 const settingsService = require('../services/settings.service');
 const sse = require('../middleware/sse');
 const delivery = require('../services/delivery.service');
@@ -111,6 +112,37 @@ async function changeOrderStatus(req, res) {
 async function deleteOrder(req, res) {
   const row = await orders.archiveOrder(req.params.id, tenantId(req));
   res.json({ ok: true, order: row });
+}
+
+/* ------------------------- bookings ---------------------------- */
+
+async function listBookings(req, res) {
+  const id = tenantId(req);
+  const page = v.validatePagination(req.query);
+  const { total, bookings: rows } = await bookings.listForRestaurant(id, {
+    status: req.query.status || null,
+    limit: page.limit,
+    offset: page.offset,
+  });
+  res.json({ total, page: page.page, limit: page.limit, bookings: rows });
+}
+
+async function getBooking(req, res) {
+  const row = await bookings.getForRestaurant(req.params.id, tenantId(req));
+  res.json({ booking: row });
+}
+
+async function changeBookingStatus(req, res) {
+  const { status } = v.validateBookingStatusChange(req.body);
+  const row = await bookings.changeStatus(req.params.id, tenantId(req), status);
+  sse.broadcast(tenantId(req), 'booking:status', { bookingId: row.id, code: row.code, status: row.status });
+  sse.broadcast(tenantId(req), 'booking:new', { bookingId: row.id, code: row.code });
+  res.json({ booking: row });
+}
+
+async function deleteBooking(req, res) {
+  await bookings.archive(req.params.id, tenantId(req));
+  res.json({ ok: true });
 }
 
 /* ------------------------ categories ---------------------------- */
@@ -307,6 +339,10 @@ module.exports = {
   getOrder: asyncHandler(getOrder),
   changeOrderStatus: asyncHandler(changeOrderStatus),
   deleteOrder: asyncHandler(deleteOrder),
+  listBookings: asyncHandler(listBookings),
+  getBooking: asyncHandler(getBooking),
+  changeBookingStatus: asyncHandler(changeBookingStatus),
+  deleteBooking: asyncHandler(deleteBooking),
   listCategories: asyncHandler(listCategories),
   createCategory: asyncHandler(createCategory),
   updateCategory: asyncHandler(updateCategory),

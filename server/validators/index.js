@@ -249,6 +249,30 @@ function validateDeliverySelection(body = {}) {
   return [...new Set(ids)];
 }
 
+/* --------------------------- bookings --------------------------- */
+
+const BOOKING_STATUSES = ['pending', 'confirmed', 'cancelled', 'completed', 'noshow'];
+
+function validateBooking(body = {}) {
+  const customerName = requireText(body.customerName, { field: 'customerName', min: 2, max: 80 });
+  const customerWhatsapp = cleanPhone(body.customerWhatsapp, { field: 'customerWhatsapp', required: true });
+  const customerPhone = cleanPhone(body.customerPhone, { field: 'customerPhone' });
+  const tablesCount = toIntInRange(body.tablesCount, 'tablesCount', { min: 1, max: 20 });
+  const rawAt = body.bookedAt;
+  if (typeof rawAt !== 'string' || !rawAt) throw badRequest('bookedAt is required', [{ field: 'bookedAt' }]);
+  const bookedAt = new Date(rawAt);
+  if (Number.isNaN(bookedAt.getTime())) throw badRequest('bookedAt must be a valid ISO datetime', [{ field: 'bookedAt' }]);
+  if (bookedAt.getTime() < Date.now() - 60 * 1000) throw badRequest('bookedAt cannot be in the past', [{ field: 'bookedAt' }]);
+  const notes = cleanText(body.notes, { field: 'notes', max: 400 }) || null;
+  return { customerName, customerWhatsapp, customerPhone, tablesCount, bookedAt: bookedAt.toISOString(), notes };
+}
+
+function validateBookingStatusChange(body = {}) {
+  const status = body.status;
+  if (!BOOKING_STATUSES.includes(status)) throw badRequest('Unknown booking status', [{ field: 'status' }]);
+  return { status };
+}
+
 /* --------------------------- misc ------------------------------ */
 
 function validateStatusChange(body = {}) {
@@ -277,6 +301,9 @@ module.exports = {
   validateSettingsUpdate,
   validateHours,
   validateCheckout,
+  validateBooking,
+  validateBookingStatusChange,
+  BOOKING_STATUSES,
   validateStatusChange,
   validateDeliveryGroupCreate,
   validateDeliveryGroupUpdate,

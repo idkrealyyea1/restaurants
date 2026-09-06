@@ -81,6 +81,7 @@
           '</div>' +
           '<div class="sf-hero-meta">' + waBtn +
             '<button id="share-btn" type="button" class="sf-hero-action">' + esc(I.t('share')) + '</button>' +
+            '<button id="book-btn" type="button" class="sf-hero-action">' + esc(I.t('bookTable')) + '</button>' +
           '</div>' +
         '</div>' +
       '</section>';
@@ -351,7 +352,8 @@
       '</div>' +
       checkoutFormHtml() +
       '<div id="checkout-error" class="notice notice-error hidden mt-1"></div>' +
-      '<button type="submit" form="checkout-form" class="sf-checkout-cta mt-1" id="place-order-btn">' + esc(I.t('placeOrder')) + '</button>' +
+      '<button type="submit" form="checkout-form" class="sf-checkout-cta mt-1" id="place-order-btn"' + (view.openNow ? '' : ' disabled') + '>' + esc(I.t('orderViaWebsite')) + '</button>' +
+      '<button type="button" class="sf-checkout-cta mt-1" id="order-wa-btn"' + (view.openNow ? '' : ' disabled') + ' style="background:var(--surface);color:var(--ink);border:1px solid var(--border-strong)">' + esc(I.t('orderViaWhatsapp')) + '</button>' +
       '<button type="button" id="close-sheet-btn" class="btn btn-outline btn-block mt-1">' + esc(I.t('keepBrowsing')) + '</button>';
 
     // Wire quantity controls.
@@ -368,6 +370,8 @@
 
     document.getElementById('close-sheet-btn').addEventListener('click', closeSheet);
     document.getElementById('checkout-form').addEventListener('submit', submitOrder);
+    const waBtn2 = document.getElementById('order-wa-btn');
+    if (waBtn2) waBtn2.addEventListener('click', orderViaWhatsapp);
   }
 
   function checkoutFormHtml() {
@@ -386,6 +390,89 @@
           '<input id="co-notes" name="notes" type="text" maxlength="400"></div>' +
       '</form>'
     );
+  }
+
+  function orderViaWhatsapp() {
+    const name = (document.getElementById('co-name') && document.getElementById('co-name').value.trim()) || '';
+    const wa = (document.getElementById('co-wa') && document.getElementById('co-wa').value.trim()) || '';
+    const address = (document.getElementById('co-address') && document.getElementById('co-address').value.trim()) || '';
+    const notes = (document.getElementById('co-notes') && document.getElementById('co-notes').value.trim()) || '';
+    const entries = cartEntries();
+    if (!entries.length) return;
+    if (!name || !wa) {
+      const errBox = document.getElementById('checkout-error');
+      errBox.textContent = I.t('enterBoth') || 'Enter name and WhatsApp';
+      errBox.classList.remove('hidden');
+      return;
+    }
+    const restaurantWa = (view.settings && view.settings.whatsapp || '').replace(/[^0-9]/g, '');
+    if (!restaurantWa) {
+      const errBox = document.getElementById('checkout-error');
+      errBox.textContent = 'WhatsApp not available for this restaurant';
+      errBox.classList.remove('hidden');
+      return;
+    }
+    const lines = entries.map((e) => e.qty + '× ' + e.item.name).join('\n');
+    const total = fmtMoney(subtotalCents() + deliveryFeeCents(), view.settings.currency);
+    let msg = 'السلام عليكم ' + view.name + '، أريد طلب:\n' + lines + '\nالمجموع: ' + total + '\nالاسم: ' + name + '\nواتساب: ' + wa;
+    if (address) msg += '\nالعنوان: ' + address;
+    if (notes) msg += '\nملاحظات: ' + notes;
+    msg += '\nنوع الطلب: ' + (orderType === 'delivery' ? I.t('delivery') : I.t('pickup'));
+    window.open('https://wa.me/' + encodeURIComponent(restaurantWa) + '?text=' + encodeURIComponent(msg), '_blank');
+  }
+
+  function bookingFormHtml(defaultDate) {
+    return (
+      '<form id="booking-form" novalidate class="mt-2">' +
+        '<div class="field"><label for="bk-name">' + esc(I.t('bookingName')) + '</label><input id="bk-name" type="text" maxlength="80" required></div>' +
+        '<div class="field"><label for="bk-wa">' + esc(I.t('bookingWhatsapp')) + '</label><input id="bk-wa" type="tel" maxlength="20" required placeholder="+970..."></div>' +
+        '<div class="field"><label for="bk-phone">' + esc(I.t('bookingPhone')) + '</label><input id="bk-phone" type="tel" maxlength="20"></div>' +
+        '<div class="field"><label for="bk-tables">' + esc(I.t('tablesCount')) + '</label><input id="bk-tables" type="number" min="1" max="20" value="2" required></div>' +
+        '<div class="field"><label for="bk-date">' + esc(I.t('bookingDate')) + '</label><input id="bk-date" type="date" value="' + esc(defaultDate) + '" required></div>' +
+        '<div class="field"><label for="bk-time">' + esc(I.t('bookingTime')) + '</label><input id="bk-time" type="time" value="19:00" required></div>' +
+        '<div class="field"><label for="bk-notes">' + esc(I.t('bookingNotes')) + '</label><input id="bk-notes" type="text" maxlength="400"></div>' +
+      '</form>'
+    );
+  }
+
+  function openBookingSheet() {
+    const content = document.getElementById('sheet-content');
+    const defaultDate = new Date().toISOString().slice(0, 10);
+    content.innerHTML =
+      '<h2 class="sf-sheet-title">' + esc(I.t('bookTableTitle')) + '</h2>' +
+      '<p class="muted small">' + esc(I.t('bookTableDesc')) + '</p>' +
+      bookingFormHtml(defaultDate) +
+      '<div id="booking-error" class="notice notice-error hidden mt-1"></div>' +
+      '<button type="submit" form="booking-form" class="sf-checkout-cta mt-1" id="book-submit-btn">' + esc(I.t('bookNow')) + '</button>' +
+      '<button type="button" id="close-sheet-btn-booking" class="btn btn-outline btn-block mt-1">' + esc(I.t('close')) + '</button>';
+    document.getElementById('close-sheet-btn-booking').addEventListener('click', closeSheet);
+    document.getElementById('booking-form').addEventListener('submit', submitBooking);
+    openSheet();
+  }
+
+  async function submitBooking(e) {
+    e.preventDefault();
+    const errBox = document.getElementById('booking-error');
+    errBox.classList.add('hidden');
+    const payload = {
+      customerName: document.getElementById('bk-name').value,
+      customerWhatsapp: document.getElementById('bk-wa').value,
+      customerPhone: document.getElementById('bk-phone').value,
+      tablesCount: Number(document.getElementById('bk-tables').value),
+      bookedAt: document.getElementById('bk-date').value + 'T' + document.getElementById('bk-time').value,
+      notes: document.getElementById('bk-notes').value,
+    };
+    const btn = document.getElementById('book-submit-btn');
+    btn.disabled = true;
+    try {
+      const data = await api.post('/api/restaurants/' + encodeURIComponent(slug) + '/bookings', payload);
+      toast(I.t('bookingCreated'), 'success');
+      closeSheet();
+    } catch (err) {
+      errBox.textContent = err.message;
+      errBox.classList.remove('hidden');
+      btn.disabled = false;
+    }
   }
 
   async function submitOrder(e) {
@@ -493,6 +580,8 @@
 
     const shareBtn = document.getElementById('share-btn');
     if (shareBtn) shareBtn.addEventListener('click', sharePage);
+    const bookBtn = document.getElementById('book-btn');
+    if (bookBtn) bookBtn.addEventListener('click', openBookingSheet);
 
     document.getElementById('sheet-backdrop').addEventListener('click', closeSheet);
     document.addEventListener('keydown', (e) => {
@@ -512,6 +601,8 @@
       document.getElementById('notice-zone').innerHTML = notices2.join('');
       const sb = document.getElementById('share-btn');
       if (sb) sb.addEventListener('click', sharePage);
+      const bb = document.getElementById('book-btn');
+      if (bb) bb.addEventListener('click', openBookingSheet);
       if (document.getElementById('sheet').classList.contains('open') && totalUnits() > 0) {
         renderCartSheet();
       }

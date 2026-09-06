@@ -38,6 +38,12 @@ router.get('/orders/:id', admin.getOrder);
 router.patch('/orders/:id/status', admin.changeOrderStatus);
 router.delete('/orders/:id', admin.deleteOrder);
 
+// Bookings
+router.get('/bookings', admin.listBookings);
+router.get('/bookings/:id', admin.getBooking);
+router.patch('/bookings/:id/status', admin.changeBookingStatus);
+router.delete('/bookings/:id', admin.deleteBooking);
+
 // Settings + opening hours
 router.get('/settings', admin.getSettings);
 router.patch('/settings', admin.updateSettings);

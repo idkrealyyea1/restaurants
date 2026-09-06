@@ -88,11 +88,12 @@
     document.querySelectorAll('.side-link, .tab-btn').forEach((b) => {
       b.classList.toggle('active', b.dataset.tab === tab);
     });
-    ['dashboard', 'orders', 'menu', 'settings', 'analytics', 'share'].forEach((t) => {
+    ['dashboard', 'orders', 'bookings', 'menu', 'settings', 'analytics', 'share'].forEach((t) => {
       document.getElementById('tab-' + t).classList.toggle('hidden', t !== tab);
     });
     if (tab === 'dashboard') loadDashboard();
     if (tab === 'orders') loadOrders();
+    if (tab === 'bookings') loadBookings();
     if (tab === 'menu') loadMenu();
     if (tab === 'settings') loadSettings();
     if (tab === 'analytics') loadAnalytics();
@@ -334,8 +335,151 @@
     }
   }
 
-  function refreshCurrentOrdersView() {
-    if (!document.getElementById('tab-orders').classList.contains('hidden')) fetchOrders();
+  /* --------------------------- bookings ------------------------------ */
+
+  let bookingsFilter = '';
+  let bookingsPage = 1;
+
+  function formatBookingDate(value) {
+    try { return new Date(value).toLocaleString(); } catch (_) { return String(value); }
+  }
+
+  function bookingStatusLabel(status) {
+    const map = { pending: I.t('pendingL'), confirmed: I.t('bookingConfirmed'), cancelled: I.t('bookingCancelled'), completed: 'Completed', noshow: 'No-show' };
+    return map[status] || status;
+  }
+
+  function bookingCardHtml(b) {
+    const badgeClass = b.status === 'confirmed' ? 'badge-open' : b.status === 'pending' ? 'badge-warn' : 'badge-closed';
+    return '<div class="card mb-1" data-booking="' + esc(b.id) + '">' +
+      '<div class="flex-between">' +
+        '<div><strong>' + esc(b.customer_name) + '</strong> <span class="badge ' + badgeClass + '">' + esc(bookingStatusLabel(b.status)) + '</span>' +
+        '<div class="muted small">' + esc(b.customer_whatsapp) + (b.customer_phone ? ' · ' + esc(b.customer_phone) : '') + '</div>' +
+        '<div class="muted small">' + esc(I.t('tablesCount')) + ': ' + esc(String(b.tables_count)) + ' · ' + esc(formatBookingDate(b.booked_at)) + '</div>' +
+        (b.notes ? '<div class="muted small">' + esc(b.notes) + '</div>' : '') +
+        '<div class="muted small">Code: ' + esc(b.code) + '</div></div>' +
+        '<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">' + bookingActionsHtml(b) + '</div>' +
+      '</div></div>';
+  }
+
+  function bookingActionsHtml(b) {
+    if (b.status === 'pending') {
+      return '<button type="button" class="btn btn-sm" data-confirm-booking="' + esc(b.id) + '">' + esc(I.t('confirmBooking')) + '</button> ' +
+        '<button type="button" class="btn btn-outline btn-sm" data-confirm-wa="' + esc(b.id) + '">' + esc(I.t('confirmViaWhatsapp')) + '</button> ' +
+        '<button type="button" class="btn btn-danger btn-sm" data-cancel-booking="' + esc(b.id) + '">' + esc(I.t('actCancel')) + '</button>';
+    }
+    if (b.status === 'confirmed') {
+      return '<button type="button" class="btn btn-outline btn-sm" data-complete-booking="' + esc(b.id) + '">Completed</button> ' +
+        '<button type="button" class="btn btn-danger btn-sm" data-cancel-booking="' + esc(b.id) + '">' + esc(I.t('actCancel')) + '</button>';
+    }
+    return '<button type="button" class="btn btn-danger btn-sm" data-del-booking="' + esc(b.id) + '">' + esc(I.t('del')) + '</button>';
+  }
+
+  function wireBookingActions(container) {
+    container.querySelectorAll('[data-confirm-booking]').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        btn.disabled = true;
+        try {
+          await api.patch('/api/admin/bookings/' + btn.dataset.confirmBooking + '/status', { status: 'confirmed' });
+          toast(I.t('bookingConfirmed'), 'success');
+          fetchBookings();
+        } catch (err) { toast(err.message, 'error'); btn.disabled = false; }
+      });
+    });
+    container.querySelectorAll('[data-confirm-wa]').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        btn.disabled = true;
+        try {
+          const id = btn.dataset.confirmWa;
+          const card = btn.closest('[data-booking]');
+          await api.patch('/api/admin/bookings/' + id + '/status', { status: 'confirmed' });
+          const booking = (await api.get('/api/admin/bookings/' + id)).booking;
+          const wa = (booking.customer_whatsapp || '').replace(/[^0-9]/g, '');
+          const d = new Date(booking.booked_at);
+          const dateStr = d.toLocaleDateString();
+          const timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          const msg = I.t('whatsappConfirmMsg', { name: booking.customer_name, tables: String(booking.tables_count), date: dateStr, time: timeStr });
+          toast(I.t('bookingConfirmed'), 'success');
+          fetchBookings();
+          if (wa) window.open('https://wa.me/' + wa + '?text=' + encodeURIComponent(msg), '_blank');
+        } catch (err) { toast(err.message, 'error'); btn.disabled = false; }
+      });
+    });
+    container.querySelectorAll('[data-cancel-booking]').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        if (!confirm(I.t('bookingCancelled') + '?')) return;
+        btn.disabled = true;
+        try {
+          await api.patch('/api/admin/bookings/' + btn.dataset.cancelBooking + '/status', { status: 'cancelled' });
+          toast(I.t('bookingCancelled'), 'success');
+          fetchBookings();
+        } catch (err) { toast(err.message, 'error'); btn.disabled = false; }
+      });
+    });
+    container.querySelectorAll('[data-complete-booking]').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        btn.disabled = true;
+        try {
+          await api.patch('/api/admin/bookings/' + btn.dataset.completeBooking + '/status', { status: 'completed' });
+          toast('Completed', 'success');
+          fetchBookings();
+        } catch (err) { toast(err.message, 'error'); btn.disabled = false; }
+      });
+    });
+    container.querySelectorAll('[data-del-booking]').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        if (!confirm(I.t('del') + '?')) return;
+        btn.disabled = true;
+        try {
+          await api.del('/api/admin/bookings/' + btn.dataset.delBooking);
+          toast(I.t('bookingCancelled'), 'success');
+          fetchBookings();
+        } catch (err) { toast(err.message, 'error'); btn.disabled = false; }
+      });
+    });
+  }
+
+  async function loadBookings() {
+    const zone = document.getElementById('tab-bookings');
+    if (!zone.dataset.built) {
+      zone.innerHTML =
+        '<div class="flex-between mb-2">' +
+          '<h1 class="section-title">' + esc(I.t('bookingsTab')) + '</h1>' +
+          '<select id="bookings-filter">' +
+            '<option value="">' + esc(I.t('allStatuses')) + '</option>' +
+            ['pending','confirmed','cancelled','completed','noshow'].map((k) => '<option value="' + k + '">' + esc(bookingStatusLabel(k)) + '</option>').join('') +
+          '</select>' +
+        '</div>' +
+        '<div id="bookings-list"></div>' +
+        '<div class="flex-between mt-2">' +
+          '<button id="bookings-prev" type="button" class="btn btn-outline btn-sm">' + esc(I.t('prev')) + '</button>' +
+          '<span id="bookings-page-info" class="muted small"></span>' +
+          '<button id="bookings-next" type="button" class="btn btn-outline btn-sm">' + esc(I.t('next')) + '</button>' +
+        '</div>';
+      zone.dataset.built = '1';
+      document.getElementById('bookings-filter').addEventListener('change', (e) => { bookingsFilter = e.target.value; bookingsPage = 1; fetchBookings(); });
+      document.getElementById('bookings-prev').addEventListener('click', () => { if (bookingsPage > 1) { bookingsPage--; fetchBookings(); } });
+      document.getElementById('bookings-next').addEventListener('click', () => { bookingsPage++; fetchBookings(); });
+    }
+    fetchBookings();
+  }
+
+  async function fetchBookings() {
+    const list = document.getElementById('bookings-list');
+    list.innerHTML = '<div class="empty-state">' + esc(I.t('loading')) + '</div>';
+    try {
+      const q = '?page=' + bookingsPage + '&limit=20' + (bookingsFilter ? '&status=' + bookingsFilter : '');
+      const data = await api.get('/api/admin/bookings' + q);
+      const totalPages = Math.max(1, Math.ceil(data.total / data.limit));
+      bookingsPage = Math.min(bookingsPage, totalPages);
+      list.innerHTML = data.bookings.length ? data.bookings.map(bookingCardHtml).join('') : '<div class="empty-state card">' + esc(I.t('bookingsEmpty')) + '</div>';
+      document.getElementById('bookings-page-info').textContent = I.t('pageInfo', { p: bookingsPage, t: totalPages, n: data.total });
+      wireBookingActions(list);
+    } catch (err) { list.innerHTML = errorHtml(err); }
+  }
+
+  function refreshBookingsView() {
+    if (!document.getElementById('tab-bookings').classList.contains('hidden')) fetchBookings();
   }
 
   /* ------------------------- live updates (SSE) ----------------------- */
@@ -352,6 +496,12 @@
       if (!document.getElementById('tab-dashboard').classList.contains('hidden')) loadDashboard();
     });
     eventSource.addEventListener('order:status', () => refreshCurrentOrdersView());
+    eventSource.addEventListener('booking:new', () => {
+      toast(I.t('newBookingToast'), 'success');
+      refreshBookingsView();
+      if (!document.getElementById('tab-dashboard').classList.contains('hidden')) loadDashboard();
+    });
+    eventSource.addEventListener('booking:status', () => refreshBookingsView());
     eventSource.onerror = () => {
       // EventSource retries automatically.
     };
