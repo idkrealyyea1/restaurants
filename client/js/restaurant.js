@@ -6,7 +6,7 @@
  */
 
 (function () {
-  const { api, esc, fmtMoney, qsParam } = window.App;
+  const { api, esc, fmtMoney, qsParam, toast } = window.App;
   const I = window.I18N;
 
   /* ------------------------- resolve slug -------------------------- */
