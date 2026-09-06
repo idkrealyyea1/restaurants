@@ -20,9 +20,14 @@ function assertTransition(current, next) {
 }
 
 async function create({ restaurantId, payload }) {
-  const { rows: rRows } = await query('SELECT id, is_active FROM restaurants WHERE id = $1', [restaurantId]);
+  const { rows: rRows } = await query('SELECT id, is_active, subscription_ends_at FROM restaurants WHERE id = $1', [restaurantId]);
   if (!rRows[0]) throw notFound('Restaurant not found');
   if (!rRows[0].is_active) throw conflict('RESTAURANT_UNAVAILABLE', 'Restaurant is not active');
+  {
+    const endsAt = rRows[0].subscription_ends_at;
+    const active = !endsAt || new Date(endsAt).getTime() > Date.now();
+    if (!active) throw conflict('SUBSCRIPTION_EXPIRED', 'Subscription expired — please renew ($20/month)');
+  }
 
   let code = null;
   let booking = null;

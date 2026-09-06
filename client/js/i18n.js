@@ -261,10 +261,12 @@
       groupSaved: 'تم حفظ شركة التوصيل',
       groupDeleted: 'تم حذف الشركة',
       /* subscription */
-      subscriptionH: 'الاشتراك',
+      subscriptionH: 'الاشتراك — $20/شهر',
       subActive: 'الاشتراك نشط',
-      subExpired: 'انتهى الاشتراك',
+      subExpired: 'انتهى الاشتراك — جدّد بـ $20',
       subExpires: 'ينتهي في',
+      subPrice: '$20 كل شهر، بدون عمولة',
+      subRenewHint: 'تواصل مع الإدارة للتجديد',
       /* owner panel */
       logout: 'تسجيل الخروج',
       restaurantsH: 'المطاعم',
@@ -610,10 +612,12 @@
       groupSaved: 'Delivery company saved',
       groupDeleted: 'Company deleted',
       /* subscription */
-      subscriptionH: 'Subscription',
+      subscriptionH: 'Subscription — $20/month',
       subActive: 'Subscription active',
-      subExpired: 'Subscription expired',
+      subExpired: 'Subscription expired — renew for $20',
       subExpires: 'Expires',
+      subPrice: '$20 per month, 0% commission',
+      subRenewHint: 'Contact admin to renew',
       /* owner panel */
       logout: 'Log out',
       restaurantsH: 'Restaurants',

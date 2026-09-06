@@ -469,7 +469,7 @@
       toast(I.t('bookingCreated'), 'success');
       closeSheet();
     } catch (err) {
-      errBox.textContent = err.message;
+      errBox.textContent = err.code === 'SUBSCRIPTION_EXPIRED' ? I.t('subExpired') : err.message;
       errBox.classList.remove('hidden');
       btn.disabled = false;
     }
@@ -499,7 +499,7 @@
       updateCartBar();
       renderSuccess(data.order);
     } catch (err) {
-      errBox.textContent = err.message;
+      errBox.textContent = err.code === 'SUBSCRIPTION_EXPIRED' ? I.t('subExpired') : err.message;
       errBox.classList.remove('hidden');
     } finally {
       btn.disabled = false;

@@ -131,9 +131,10 @@
         '<div class="card mt-2"><div class="flex-between"><h2 class="section-title">' + esc(I.t('subscriptionH')) + '</h2>' +
           '<span class="badge ' + (d.subscription && d.subscription.active ? 'badge-open' : 'badge-closed') + '">' +
             esc(I.t(d.subscription && d.subscription.active ? 'subActive' : 'subExpired')) + '</span></div>' +
-          (d.subscription && d.subscription.endsAt && d.subscription.active
-            ? '<p class="muted small mt-1">' + esc(I.t('subExpires')) + ' ' + fmtDateTime(d.subscription.endsAt) + '</p>'
-            : '') +
+          '<p class="muted small mt-1">' + esc(I.t('subPrice')) + '</p>' +
+          (d.subscription && d.subscription.endsAt
+            ? '<p class="muted small">' + esc(I.t('subExpires')) + ' ' + fmtDateTime(d.subscription.endsAt) + '</p>'
+            : '<p class="muted small">' + esc(I.t('subRenewHint')) + '</p>') +
         '</div>' +
         '<h2 class="section-title mt-2">' + esc(I.t('pendingOrdersH')) + '</h2><div id="dash-pending"></div>';
 
