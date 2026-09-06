@@ -1,28 +1,41 @@
 <!doctype html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Restaurant</title>
+  <meta name="theme-color" content="#22211d">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="/icons/icon.svg">
+  <title>المطعم</title>
+  <link rel="stylesheet" href="/fonts/fonts.css">
   <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/storefront.css">
 </head>
-<body>
+<body class="storefront">
+  <div class="page-glow" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <div class="topbar-inner container">
+      <span class="spacer"></span>
+    </div>
+  </header>
+
   <!-- Hero is rendered by JS -->
   <div id="hero"></div>
 
   <main class="container">
     <div id="notice-zone"></div>
-    <div class="chips-row" id="chips"></div>
+    <div class="sf-chips" id="chips"></div>
 
     <div id="menu-zone" class="mt-1"></div>
-    <p class="footer-note">Powered by Restaurants Platform</p>
+    <p class="footer-note" data-i18n="poweredBy">مدعوم من منصة المطاعم</p>
   </main>
 
   <!-- Floating cart bar -->
-  <div id="cart-bar" class="cart-bar hidden">
-    <div class="cart-bar-inner">
-      <span id="cart-summary"></span>
-      <button id="open-cart-btn" type="button">View cart</button>
+  <div id="cart-bar" class="sf-cartbar hidden">
+    <div class="sf-cartbar-inner">
+      <span id="cart-summary" class="sf-cart-summary"></span>
+      <button id="open-cart-btn" type="button" class="sf-cart-go" data-i18n="viewCart">عرض السلة</button>
     </div>
   </div>
 
@@ -33,7 +46,10 @@
     <div id="sheet-content"></div>
   </div>
 
+  <script src="/js/i18n.js"></script>
   <script src="/js/api.js"></script>
   <script src="/js/restaurant.js"></script>
+  <script src="/js/pwa.js"></script>
 </body>
 </html>
+

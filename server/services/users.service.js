@@ -20,6 +20,7 @@ function publicUser(row) {
     username: row.username,
     email: row.email || null,
     restaurantId: row.restaurant_id || null,
+    deliveryGroupId: row.delivery_group_id || null,
     isActive: row.is_active,
     createdAt: row.created_at,
   };
@@ -89,6 +90,63 @@ async function listAdminsForRestaurant(restaurantId) {
   return rows;
 }
 
+/* ------------------------- delivery accounts ------------------------- */
+
+/**
+ * Create a delivery-company login account (platform owner only).
+ * Optionally request a specific username; otherwise derive from the company.
+ */
+async function createDelivery({ deliveryGroupId, username, email, password }) {
+  const hash = await hashPassword(password);
+  const { rows } = await query(
+    `INSERT INTO users (role, delivery_group_id, username, email, password_hash)
+     VALUES ('delivery', $1, $2, $3, $4)
+     RETURNING id, role, username, email, delivery_group_id, is_active, created_at`,
+    [deliveryGroupId, username, email || null, hash]
+  );
+  return publicUser(rows[0]);
+}
+
+async function setDeliveryActive(userId, isActive) {
+  await withTx(async (client) => {
+    const { rowCount } = await client.query(
+      'UPDATE users SET is_active = $2 WHERE id = $1 AND role = $3',
+      [userId, isActive, 'delivery']
+    );
+    if (rowCount === 0) return null;
+    if (!isActive) {
+      await client.query(`DELETE FROM "session" WHERE sess->>'userId' = $1`, [userId]);
+    }
+    return true;
+  });
+}
+
+async function deleteDelivery(userId) {
+  const { rowCount } = await query(`DELETE FROM users WHERE id = $1 AND role = 'delivery'`, [userId]);
+  return rowCount > 0;
+}
+
+async function listDeliveriesForGroup(deliveryGroupId) {
+  const { rows } = await query(
+    `SELECT u.id, u.username, u.email, u.is_active, u.created_at,
+            g.name AS "groupName"
+     FROM users u
+     JOIN delivery_groups g ON g.id = u.delivery_group_id
+     WHERE u.role = 'delivery' AND u.delivery_group_id = $1
+     ORDER BY u.created_at ASC`,
+    [deliveryGroupId]
+  );
+  return rows;
+}
+
+async function findByGroup(deliveryGroupId) {
+  const { rows } = await query(
+    `SELECT * FROM users WHERE role = 'delivery' AND delivery_group_id = $1 LIMIT 1`,
+    [deliveryGroupId]
+  );
+  return rows[0] || null;
+}
+
 module.exports = {
   hashPassword,
   verifyPassword,
@@ -100,4 +158,9 @@ module.exports = {
   setIsActive,
   deleteAdmin,
   listAdminsForRestaurant,
+  createDelivery,
+  setDeliveryActive,
+  deleteDelivery,
+  listDeliveriesForGroup,
+  findByGroup,
 };

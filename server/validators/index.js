@@ -223,6 +223,32 @@ function validateCheckout(body = {}) {
   return { customerName, customerWhatsapp, customerPhone, customerAddress, orderType: orderTypeRaw, notes, items };
 }
 
+/* ---------------------- delivery groups ------------------------ */
+
+function validateDeliveryGroupCreate(body = {}) {
+  return {
+    name: requireText(body.name, { field: 'name', min: 1, max: 80 }),
+    phone: cleanPhone(body.phone, { field: 'phone' }) || '',
+    notes: cleanText(body.notes, { field: 'notes', max: 300 }) || '',
+  };
+}
+
+function validateDeliveryGroupUpdate(body = {}) {
+  const patch = {};
+  if (body.name !== undefined) patch.name = requireText(body.name, { field: 'name', min: 1, max: 80 });
+  if (body.phone !== undefined) patch.phone = cleanPhone(body.phone, { field: 'phone' }) || '';
+  if (body.notes !== undefined) patch.notes = cleanText(body.notes, { field: 'notes', max: 300 }) || '';
+  if (Object.keys(patch).length === 0) throw badRequest('No updatable fields provided');
+  return patch;
+}
+
+function validateDeliverySelection(body = {}) {
+  if (!Array.isArray(body.groupIds)) throw badRequest('groupIds must be an array', [{ field: 'groupIds' }]);
+  const ids = body.groupIds.map((id, i) => assertUuid(id, `groupIds[${i}]`));
+  if (ids.length > 20) throw badRequest('Too many delivery groups selected');
+  return [...new Set(ids)];
+}
+
 /* --------------------------- misc ------------------------------ */
 
 function validateStatusChange(body = {}) {
@@ -252,5 +278,8 @@ module.exports = {
   validateHours,
   validateCheckout,
   validateStatusChange,
+  validateDeliveryGroupCreate,
+  validateDeliveryGroupUpdate,
+  validateDeliverySelection,
   validatePagination,
 };

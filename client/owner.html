@@ -1,43 +1,57 @@
 <!doctype html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Platform owner</title>
+  <link rel="stylesheet" href="/fonts/fonts.css">
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
   <header class="topbar">
     <div class="topbar-inner container">
-      <span class="brand">Platform owner</span>
+      <span class="brand" data-i18n="brand">منصة المطاعم</span>
       <span class="spacer"></span>
-      <button id="logout-btn" type="button" class="btn btn-outline btn-sm">Log out</button>
+      <button id="logout-btn" type="button" class="btn btn-outline btn-sm" data-i18n="logout">Log out</button>
     </div>
   </header>
 
   <main class="container mt-2">
     <div id="overview-zone"></div>
 
-    <section class="card">
+    <section class="card mt-2">
+      <h1 class="section-title" data-i18n="deliveryGroupsT">Delivery companies</h1>
+      <form id="delivery-form" class="form-row form-row-3 mb-2" novalidate autocomplete="off">
+        <input id="dg-name" type="text" data-i18n-placeholder="groupNamePh" placeholder="Company name" maxlength="80" required>
+        <input id="dg-phone" type="tel" data-i18n-placeholder="groupPhonePh" placeholder="Phone (optional)" maxlength="20">
+        <button type="submit" class="btn btn-secondary" data-i18n="addCompanyBtn">Add company</button>
+      </form>
+      <div id="delivery-zone"></div>
+    </section>
+
+    <section class="card mt-2">
       <div class="flex-between mb-2">
-        <h1 class="section-title">Restaurants</h1>
-        <button id="new-restaurant-btn" type="button" class="btn">New restaurant</button>
+        <h1 class="section-title" data-i18n="restaurantsH">Restaurants</h1>
+        <div class="flex-between" style="gap:8px">
+          <a class="btn btn-outline" href="/api/owner/reports/restaurants.csv" download data-i18n="exportCsv">Export CSV</a>
+          <button id="new-restaurant-btn" type="button" class="btn" data-i18n="newRestaurant">New restaurant</button>
+        </div>
       </div>
       <div class="form-row form-row-2 mb-2">
-        <input id="search-input" type="text" placeholder="Search by name or slug&hellip;" maxlength="80" autocomplete="off">
+        <input id="search-input" type="text" data-i18n-placeholder="searchRestPh" placeholder="Search by name or slug…" maxlength="80" autocomplete="off">
         <select id="status-filter">
-          <option value="">All statuses</option>
-          <option value="active">Active only</option>
-          <option value="inactive">Deactivated only</option>
+          <option value="" data-i18n="filterAll">All statuses</option>
+          <option value="active" data-i18n="filterActive">Active only</option>
+          <option value="inactive" data-i18n="filterInactive">Deactivated only</option>
         </select>
       </div>
 
       <div id="restaurants-zone"></div>
 
       <div class="flex-between mt-2">
-        <button id="page-prev" type="button" class="btn btn-outline btn-sm">Prev</button>
+        <button id="page-prev" type="button" class="btn btn-outline btn-sm" data-i18n="prev">Prev</button>
         <span id="page-info" class="muted small"></span>
-        <button id="page-next" type="button" class="btn btn-outline btn-sm">Next</button>
+        <button id="page-next" type="button" class="btn btn-outline btn-sm" data-i18n="next">Next</button>
       </div>
     </section>
   </main>
@@ -46,6 +60,7 @@
     <div class="modal" id="modal-box" role="dialog" aria-modal="true"></div>
   </div>
 
+  <script src="/js/i18n.js"></script>
   <script src="/js/api.js"></script>
   <script src="/js/owner.js"></script>
 </body>

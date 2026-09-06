@@ -18,10 +18,12 @@ async function attachUser(req, res, next) {
     const userId = req.session && req.session.userId;
     if (userId) {
       const { rows } = await query(
-        `SELECT u.id, u.role, u.username, u.restaurant_id,
-                r.is_active AS restaurant_is_active, r.slug AS restaurant_slug
+        `SELECT u.id, u.role, u.username, u.restaurant_id, u.delivery_group_id,
+                r.is_active AS restaurant_is_active, r.slug AS restaurant_slug,
+                g.is_active AS delivery_group_is_active
          FROM users u
          LEFT JOIN restaurants r ON r.id = u.restaurant_id
+         LEFT JOIN delivery_groups g ON g.id = u.delivery_group_id
          WHERE u.id = $1 AND u.is_active = TRUE`,
         [userId]
       );
@@ -61,10 +63,20 @@ function requireRestaurantAdmin(req, res, next) {
   next();
 }
 
+function requireDelivery(req, res, next) {
+  if (!req.user) return next(unauthorized());
+  if (req.user.role !== 'delivery') return next(forbidden());
+  if (!req.user.delivery_group_id) return next(forbidden('NO_DELIVERY_GROUP', 'Account is not linked to a delivery company'));
+  if (req.user.delivery_group_is_active === false) {
+    return next(forbidden('DELIVERY_DISABLED', 'This delivery company has been deactivated by the platform owner'));
+  }
+  next();
+}
+
 /** Resolve the tenant id strictly from the authenticated user (multi-tenant guard). */
 function tenantIdOf(req) {
   if (req.user.role === 'owner') return null; // owners act across tenants explicitly
   return req.user.restaurant_id;
 }
 
-module.exports = { attachUser, requireAuth, requireOwner, requireRestaurantAdmin, tenantIdOf };
+module.exports = { attachUser, requireAuth, requireOwner, requireRestaurantAdmin, requireDelivery, tenantIdOf };

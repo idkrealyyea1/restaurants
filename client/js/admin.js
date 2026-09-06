@@ -6,7 +6,12 @@
  */
 
 (function () {
-  const { api, esc, fmtMoney, fmtDateTime, debounce, toast, STATUS_LABELS } = window.App;
+  const { api, esc, fmtMoney, fmtDateTime, debounce, toast } = window.App;
+  const I = window.I18N;
+
+  function statusLabel(status) {
+    return I.t('status_' + status);
+  }
 
   /* ----------------------------- state ------------------------------ */
 
@@ -37,7 +42,7 @@
       switchTab('dashboard');
       connectEvents();
     } catch (err) {
-      toast(err.message || 'Failed to load', 'error');
+      toast(err.message || I.t('failedLoad'), 'error');
     }
   }
 
@@ -59,8 +64,8 @@
   function renderOpenBadge() {
     const badge = document.getElementById('open-badge');
     badge.innerHTML = info.restaurant.status === 'open'
-      ? '<span class="badge badge-open">Open</span>'
-      : '<span class="badge badge-closed">' + (info.restaurant.status === 'temporarily_closed' ? 'Temporarily closed' : 'Closed') + '</span>';
+      ? '<span class="badge badge-open">' + esc(I.t('openBadge')) + '</span>'
+      : '<span class="badge badge-closed">' + esc(info.restaurant.status === 'temporarily_closed' ? I.t('tempClosedBadge') : I.t('closedBadge')) + '</span>';
   }
 
   function bindChrome() {
@@ -114,15 +119,22 @@
 
       zone.innerHTML =
         '<div class="grid-stats mb-2">' +
-          statCard('Orders today', d.counts.ordersToday) +
-          statCard('Pending', d.counts.pendingOrders) +
-          statCard('Revenue today', fmtMoney(d.counts.revenueTodayCents, currency)) +
-          statCard('Menu items', usage) +
+          statCard(I.t('ordersToday'), d.counts.ordersToday) +
+          statCard(I.t('pendingL'), d.counts.pendingOrders) +
+          statCard(I.t('revenueToday'), fmtMoney(d.counts.revenueTodayCents, currency)) +
+          statCard(I.t('menuItemsL'), usage) +
         '</div>' +
-        '<div class="card"><div class="flex-between"><h2 class="section-title">Restaurant status</h2>' +
-        '<button id="goto-settings" type="button" class="btn btn-outline btn-sm">Change</button></div>' +
+        '<div class="card"><div class="flex-between"><h2 class="section-title">' + esc(I.t('restaurantStatus')) + '</h2>' +
+        '<button id="goto-settings" type="button" class="btn btn-outline btn-sm">' + esc(I.t('change')) + '</button></div>' +
         '<p>' + statusText(d.openNow) + '</p></div>' +
-        '<h2 class="section-title">Pending orders</h2><div id="dash-pending"></div>';
+        '<div class="card mt-2"><div class="flex-between"><h2 class="section-title">' + esc(I.t('subscriptionH')) + '</h2>' +
+          '<span class="badge ' + (d.subscription && d.subscription.active ? 'badge-open' : 'badge-closed') + '">' +
+            esc(I.t(d.subscription && d.subscription.active ? 'subActive' : 'subExpired')) + '</span></div>' +
+          (d.subscription && d.subscription.endsAt && d.subscription.active
+            ? '<p class="muted small mt-1">' + esc(I.t('subExpires')) + ' ' + fmtDateTime(d.subscription.endsAt) + '</p>'
+            : '') +
+        '</div>' +
+        '<h2 class="section-title mt-2">' + esc(I.t('pendingOrdersH')) + '</h2><div id="dash-pending"></div>';
 
       document.getElementById('goto-settings').addEventListener('click', () => switchTab('settings'));
 
@@ -130,7 +142,7 @@
       const { orders } = await api.get('/api/admin/orders?status=pending&limit=10');
       list.innerHTML = orders.length
         ? orders.map(orderCardHtml).join('')
-        : '<div class="empty-state card">No pending orders. You are all caught up.</div>';
+        : '<div class="empty-state card">' + esc(I.t('noPending')) + '</div>';
       wireOrderActions(list);
     } catch (err) {
       zone.innerHTML = errorHtml(err);
@@ -143,19 +155,19 @@
 
   function statusText(openNow) {
     if (!info.restaurant.status || info.restaurant.status === 'open') {
-      return openNow ? 'Open — accepting orders.' : 'Status is "Open" but outside opening hours — orders are rejected.';
+      return openNow ? I.t('openAccepting') : I.t('openOutsideHours');
     }
-    return 'Closed — customers can browse the menu but cannot order.';
+    return I.t('closedNoOrders');
   }
 
   /* ----------------------------- orders ------------------------------ */
 
   const NEXT_ACTIONS = {
-    pending: [['confirmed', 'Confirm', 'btn-success'], ['cancelled', 'Cancel', 'btn-outline']],
-    confirmed: [['preparing', 'Start preparing', 'btn-secondary'], ['cancelled', 'Cancel', 'btn-outline']],
-    preparing: [['ready', 'Mark ready', 'btn-secondary'], ['cancelled', 'Cancel', 'btn-outline']],
+    pending: [['confirmed', 'actConfirm', 'btn-success'], ['cancelled', 'actCancel', 'btn-outline']],
+    confirmed: [['preparing', 'actPreparing', 'btn-secondary'], ['cancelled', 'actCancel', 'btn-outline']],
+    preparing: [['ready', 'actReady', 'btn-secondary'], ['cancelled', 'actCancel', 'btn-outline']],
     ready: null, // depends on order_type
-    out_for_delivery: [['completed', 'Complete', 'btn-success']],
+    out_for_delivery: [['completed', 'actComplete', 'btn-success']],
     completed: [],
     cancelled: [],
   };
@@ -164,8 +176,8 @@
     let defs = NEXT_ACTIONS[order.status];
     if (order.status === 'ready') {
       defs = order.order_type === 'delivery'
-        ? [['out_for_delivery', 'Out for delivery', 'btn-secondary'], ['completed', 'Complete', 'btn-success']]
-        : [['completed', 'Complete', 'btn-success']];
+        ? [['out_for_delivery', 'actOut', 'btn-secondary'], ['completed', 'actComplete', 'btn-success']]
+        : [['completed', 'actComplete', 'btn-success']];
     }
     return defs || [];
   }
@@ -175,15 +187,23 @@
       ? o.items.map((it) => '<li>' + esc(it.quantity) + ' &times; ' + esc(it.item_name) + '</li>').join('')
       : '';
 
-    const actions = actionsFor(o).map(([next, label, cls]) =>
-      '<button type="button" class="btn btn-sm ' + cls + '" data-order="' + esc(o.id) + '" data-next="' + next + '">' + label + '</button>'
+    const actions = actionsFor(o).map(([next, labelKey, cls]) =>
+      '<button type="button" class="btn btn-sm ' + cls + '" data-order="' + esc(o.id) + '" data-next="' + next + '">' + esc(I.t(labelKey)) + '</button>'
     ).join('');
+
+    const canDelete = o.status === 'completed' || o.status === 'cancelled';
+    const deleteBtn = canDelete
+      ? '<button type="button" class="btn btn-danger btn-sm" data-del-order="' + esc(o.id) + '" data-code="' + esc(o.code) + '">' + esc(I.t('del')) + '</button>'
+      : '';
+    const actionsBar = (actions || deleteBtn)
+      ? '<div class="order-actions">' + actions + deleteBtn + '</div>'
+      : '';
 
     return (
       '<article class="card order-card" id="order-' + esc(o.id) + '">' +
         '<div class="order-head">' +
           '<span class="order-code">' + esc(o.code) + '</span>' +
-          '<span class="badge status-' + esc(o.status) + '">' + (STATUS_LABELS[o.status] || esc(o.status)) + '</span>' +
+          '<span class="badge status-' + esc(o.status) + '">' + esc(statusLabel(o.status)) + '</span>' +
         '</div>' +
         '<div class="order-meta mt-1">' +
           esc(o.customer_name) + ' &middot; ' + esc(o.customer_whatsapp) + ' &middot; ' +
@@ -191,10 +211,10 @@
         '</div>' +
         (o.items
           ? '<ul class="order-lines small">' + lines + '</ul>' +
-            '<strong>Total: ' + fmtMoney(o.total_cents, currency) + '</strong>'
-          : '<div class="mt-1"><button type="button" class="btn btn-outline btn-sm" data-expand="' + esc(o.id) + '">Details</button> <strong id="sum-' + esc(o.id) + '">' + fmtMoney(o.total_cents, currency) + '</strong></div>') +
-        (o.notes ? '<p class="small mt-1"><em>Note: ' + esc(o.notes) + '</em></p>' : '') +
-        (actions ? '<div class="order-actions">' + actions + '</div>' : '') +
+            '<strong>' + esc(I.t('totalW')) + ' ' + fmtMoney(o.total_cents, currency) + '</strong>'
+          : '<div class="mt-1"><button type="button" class="btn btn-outline btn-sm" data-expand="' + esc(o.id) + '">' + esc(I.t('details')) + '</button> <strong id="sum-' + esc(o.id) + '">' + fmtMoney(o.total_cents, currency) + '</strong></div>') +
+        (o.notes ? '<p class="small mt-1"><em>' + esc(I.t('noteW')) + ' ' + esc(o.notes) + '</em></p>' : '') +
+        actionsBar +
       '</article>'
     );
   }
@@ -205,7 +225,26 @@
         btn.disabled = true;
         try {
           const res = await api.patch('/api/admin/orders/' + btn.dataset.order + '/status', { status: btn.dataset.next });
-          toast('Order ' + res.order.code + ' → ' + STATUS_LABELS[res.order.status], 'success');
+          toast(I.t('status_' + res.order.status) + ' ← ' + res.order.code, 'success');
+          refreshCurrentOrdersView();
+          if (!document.getElementById('tab-dashboard').classList.contains('hidden')) loadDashboard();
+        } catch (err) {
+          toast(err.message, 'error');
+          btn.disabled = false;
+        }
+      });
+    });
+
+    rootEl.querySelectorAll('[data-del-order]').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        if (!confirm(I.t('delOrderConfirm', { code: btn.dataset.code }))) return;
+        btn.disabled = true;
+        try {
+          const id = btn.dataset.delOrder;
+          await api.del('/api/admin/orders/' + id);
+          toast(I.t('orderDeleted'), 'success');
+          const card = document.getElementById('order-' + id);
+          if (card) card.remove();
           refreshCurrentOrdersView();
           if (!document.getElementById('tab-dashboard').classList.contains('hidden')) loadDashboard();
         } catch (err) {
@@ -244,17 +283,18 @@
     if (!zone.dataset.built) {
       zone.innerHTML =
         '<div class="flex-between mb-2">' +
-          '<h1 class="section-title">Orders</h1>' +
+          '<h1 class="section-title">' + esc(I.t('ordersTab')) + '</h1>' +
           '<select id="orders-filter">' +
-            '<option value="">All statuses</option>' +
-            Object.entries(STATUS_LABELS).map(([k, v]) => '<option value="' + k + '">' + v + '</option>').join('') +
+            '<option value="">' + esc(I.t('allStatuses')) + '</option>' +
+            ['pending','confirmed','preparing','ready','out_for_delivery','completed','cancelled']
+              .map((k) => '<option value="' + k + '">' + esc(statusLabel(k)) + '</option>').join('') +
           '</select>' +
         '</div>' +
         '<div id="orders-list"></div>' +
         '<div class="flex-between mt-2">' +
-          '<button id="orders-prev" type="button" class="btn btn-outline btn-sm">Prev</button>' +
+          '<button id="orders-prev" type="button" class="btn btn-outline btn-sm">' + esc(I.t('prev')) + '</button>' +
           '<span id="orders-page-info" class="muted small"></span>' +
-          '<button id="orders-next" type="button" class="btn btn-outline btn-sm">Next</button>' +
+          '<button id="orders-next" type="button" class="btn btn-outline btn-sm">' + esc(I.t('next')) + '</button>' +
         '</div>';
       zone.dataset.built = '1';
       document.getElementById('orders-filter').addEventListener('change', (e) => {
@@ -272,7 +312,7 @@
 
   async function fetchOrders() {
     const list = document.getElementById('orders-list');
-    list.innerHTML = '<div class="empty-state">Loading…</div>';
+    list.innerHTML = '<div class="empty-state">' + esc(I.t('loading')) + '</div>';
     try {
       const q = '?page=' + ordersPage + '&limit=20' + (ordersFilter ? '&status=' + ordersFilter : '');
       const data = await api.get('/api/admin/orders' + q);
@@ -285,9 +325,9 @@
 
       list.innerHTML = data.orders.length
         ? data.orders.map(orderCardHtml).join('')
-        : '<div class="empty-state card">No orders found.</div>';
+        : '<div class="empty-state card">' + esc(I.t('noOrders')) + '</div>';
       document.getElementById('orders-page-info').textContent =
-        'Page ' + ordersPage + ' of ' + totalPages + ' (' + data.total + ' total)';
+        I.t('pageInfo', { p: ordersPage, t: totalPages, n: data.total });
       wireOrderActions(list);
     } catch (err) {
       list.innerHTML = errorHtml(err);
@@ -307,7 +347,7 @@
     eventSource = new EventSource('/api/admin/events');
 
     eventSource.addEventListener('order:new', () => {
-      toast('New order received!', 'success');
+      toast(I.t('newOrderToast'), 'success');
       refreshCurrentOrdersView();
       if (!document.getElementById('tab-dashboard').classList.contains('hidden')) loadDashboard();
     });
@@ -325,7 +365,7 @@
 
   async function loadMenu() {
     const zone = document.getElementById('tab-menu');
-    zone.innerHTML = '<div class="empty-state">Loading menu…</div>';
+    zone.innerHTML = '<div class="empty-state">' + esc(I.t('loading')) + '</div>';
     try {
       const [catRes, itemRes] = await Promise.all([
         api.get('/api/admin/categories'),
@@ -347,13 +387,13 @@
 
     zone.innerHTML =
       '<div class="flex-between mb-2">' +
-        '<h1 class="section-title">Menu <span class="badge' + (nearLimit ? ' badge-closed' : '') + '">' + used + ' / ' + limit + ' items</span></h1>' +
-        '<div><button id="add-category-btn" type="button" class="btn btn-outline btn-sm">Add category</button> ' +
-        '<button id="add-item-btn" type="button" class="btn btn-sm"' + (used >= limit ? ' disabled title="Menu limit reached"' : '') + '>Add item</button></div>' +
+        '<h1 class="section-title"><span data-i18n="menuTab">' + esc(I.t('menuTab')) + '</span> <span class="badge' + (nearLimit ? ' badge-closed' : '') + '">' + used + ' / ' + limit + '</span></h1>' +
+        '<div><button id="add-category-btn" type="button" class="btn btn-outline btn-sm">' + esc(I.t('addCategory')) + '</button> ' +
+        '<button id="add-item-btn" type="button" class="btn btn-sm"' + (used >= limit ? ' disabled title="' + esc(I.t('limitReachedT')) + '"' : '') + '>' + esc(I.t('addItem')) + '</button></div>' +
       '</div>' +
       '<div id="menu-tree"></div>';
 
-    document.getElementById('add-category-btn').addEventListener('click', categoryModal);
+    document.getElementById('add-category-btn').addEventListener('click', () => categoryModal());
     document.getElementById('add-item-btn').addEventListener('click', () => itemModal(null));
 
     const tree = document.getElementById('menu-tree');
@@ -364,15 +404,15 @@
           '<div class="flex-between mb-1">' +
             '<h2 class="section-title">' + esc(c.name) + ' <span class="muted small">(' + catItems.length + ')</span></h2>' +
             '<div>' +
-              '<button type="button" class="btn btn-outline btn-sm" data-edit-cat="' + esc(c.id) + '">Rename</button> ' +
-              '<button type="button" class="btn btn-danger btn-sm" data-del-cat="' + esc(c.id) + '">Delete</button>' +
+              '<button type="button" class="btn btn-outline btn-sm" data-edit-cat="' + esc(c.id) + '">' + esc(I.t('rename')) + '</button> ' +
+              '<button type="button" class="btn btn-danger btn-sm" data-del-cat="' + esc(c.id) + '">' + esc(I.t('del')) + '</button>' +
             '</div>' +
           '</div>' +
           (catItems.length
             ? '<div class="table-wrap"><table class="data"><thead><tr><th>Item</th><th>Price</th><th>Flags</th><th></th></tr></thead><tbody>' +
               catItems.map(itemRowHtml).join('') +
               '</tbody></table></div>'
-            : '<p class="muted small">No items in this category yet.</p>') +
+            : '<p class="muted small">' + esc(I.t('noItemsInCat')) + '</p>') +
         '</section>'
       );
     }).join('');
@@ -391,7 +431,7 @@
       b.addEventListener('click', () => togglePopular(b.dataset.popItem, b.dataset.pop === 'true')));
 
     if (categories.length === 0) {
-      tree.innerHTML = '<div class="empty-state card">Create your first category to start building the menu.</div>';
+      tree.innerHTML = '<div class="empty-state card">' + esc(I.t('createFirstCat')) + '</div>';
     }
   }
 
@@ -404,17 +444,17 @@
         '<td>' +
           (i.is_available
             ? ''
-            : '<span class="badge badge-soldout">Sold out</span> ') +
-          (i.is_popular ? '<span class="badge badge-popular">Popular</span>' : '') +
+            : '<span class="badge badge-soldout">' + esc(I.t('soldOut')) + '</span> ') +
+          (i.is_popular ? '<span class="badge badge-popular">' + esc(I.t('popular')) + '</span>' : '') +
         '</td>' +
         '<td>' +
           '<div class="flex-between">' +
             '<button type="button" class="btn btn-outline btn-sm" data-toggle-item="' + esc(i.id) + '" data-to="' + (!i.is_available) + '">' +
-              (i.is_available ? 'Sold out?' : 'Available?') + '</button>' +
+              (i.is_available ? esc(I.t('soldOutQ')) : esc(I.t('availableQ'))) + '</button>' +
             '<button type="button" class="btn btn-outline btn-sm" data-pop-item="' + esc(i.id) + '" data-pop="' + (!i.is_popular) + '">' +
-              (i.is_popular ? 'Unmark popular' : 'Popular?') + '</button>' +
-            '<button type="button" class="btn btn-outline btn-sm" data-edit-item="' + esc(i.id) + '">Edit</button>' +
-            '<button type="button" class="btn btn-danger btn-sm" data-del-item="' + esc(i.id) + '">Delete</button>' +
+              (i.is_popular ? esc(I.t('unmarkPop')) : esc(I.t('markPop'))) + '</button>' +
+            '<button type="button" class="btn btn-outline btn-sm" data-edit-item="' + esc(i.id) + '">' + esc(I.t('edit')) + '</button>' +
+            '<button type="button" class="btn btn-danger btn-sm" data-del-item="' + esc(i.id) + '">' + esc(I.t('del')) + '</button>' +
           '</div>' +
         '</td>' +
       '</tr>'
@@ -423,12 +463,12 @@
 
   function categoryModal(category) {
     openModal(
-      '<div class="modal-head"><h2>' + (category ? 'Rename category' : 'New category') + '</h2>' +
+      '<div class="modal-head"><h2>' + esc(category ? I.t('renameCatH') : I.t('newCatH')) + '</h2>' +
         '<button type="button" class="modal-close" aria-label="Close">&times;</button></div>' +
       '<form id="category-form">' +
-        '<div class="field"><label for="cat-name">Name</label>' +
+        '<div class="field"><label for="cat-name">' + esc(I.t('nameL')) + '</label>' +
           '<input id="cat-name" maxlength="60" required value="' + esc(category ? category.name : '') + '"></div>' +
-        '<button type="submit" class="btn btn-block">Save</button>' +
+        '<button type="submit" class="btn btn-block">' + esc(I.t('save')) + '</button>' +
       '</form>'
     );
     document.querySelector('.modal-close').addEventListener('click', closeModal);
@@ -439,7 +479,7 @@
         if (category) await api.patch('/api/admin/categories/' + category.id, { name });
         else await api.post('/api/admin/categories', { name });
         closeModal();
-        toast('Category saved', 'success');
+        toast(I.t('categorySaved'), 'success');
         loadMenu();
       } catch (err) {
         toast(err.message, 'error');
@@ -449,10 +489,10 @@
 
   async function deleteCategory(id) {
     const cat = categories.find((c) => c.id === id);
-    if (!confirm('Delete "' + cat.name + '" and ALL its menu items? This cannot be undone.')) return;
+    if (!confirm(I.t('delCatConfirm', { name: cat.name }))) return;
     try {
       await api.del('/api/admin/categories/' + id);
-      toast('Category deleted', 'success');
+      toast(I.t('catDeleted'), 'success');
       await reloadInfo();
       loadMenu();
     } catch (err) {
@@ -462,46 +502,47 @@
 
   function itemModal(item) {
     if (categories.length === 0) {
-      toast('Create a category first', 'error');
+      toast(I.t('createFirstCat'), 'error');
       return;
     }
     const isNew = !item;
 
     openModal(
-      '<div class="modal-head"><h2>' + (isNew ? 'New menu item' : 'Edit menu item') + '</h2>' +
+      '<div class="modal-head"><h2>' + esc(isNew ? I.t('newItemH') : I.t('editItemH')) + '</h2>' +
         '<button type="button" class="modal-close" aria-label="Close">&times;</button></div>' +
       '<form id="item-form">' +
-        '<div class="field"><label for="it-name">Name *</label>' +
+        '<div class="field"><label for="it-name">' + esc(I.t('nameReq')) + '</label>' +
           '<input id="it-name" maxlength="100" required value="' + esc(item ? item.name : '') + '"></div>' +
-        '<div class="field"><label for="it-desc">Description</label>' +
+        '<div class="field"><label for="it-desc">' + esc(I.t('descL')) + '</label>' +
           '<textarea id="it-desc" maxlength="500">' + esc(item ? item.description : '') + '</textarea></div>' +
         '<div class="form-row form-row-2">' +
-          '<div class="field"><label for="it-price">Price *</label>' +
+          '<div class="field"><label for="it-price">' + esc(I.t('priceReq')) + '</label>' +
             '<input id="it-price" type="number" min="0" step="0.01" required value="' + (item ? (item.price_cents / 100).toFixed(2) : '') + '"></div>' +
-          '<div class="field"><label for="it-cat">Category *</label>' +
+          '<div class="field"><label for="it-cat">' + esc(I.t('catReq')) + '</label>' +
             '<select id="it-cat">' +
               categories.map((c) => '<option value="' + esc(c.id) + '"' +
                 (item && item.category_id === c.id ? ' selected' : '') + '>' + esc(c.name) + '</option>').join('') +
             '</select></div>' +
         '</div>' +
-        '<div class="checkbox-line mb-1"><input id="it-available" type="checkbox"' + (!item || item.is_available ? ' checked' : '') + '><label for="it-available">Available</label></div>' +
-        '<div class="checkbox-line mb-1"><input id="it-popular" type="checkbox"' + (item && item.is_popular ? ' checked' : '') + '><label for="it-popular">Show as popular</label></div>' +
-        (isNew ? '' :
-          '<div class="field mt-2"><label for="it-image">Image</label>' +
-            (item.image_path ? '<img src="' + esc(item.image_path) + '" alt="" class="mb-1" width="120" height="90">' : '') +
-            '<input id="it-image" type="file" accept="image/jpeg,image/png,image/webp">' +
-            '<div class="hint">JPEG, PNG or WebP image, up to a few MB.</div>' +
-          '</div>') +
-        '<button type="submit" class="btn btn-block">' + (isNew ? 'Create item' : 'Save changes') + '</button>' +
+        '<div class="checkbox-line mb-1"><input id="it-available" type="checkbox"' + (!item || item.is_available ? ' checked' : '') + '><label for="it-available">' + esc(I.t('availableL')) + '</label></div>' +
+        '<div class="checkbox-line mb-1"><input id="it-popular" type="checkbox"' + (item && item.is_popular ? ' checked' : '') + '><label for="it-popular">' + esc(I.t('popularL')) + '</label></div>' +
+        '<div class="field mt-2"><label for="it-image">' + esc(I.t('imageL')) + '</label>' +
+          (!isNew && item.image_path ? '<img src="' + esc(item.image_path) + '" alt="" class="mb-1" width="120" height="90">' : '') +
+          '<input id="it-image" type="file" accept="image/jpeg,image/png,image/webp">' +
+          '<div class="hint">' + esc(I.t('imgHint')) + '</div>' +
+          '<div id="it-image-progress" class="progress hidden"><div id="it-image-progress-fill" class="progress-fill"></div></div>' +
+        '</div>' +
+        '<button id="it-save" type="submit" class="btn btn-block">' + esc(isNew ? I.t('createItemBtn') : I.t('saveChangesBtn')) + '</button>' +
       '</form>'
     );
     document.querySelector('.modal-close').addEventListener('click', closeModal);
 
     document.getElementById('item-form').addEventListener('submit', async (e) => {
       e.preventDefault();
+      const submitBtn = document.getElementById('it-save');
       const priceMajor = parseFloat(document.getElementById('it-price').value);
       if (!Number.isFinite(priceMajor) || priceMajor < 0) {
-        toast('Invalid price', 'error');
+        toast(I.t('invalidPrice'), 'error');
         return;
       }
       const body = {
@@ -513,36 +554,56 @@
         isPopular: document.getElementById('it-popular').checked,
       };
       try {
+        submitBtn.disabled = true;
         let saved;
         if (isNew) {
           saved = await api.post('/api/admin/items', body);
-          toast('Item created', 'success');
+          toast(I.t('itemCreated'), 'success');
         } else {
           saved = await api.patch('/api/admin/items/' + item.id, body);
-          toast('Item updated', 'success');
+          toast(I.t('itemUpdated'), 'success');
         }
         // Upload image after save so it attaches immediately.
         const fileInput = document.getElementById('it-image');
-        if (!isNew && fileInput && fileInput.files[0]) {
+        if (fileInput && fileInput.files[0]) {
+          const file = await App.compressImage(fileInput.files[0], { max: 700, quality: 0.78 });
           const fd = new FormData();
-          fd.append('image', fileInput.files[0]);
-          await api.request('/api/admin/images?type=items&itemId=' + encodeURIComponent(saved.item.id), { method: 'POST', body: fd });
+          fd.append('image', file, 'item.webp');
+          const prog = document.getElementById('it-image-progress');
+          const fill = document.getElementById('it-image-progress-fill');
+          if (prog) prog.classList.remove('hidden');
+          submitBtn.textContent = I.t('uploadingPct', { p: 0 });
+          await api.uploadWithProgress(
+            '/api/admin/images?type=items&itemId=' + encodeURIComponent(saved.item.id),
+            fd,
+            (pct) => {
+              if (fill) fill.style.width = pct + '%';
+              submitBtn.textContent = I.t('uploadingPct', { p: pct });
+            }
+          );
+          toast(I.t('imgCompressed'));
         }
         closeModal();
         await reloadInfo();
         loadMenu();
       } catch (err) {
         toast(err.message, 'error');
+        submitBtn.disabled = false;
+        submitBtn.textContent = isNew ? I.t('createItemBtn') : I.t('saveChangesBtn');
+        const prog = document.getElementById('it-image-progress');
+        const fill = document.getElementById('it-image-progress-fill');
+        if (prog) prog.classList.add('hidden');
+        if (fill) fill.style.width = '0%';
       }
     });
   }
 
   async function deleteItem(id) {
     const item = items.find((i) => i.id === id);
-    if (!confirm('Delete "' + item.name + '" from the menu?')) return;
+    if (!confirm(I.t('delItemConfirm', { name: item.name }))) return;
     try {
       await api.del('/api/admin/items/' + id);
-      toast('Item deleted', 'success');
+      toast(I.t('itemDeleted'), 'success');
       await reloadInfo();
       loadMenu();
     } catch (err) {
@@ -577,79 +638,121 @@
     'Asia/Karachi', 'Asia/Kolkata', 'Asia/Bangkok', 'Asia/Shanghai', 'Asia/Tokyo',
     'Asia/Singapore', 'Australia/Sydney', 'Pacific/Auckland',
   ];
-  const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const DAY_KEYS = ['day_0', 'day_1', 'day_2', 'day_3', 'day_4', 'day_5', 'day_6'];
 
   async function loadSettings() {
     const zone = document.getElementById('tab-settings');
-    zone.innerHTML = '<div class="empty-state">Loading…</div>';
+    zone.innerHTML = '<div class="empty-state">' + esc(I.t('loading')) + '</div>';
     try {
-      const [res, hoursRes] = await Promise.all([api.get('/api/admin/settings'), api.get('/api/admin/hours')]);
+      const [res, hoursRes, dgRes] = await Promise.all([
+        api.get('/api/admin/settings'),
+        api.get('/api/admin/hours'),
+        api.get('/api/admin/delivery-groups'),
+      ]);
       const s = res.settings;
 
       zone.innerHTML =
-        '<h1 class="section-title">Settings</h1>' +
+        '<h1 class="section-title">' + esc(I.t('settingsTab')) + '</h1>' +
 
-        '<section class="card"><h2>Profile</h2>' +
-          '<div class="field"><label for="st-desc">Description</label><textarea id="st-desc" maxlength="500">' + esc(s.description) + '</textarea></div>' +
+        '<section class="card"><h2>' + esc(I.t('profileS')) + '</h2>' +
+          '<div class="field"><label for="st-desc">' + esc(I.t('descL2')) + '</label><textarea id="st-desc" maxlength="500">' + esc(s.description) + '</textarea></div>' +
           '<div class="form-row form-row-2">' +
-            '<div class="field"><label for="st-phone">Phone</label><input id="st-phone" type="tel" value="' + esc(s.phone) + '"></div>' +
-            '<div class="field"><label for="st-wa">WhatsApp</label><input id="st-wa" type="tel" value="' + esc(s.whatsapp) + '"></div>' +
+            '<div class="field"><label for="st-phone">' + esc(I.t('phoneL')) + '</label><input id="st-phone" type="tel" value="' + esc(s.phone) + '"></div>' +
+            '<div class="field"><label for="st-wa">' + esc(I.t('whatsappL2')) + '</label><input id="st-wa" type="tel" value="' + esc(s.whatsapp) + '"></div>' +
           '</div>' +
-          '<div class="field"><label for="st-address">Address</label><textarea id="st-address" maxlength="300">' + esc(s.address) + '</textarea></div>' +
+          '<div class="field"><label for="st-address">' + esc(I.t('addressL')) + '</label><textarea id="st-address" maxlength="300">' + esc(s.address) + '</textarea></div>' +
           '<div class="form-row form-row-2">' +
-            '<div class="field"><label for="st-tz">Timezone</label><select id="st-tz">' +
+            '<div class="field"><label for="st-tz">' + esc(I.t('timezoneL')) + '</label><select id="st-tz">' +
               TIMEZONES.map((tz) => '<option' + (tz === s.timezone ? ' selected' : '') + '>' + tz + '</option>').join('') +
             '</select></div>' +
-            '<div class="field"><label for="st-cur">Currency (ISO)</label><input id="st-cur" maxlength="3" value="' + esc(s.currency) + '"></div>' +
+            '<div class="field"><label for="st-cur">' + esc(I.t('currencyL')) + '</label><input id="st-cur" maxlength="3" value="' + esc(s.currency) + '"></div>' +
           '</div>' +
           '<div class="form-row form-row-2">' +
-            '<div class="field"><label for="st-fee">Delivery fee (major units)</label><input id="st-fee" type="number" min="0" step="0.01" value="' + (s.deliveryFeeCents / 100).toFixed(2) + '"></div>' +
+            '<div class="field"><label for="st-fee">' + esc(I.t('deliveryFeeL')) + '</label><input id="st-fee" type="number" min="0" step="0.01" value="' + (s.deliveryFeeCents / 100).toFixed(2) + '"></div>' +
             '<div class="field"><label>&nbsp;</label><div class="checkbox-line"><input id="st-ignore-hours" type="checkbox"' + (s.ignoreOpeningHours ? ' checked' : '') + '>' +
-              '<label for="st-ignore-hours">Ignore opening hours (always accept)</label></div></div>' +
+              '<label for="st-ignore-hours">' + esc(I.t('ignoreHours')) + '</label></div></div>' +
           '</div>' +
         '</section>' +
 
-        '<section class="card"><h2>Appearance</h2>' +
+        '<section class="card"><h2>' + esc(I.t('appearanceS')) + '</h2>' +
           '<div class="form-row form-row-2">' +
-            '<div class="field"><label for="st-color1">Primary color</label><input id="st-color1" type="color" value="' + esc(s.primaryColor) + '"></div>' +
-            '<div class="field"><label for="st-color2">Secondary color</label><input id="st-color2" type="color" value="' + esc(s.secondaryColor) + '"></div>' +
+            '<div class="field"><label for="st-color1">' + esc(I.t('colorPrimary')) + '</label><input id="st-color1" type="color" value="' + esc(s.primaryColor) + '"></div>' +
+            '<div class="field"><label for="st-color2">' + esc(I.t('colorSecondary')) + '</label><input id="st-color2" type="color" value="' + esc(s.secondaryColor) + '"></div>' +
+          '</div>' +
+          '<div id="theme-preview" class="theme-preview">' +
+            '<div class="tp-block"><span class="tp-label">' + esc(I.t('tpButton')) + '</span><span class="tp-btn" id="tp-btn">' + esc(I.t('add')) + '</span></div>' +
+            '<div class="tp-block"><span class="tp-label">' + esc(I.t('tpCategory')) + '</span><span class="tp-chip" id="tp-chip">' + esc(I.t('tpCategoryLabel')) + '</span></div>' +
+            '<div class="tp-block"><span class="tp-label">' + esc(I.t('tpPopular')) + '</span><span class="tp-tag" id="tp-tag">' + esc(I.t('popular')) + '</span></div>' +
+            '<div class="tp-block"><span class="tp-label">' + esc(I.t('tpPrice')) + '</span><span class="tp-price" id="tp-price">' + esc(I.t('tpPriceLabel')) + '</span></div>' +
           '</div>' +
           '<div class="form-row form-row-2">' +
-            '<div class="field"><label for="st-logo">Logo upload</label><input id="st-logo" type="file" accept="image/jpeg,image/png,image/webp">' +
+            '<div class="field"><label for="st-logo">' + esc(I.t('logoUpload')) + '</label><input id="st-logo" type="file" accept="image/jpeg,image/png,image/webp">' +
               (s.logoPath ? '<img src="' + esc(s.logoPath) + '" alt="Logo" width="64" height="64" class="mt-1">' : '') + '</div>' +
-            '<div class="field"><label for="st-cover">Cover upload</label><input id="st-cover" type="file" accept="image/jpeg,image/png,image/webp">' +
+            '<div class="field"><label for="st-cover">' + esc(I.t('coverUpload')) + '</label><input id="st-cover" type="file" accept="image/jpeg,image/png,image/webp">' +
               (s.coverPath ? '<img src="' + esc(s.coverPath) + '" alt="Cover" width="96" height="54" class="mt-1">' : '') + '</div>' +
           '</div>' +
         '</section>' +
 
-        '<section class="card"><h2>Status</h2>' +
-          '<div class="field"><label for="st-status">Restaurant status</label><select id="st-status">' +
-            '<option value="open"' + (info.restaurant.status === 'open' ? ' selected' : '') + '>Open — accepting orders</option>' +
-            '<option value="closed"' + (info.restaurant.status === 'closed' ? ' selected' : '') + '>Closed</option>' +
-            '<option value="temporarily_closed"' + (info.restaurant.status === 'temporarily_closed' ? ' selected' : '') + '>Temporarily closed</option>' +
+        '<section class="card"><h2>' + esc(I.t('statusS')) + '</h2>' +
+          '<div class="field"><label for="st-status">' + esc(I.t('restaurantStatusL')) + '</label><select id="st-status">' +
+            '<option value="open"' + (info.restaurant.status === 'open' ? ' selected' : '') + '>' + esc(I.t('stOpen')) + '</option>' +
+            '<option value="closed"' + (info.restaurant.status === 'closed' ? ' selected' : '') + '>' + esc(I.t('stClosed')) + '</option>' +
+            '<option value="temporarily_closed"' + (info.restaurant.status === 'temporarily_closed' ? ' selected' : '') + '>' + esc(I.t('stTemp')) + '</option>' +
           '</select></div>' +
         '</section>' +
 
-        '<section class="card"><h2>Opening hours</h2>' +
+        '<section class="card"><h2>' + esc(I.t('deliveryGroupsT')) + '</h2>' +
+          (dgRes.groups.length
+            ? '<p class="hint muted small mb-1">' + esc(I.t('chooseGroupsHint')) + '</p>' +
+              '<div class="table-wrap"><table class="data"><tbody>' +
+              dgRes.groups.map((g) =>
+                '<tr><td><div class="checkbox-line"><input type="checkbox" id="dg-' + esc(g.id) + '"' + (g.selected ? ' checked' : '') + '>' +
+                '<label for="dg-' + esc(g.id) + '">' + esc(g.name) +
+                (g.phone ? '<span class="muted"> &middot; ' + esc(g.phone) + '</span>' : '') + '</label></div></td></tr>'
+              ).join('') +
+              '</tbody></table></div>'
+            : '<p class="hint muted small">' + esc(I.t('noGroupsForSelection')) + '</p>') +
+        '</section>' +
+
+        '<section class="card"><h2>' + esc(I.t('hoursS')) + '</h2>' +
           '<div class="table-wrap"><table class="data hours-table" id="hours-table"><tbody>' +
-          DAY_NAMES.map((day, idx) => {
+          DAY_KEYS.map((key, idx) => {
             const h = hoursRes.hours.find((x) => x.day === idx) || { opensAt: '09:00', closesAt: '22:00' };
             return (
-              '<tr data-day="' + idx + '"><td><div class="checkbox-line"><input id="hc-' + idx + '" type="checkbox"' + (!h.closed ? ' checked' : '') + '><label for="hc-' + idx + '">' + day + '</label></div></td>' +
+              '<tr data-day="' + idx + '"><td><div class="checkbox-line"><input id="hc-' + idx + '" type="checkbox"' + (!h.closed ? ' checked' : '') + '><label for="hc-' + idx + '">' + esc(I.t(key)) + '</label></div></td>' +
               '<td><input id="ho-' + idx + '" type="time" value="' + esc(h.opensAt) + '"></td>' +
               '<td><input id="hx-' + idx + '" type="time" value="' + esc(h.closesAt) + '"></td></tr>'
             );
           }).join('') +
           '</tbody></table></div>' +
-          '<p class="hint muted small">If closing time is earlier than opening time, the range crosses midnight.</p>' +
+          '<p class="hint muted small">' + esc(I.t('crossMidnight')) + '</p>' +
         '</section>' +
 
-        '<button id="save-settings-btn" type="button" class="btn btn-block mb-3">Save all settings</button>';
+        '<button id="save-settings-btn" type="button" class="btn btn-block mb-3">' + esc(I.t('saveAll')) + '</button>';
 
       document.getElementById('save-settings-btn').addEventListener('click', saveSettings);
+
+      const c1 = document.getElementById('st-color1');
+      const c2 = document.getElementById('st-color2');
+      renderThemePreview(c1.value, c2.value);
+      c1.addEventListener('input', () => renderThemePreview(c1.value, c2.value));
+      c2.addEventListener('input', () => renderThemePreview(c1.value, c2.value));
     } catch (err) {
       zone.innerHTML = errorHtml(err);
     }
+  }
+
+  function renderThemePreview(primaryColor, secondaryColor) {
+    const t = window.App.theme.buildTokens(primaryColor, secondaryColor);
+    const set = (id, prop, val) => { const el = document.getElementById(id); if (el) el.style.setProperty(prop, val); };
+    set('tp-btn', 'background-color', t['--primary']);
+    set('tp-btn', 'color', t['--on-primary']);
+    set('tp-chip', 'background-color', t['--primary']);
+    set('tp-chip', 'color', t['--on-primary']);
+    set('tp-chip', 'border-color', t['--primary']);
+    set('tp-tag', 'background-color', t['--secondary-soft']);
+    set('tp-tag', 'color', t['--secondary']);
+    set('tp-price', 'color', t['--primary']);
   }
 
   async function saveSettings() {
@@ -685,6 +788,13 @@
       await api.patch('/api/admin/settings', settingsBody);
       await api.put('/api/admin/hours', { hours: hoursBody });
 
+      const dgCbs = Array.prototype.slice.call(document.querySelectorAll('[id^="dg-"]'));
+      if (dgCbs.length) {
+        await api.put('/api/admin/delivery-groups', {
+          groupIds: dgCbs.filter((cb) => cb.checked).map((cb) => cb.id.slice(3)),
+        });
+      }
+
       // Status lives on the restaurant record:
       if (status !== info.restaurant.status) {
         await setStatus(status);
@@ -692,7 +802,7 @@
       if (logoFile) await uploadSettingImage(logoFile, 'logos');
       if (coverFile) await uploadSettingImage(coverFile, 'covers');
 
-      toast('Settings saved', 'success');
+      toast(I.t('settingsSaved'), 'success');
       await reloadInfo();
     } catch (err) {
       toast(err.message, 'error');
@@ -700,9 +810,14 @@
   }
 
   async function uploadSettingImage(file, type) {
+    const isLogo = type === 'logos';
+    const optimized = await App.compressImage(file, isLogo
+      ? { max: 256, quality: 0.85 }
+      : { max: 1600, quality: 0.75 });
     const fd = new FormData();
-    fd.append('image', file);
+    fd.append('image', optimized, isLogo ? 'logo.webp' : 'cover.webp');
     await api.request('/api/admin/images?type=' + type, { method: 'POST', body: fd });
+    toast(I.t('imgCompressed'));
   }
 
   /** Admins set their own restaurant status through the settings PATCH endpoint. */
@@ -714,42 +829,73 @@
 
   /* ---------------------------- analytics ------------------------------ */
 
+  function hourBars(byHour) {
+    if (!byHour || !byHour.length) return '<span class="muted small">' + esc(I.t('noSales')) + '</span>';
+    const max = Math.max(1, ...byHour.map((r) => r.orders));
+    const by = new Map(byHour.map((r) => [r.hour, r.orders]));
+    const cols = [];
+    for (let h = 0; h < 24; h++) {
+      const n = by.get(h) || 0;
+      cols.push(
+        '<div class="bar-wrap" title="' + String(h).padStart(2, '0') + ':00 — ' + n + ' ' + esc(I.t('ordersWord')) + '">' +
+          '<div class="bar" data-h="' + Math.round((n / max) * 100) + '"></div>' +
+          '<span class="bar-label">' + (h % 6 === 0 ? h : '') + '</span></div>'
+      );
+    }
+    return cols.join('');
+  }
+
   async function loadAnalytics() {
     const zone = document.getElementById('tab-analytics');
-    zone.innerHTML = '<div class="empty-state">Loading…</div>';
+    zone.innerHTML = '<div class="empty-state">' + esc(I.t('loading')) + '</div>';
     try {
       const days = Number(document.getElementById('an-days')?.value || 7);
       const a = await api.get('/api/admin/analytics?days=' + days);
       const maxOrders = Math.max(1, ...a.series.map((s) => s.orders));
 
       zone.innerHTML =
-        '<div class="flex-between mb-2"><h1 class="section-title">Analytics</h1>' +
-          '<select id="an-days"><option value="7"' + (days === 7 ? ' selected' : '') + '>Last 7 days</option>' +
-          '<option value="30"' + (days === 30 ? ' selected' : '') + '>Last 30 days</option>' +
-          '<option value="90"' + (days === 90 ? ' selected' : '') + '>Last 90 days</option></select></div>' +
+        '<div class="flex-between mb-2"><h1 class="section-title">' + esc(I.t('analyticsTab')) + '</h1>' +
+          '<div class="flex-between" style="gap:8px">' +
+          '<a class="btn btn-outline btn-sm" href="/api/admin/reports/orders.csv" download>' + esc(I.t('exportCsv')) + '</a>' +
+          '<select id="an-days"><option value="7"' + (days === 7 ? ' selected' : '') + '>' + esc(I.t('last7')) + '</option>' +
+          '<option value="30"' + (days === 30 ? ' selected' : '') + '>' + esc(I.t('last30')) + '</option>' +
+          '<option value="90"' + (days === 90 ? ' selected' : '') + '>' + esc(I.t('last90')) + '</option></select></div></div>' +
 
         '<div class="grid-stats mb-2">' +
-          statCard('Total orders', a.totals.orders) +
-          statCard('Revenue', fmtMoney(a.totals.revenueCents, currency)) +
-          statCard("Today's orders", a.today.ordersToday) +
-          statCard('Revenue today', fmtMoney(a.today.revenueTodayCents, currency)) +
+          statCard(I.t('totalOrders'), a.totals.orders) +
+          statCard(I.t('revenueL'), fmtMoney(a.totals.revenueCents, currency)) +
+          statCard(I.t('avOrderValue'), fmtMoney(a.averageOrderValueCents, currency)) +
+          statCard(I.t('todaysOrders'), a.today.ordersToday) +
         '</div>' +
 
-        '<section class="card"><h2>Daily orders</h2><div class="chart">' +
+        '<section class="card"><h2>' + esc(I.t('dailyOrdersH')) + '</h2><div class="chart">' +
           a.series.map((s) =>
-            '<div class="bar-wrap" title="' + esc(s.day) + ': ' + s.orders + ' orders">' +
+            '<div class="bar-wrap" title="' + esc(s.day) + ': ' + s.orders + ' ' + esc(I.t('ordersWord')) + '">' +
               '<div class="bar" data-h="' + Math.round((s.orders / maxOrders) * 100) + '"></div>' +
               '<span class="bar-label">' + esc(s.day.slice(5)) + '</span></div>'
           ).join('') +
         '</div></section>' +
 
-        '<section class="card"><h2>Most ordered items (30 days)</h2>' +
+        '<section class="card"><h2>' + esc(I.t('byHourH')) + '</h2><div class="chart nowrap-chart">' +
+          hourBars(a.byHour) +
+        '</div></section>' +
+
+        '<section class="card"><h2>' + esc(I.t('byDowH')) + '</h2>' +
+          (a.byDayOfWeek.length
+            ? a.byDayOfWeek.map((r) =>
+                '<div class="rank-row"><span>' + esc(I.t('day_' + r.dow)) + '</span>' +
+                '<span><strong>' + r.orders + '</strong> ' + esc(I.t('ordersWord')) + ' · ' + fmtMoney(r.revenueCents, currency) + '</span></div>'
+              ).join('')
+            : '<p class="muted">' + esc(I.t('noSales')) + '</p>') +
+        '</section>' +
+
+        '<section class="card"><h2>' + esc(I.t('topItemsH')) + '</h2>' +
           (a.topItems.length
             ? a.topItems.map((t, i) =>
                 '<div class="rank-row"><span>' + (i + 1) + '. ' + esc(t.item_name) + '</span>' +
-                '<span><strong>' + t.units + '</strong> sold · ' + fmtMoney(t.revenueCents, currency) + '</span></div>'
+                '<span><strong>' + t.units + '</strong> ' + esc(I.t('soldW')) + ' · ' + fmtMoney(t.revenueCents, currency) + '</span></div>'
               ).join('')
-            : '<p class="muted">No sales yet.</p>') +
+            : '<p class="muted">' + esc(I.t('noSales')) + '</p>') +
         '</section>';
 
       // CSP-safe bar heights via CSSOM.
@@ -768,24 +914,24 @@
 
   async function loadShare() {
     const zone = document.getElementById('tab-share');
-    zone.innerHTML = '<div class="empty-state">Loading…</div>';
+    zone.innerHTML = '<div class="empty-state">' + esc(I.t('loading')) + '</div>';
     try {
       const qr = await api.get('/api/admin/qr');
       const svgDataUri = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(qr.svg)));
       const publicUrl = location.origin + '/restaurant/' + encodeURIComponent(info.restaurant.slug);
 
       zone.innerHTML =
-        '<h1 class="section-title">Share your restaurant</h1>' +
+        '<h1 class="section-title">' + esc(I.t('shareYourRestaurant')) + '</h1>' +
         '<section class="card qr-box">' +
           '<img src="' + svgDataUri + '" alt="QR code to your menu" width="260" height="260">' +
           '<p class="muted small mt-1">' + esc(qr.url) + '</p>' +
           '<div class="flex-between mt-1">' +
-            '<a class="btn btn-primary" href="/restaurant/' + encodeURIComponent(info.restaurant.slug) + '" target="_blank" rel="noopener">Open public page</a>' +
-            '<button id="copy-link-btn" type="button" class="btn btn-outline">Copy link</button>' +
+            '<a class="btn btn-primary" href="/restaurant/' + encodeURIComponent(info.restaurant.slug) + '" target="_blank" rel="noopener">' + esc(I.t('openPublicPage')) + '</a>' +
+            '<button id="copy-link-btn" type="button" class="btn btn-outline">' + esc(I.t('copyLink')) + '</button>' +
           '</div>' +
         '</section>';
       document.getElementById('copy-link-btn').addEventListener('click', () => {
-        navigator.clipboard.writeText(publicUrl).then(() => toast('Link copied'), () => {});
+        navigator.clipboard.writeText(publicUrl).then(() => toast(I.t('linkCopied')), () => {});
       });
     } catch (err) {
       zone.innerHTML = errorHtml(err);
@@ -793,8 +939,15 @@
   }
 
   function errorHtml(err) {
-    return '<div class="notice notice-error mt-2">' + esc(err.message || 'Something went wrong') + '</div>';
+    return '<div class="notice notice-error mt-2">' + esc(err.message || I.t('somethingWrong')) + '</div>';
   }
+
+  // Re-render the active tab when the user switches language.
+  I.onChange(() => {
+    renderOpenBadge();
+    const active = document.querySelector('.side-link.active, .tab-btn.active');
+    if (active) switchTab(active.dataset.tab);
+  });
 
   boot();
 })();

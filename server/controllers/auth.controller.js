@@ -26,6 +26,12 @@ async function login(req, res) {
     const rest = await restaurants.getById(user.restaurant_id);
     if (!rest || !rest.is_active) throw unauthorized('Invalid credentials');
   }
+  if (user.role === 'delivery') {
+    const group = (
+      await require('../services/delivery.service').getById(user.delivery_group_id)
+    );
+    if (!group || !group.is_active) throw unauthorized('Invalid credentials');
+  }
 
   await new Promise((resolve, reject) => {
     req.session.regenerate((err) => (err ? reject(err) : resolve()));
@@ -38,6 +44,7 @@ async function login(req, res) {
       role: user.role,
       username: user.username,
       restaurantId: user.restaurant_id,
+      deliveryGroupId: user.delivery_group_id,
     },
   });
 }
@@ -61,6 +68,7 @@ function me(req, res) {
       restaurantId: req.user.restaurant_id,
       restaurantName: req.user.restaurant_name,
       restaurantSlug: req.user.restaurant_slug,
+      deliveryGroupId: req.user.delivery_group_id,
     },
   });
 }

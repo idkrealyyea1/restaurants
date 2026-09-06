@@ -14,6 +14,7 @@ router.get('/restaurant', admin.myRestaurant);
 router.patch('/status', admin.setStatus);
 router.get('/dashboard', admin.dashboard);
 router.get('/analytics', admin.analytics);
+router.get('/reports/orders.csv', admin.ordersReportCsv);
 router.get('/qr', admin.qrCode);
 
 // Live new-order notifications (Server-Sent Events)
@@ -35,12 +36,18 @@ router.delete('/items/:id', admin.deleteItem);
 router.get('/orders', admin.listOrders);
 router.get('/orders/:id', admin.getOrder);
 router.patch('/orders/:id/status', admin.changeOrderStatus);
+router.delete('/orders/:id', admin.deleteOrder);
 
 // Settings + opening hours
 router.get('/settings', admin.getSettings);
 router.patch('/settings', admin.updateSettings);
 router.get('/hours', admin.getHours);
 router.put('/hours', admin.updateHours);
+
+// Delivery companies available on the platform (owner-managed);
+// the restaurant chooses which ones deliver for it.
+router.get('/delivery-groups', admin.listMyDeliveryGroups);
+router.put('/delivery-groups', admin.saveMyDeliveryGroups);
 
 // Image uploads (?type=logos|covers|items[&itemId=...])
 router.post('/images', ...admin.uploadImage);

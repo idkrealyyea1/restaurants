@@ -1,6 +1,7 @@
 'use strict';
 
 const express = require('express');
+const config = require('../../config');
 const restaurants = require('../services/restaurants.service');
 const ordersService = require('../services/orders.service');
 const sse = require('../middleware/sse');
@@ -10,6 +11,14 @@ const { asyncHandler } = require('../utils/errors');
 const v = require('../validators');
 
 const router = express.Router();
+
+/** Public homepage directory of all active restaurants. */
+router.get(
+  '/restaurants',
+  asyncHandler(async (req, res) => {
+    res.json({ restaurants: await restaurants.listPublicDirectory() });
+  })
+);
 
 /** Public storefront data for a restaurant slug. */
 router.get(
@@ -63,6 +72,21 @@ router.get(
     if (!/^[A-Za-z0-9]{6,12}$/.test(code)) throw notFound('No order found for this tracking code');
     const order = await ordersService.getByCode(code);
     res.json({ order });
+  })
+);
+
+/** Customer cancels their own order within the grace window. */
+router.post(
+  '/orders/cancel',
+  orderLimiter,
+  asyncHandler(async (req, res) => {
+    const code = String((req.body && req.body.code) || '').trim().toUpperCase();
+    if (!/^[A-Za-z0-9]{6,12}$/.test(code)) throw notFound('No order found for this tracking code');
+    const result = await ordersService.cancelByCustomer(code, config.customerCancelGraceMs);
+    sse.broadcast(result.restaurantId, 'order:status', {
+      orderId: result.id, code: result.code, status: result.status,
+    });
+    res.json({ ok: true, order: { code: result.code, status: result.status } });
   })
 );
 

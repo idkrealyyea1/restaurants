@@ -1,28 +1,29 @@
 <!doctype html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Track your order</title>
+  <title>تتبع طلبك — منصة المطاعم</title>
+  <link rel="stylesheet" href="/fonts/fonts.css">
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
   <header class="topbar">
     <div class="topbar-inner container">
-      <a class="brand" href="/">Order tracking</a>
+      <a class="brand" href="/" data-i18n="brand">منصة المطاعم</a>
     </div>
   </header>
 
   <main class="container mt-2">
     <div class="card">
       <div id="lookup-box">
-        <h1>Track your order</h1>
-        <p class="muted small">Enter the tracking code you received when placing the order (e.g. K7M2XQ4B).</p>
+        <h1 data-i18n="trackHeading">تتبع طلبك</h1>
+        <p class="muted small" data-i18n="trackHint">أدخل رمز التتبع الذي استلمته عند إرسال الطلب (مثال: K7M2XQ4B).</p>
         <form id="track-form" novalidate>
           <div class="field">
-            <input id="code-input" type="text" maxlength="12" placeholder="Tracking code" autocomplete="off" required>
+            <input id="code-input" type="text" maxlength="12" data-i18n-placeholder="trackingCode" placeholder="رمز التتبع" autocomplete="off" required>
           </div>
-          <button class="btn btn-block" type="submit">Track order</button>
+          <button class="btn btn-block" type="submit" data-i18n="trackBtn">تتبع الطلب</button>
         </form>
       </div>
 
@@ -30,9 +31,10 @@
         <div id="order-head"></div>
         <ol id="timeline" class="timeline"></ol>
         <div id="order-items"></div>
+        <div id="order-actions"></div>
         <div class="mt-2 flex-between">
           <span id="auto-refresh-note" class="muted small"></span>
-          <button id="reset-btn" class="btn btn-outline btn-sm">Track another order</button>
+          <button id="reset-btn" class="btn btn-outline btn-sm" data-i18n="trackAnother">تتبع طلب آخر</button>
         </div>
       </div>
 
@@ -40,6 +42,7 @@
     </div>
   </main>
 
+  <script src="/js/i18n.js"></script>
   <script src="/js/api.js"></script>
   <script src="/js/track.js"></script>
 </body>

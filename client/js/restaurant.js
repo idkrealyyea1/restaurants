@@ -7,6 +7,7 @@
 
 (function () {
   const { api, esc, fmtMoney, qsParam } = window.App;
+  const I = window.I18N;
 
   /* ------------------------- resolve slug -------------------------- */
   let slug = qsParam('r');
@@ -17,7 +18,7 @@
 
   if (!slug) {
     document.getElementById('hero').innerHTML =
-      '<div class="container mt-3"><div class="notice notice-error">No restaurant specified.</div></div>';
+      '<div class="container mt-3"><div class="notice notice-error">' + esc(I.t('missingRestaurant')) + '</div></div>';
     return;
   }
 
@@ -49,33 +50,37 @@
 
   function applyTheme() {
     const s = view.settings || {};
-    const root = document.documentElement;
-    if (/^#[0-9a-f]{6}$/i.test(s.primaryColor || '')) root.style.setProperty('--primary', s.primaryColor);
-    if (/^#[0-9a-f]{6}$/i.test(s.secondaryColor || '')) root.style.setProperty('--secondary', s.secondaryColor);
+    const tokens = window.App.theme.buildTokens(s.primaryColor, s.secondaryColor);
+    const rootStyle = document.documentElement.style;
+    for (const [name, value] of Object.entries(tokens)) rootStyle.setProperty(name, value);
   }
 
   function renderHero() {
     const s = view.settings || {};
-    const statusBadge = view.openNow
-      ? '<span class="badge badge-open">Open now</span>'
-      : '<span class="badge badge-closed">Closed</span>';
+    const statusBadge = '<span class="sf-pill ' + (view.openNow ? '' : 'closed') + '"><span class="dot"></span>' +
+      esc(view.openNow ? I.t('openNow') : I.t('closed')) + '</span>';
 
     const waBtn = s.whatsapp
-      ? '<a class="btn btn-outline btn-sm" target="_blank" rel="noopener" href="https://wa.me/' +
+      ? '<a class="sf-hero-action" target="_blank" rel="noopener" href="https://wa.me/' +
         encodeURIComponent(s.whatsapp.replace(/[^0-9]/g, '')) + '">WhatsApp</a>'
       : '';
 
     document.getElementById('hero').innerHTML =
-      '<section class="hero">' +
-        (s.coverPath ? '<img class="hero-cover" src="' + esc(s.coverPath) + '" alt="">' : '') +
-        '<div class="hero-body">' +
-          '<img class="hero-logo" src="' + esc(s.logoPath || '/images/logo-placeholder.svg') + '" alt="Logo">' +
-          '<div>' +
-            '<h1 class="hero-name">' + esc(view.name) + '</h1>' +
-            (s.description ? '<p class="hero-desc">' + esc(s.description) + '</p>' : '') +
-            '<div class="hero-meta">' + statusBadge + waBtn +
-              '<button id="share-btn" type="button" class="btn btn-outline btn-sm">Share</button>' +
+      '<section class="sf-hero">' +
+        (s.coverPath ? '<img class="sf-hero-cover" src="' + esc(s.coverPath) + '" alt="">' : '') +
+        '<div class="sf-hero-body">' +
+          '<div class="sf-hero-top">' +
+            '<img class="sf-hero-logo" src="' + esc(s.logoPath || '/images/logo-placeholder.svg') + '" alt="Logo">' +
+            '<div class="sf-hero-badges">' + statusBadge + '</div>' +
+          '</div>' +
+          '<div class="sf-hero-brand">' +
+            '<div>' +
+              '<h1 class="sf-hero-name">' + esc(view.name) + '</h1>' +
+              (s.description ? '<p class="sf-hero-desc">' + esc(s.description) + '</p>' : '') +
             '</div>' +
+          '</div>' +
+          '<div class="sf-hero-meta">' + waBtn +
+            '<button id="share-btn" type="button" class="sf-hero-action">' + esc(I.t('share')) + '</button>' +
           '</div>' +
         '</div>' +
       '</section>';
@@ -88,14 +93,16 @@
 
   function renderChips() {
     const chipsEl = document.getElementById('chips');
-    const cats = [{ id: 'all', name: 'All' }, { id: 'popular', name: 'Popular' }].concat(view.categories);
+    const cats = [{ id: 'all', name: I.t('all') }, { id: 'popular', name: I.t('popular') }].concat(view.categories);
 
     chipsEl.innerHTML = cats.map((c) =>
-      '<button type="button" class="chip' + (c.id === activeCategory ? ' active' : '') +
-      '" data-cat="' + esc(c.id) + '">' + esc(c.name) + '</button>'
+      '<button type="button" class="sf-chip' + (c.id === activeCategory ? ' active' : '') +
+      '" data-cat="' + esc(c.id) + '">' +
+      (c.id === activeCategory ? '<span class="sim"></span>' : '') +
+      esc(c.name) + '</button>'
     ).join('');
 
-    chipsEl.querySelectorAll('.chip').forEach((btn) => {
+    chipsEl.querySelectorAll('.sf-chip').forEach((btn) => {
       btn.addEventListener('click', () => {
         activeCategory = btn.dataset.cat;
         renderChips();
@@ -117,17 +124,26 @@
     const items = view.items.filter(itemVisible);
 
     if (view.items.length === 0) {
-      zone.innerHTML = '<div class="empty-state card">The menu is empty right now. Check back soon.</div>';
+      zone.innerHTML = '<div class="empty-state card">' + esc(I.t('menuEmpty')) + '</div>';
       return;
     }
     if (items.length === 0) {
-      zone.innerHTML = '<div class="empty-state card">No items match your search.</div>';
+      zone.innerHTML = '<div class="empty-state card">' + esc(I.t('noMatch')) + '</div>';
       return;
     }
 
     zone.innerHTML =
-      '<input id="menu-search" class="search-input" type="text" placeholder="Search the menu&hellip;" maxlength="60" value="' + esc(searchTerm) + '">' +
-      '<div id="menu-grid" class="menu-grid mt-2">' + items.map((item) => renderItemCard(item)).join('') + '</div>';
+      '<div class="sf-search"><span class="sf-search-icon"></span>' +
+        '<input id="menu-search" type="text" placeholder="' + esc(I.t('searchMenu')) + '" maxlength="60" value="' + esc(searchTerm) + '">' +
+      '</div>' +
+      '<div class="sf-section-h"><span class="bar"></span><h2>' + esc(I.t('bestSellers')) + '</h2></div>' +
+      '<div id="menu-grid" class="sf-menu-grid mt-1">' + items.map((item) => renderItemCard(item)).join('') + '</div>';
+
+    // Staggered entrance for the cards.
+    zone.querySelectorAll('.sf-item').forEach((el, i) => {
+      el.style.animation = 'rise .4s ease backwards';
+      el.style.animationDelay = Math.min(i * 35, 420) + 'ms';
+    });
 
     const search = document.getElementById('menu-search');
     search.addEventListener('input', () => {
@@ -137,7 +153,7 @@
       const visible = view.items.filter(itemVisible);
       grid.innerHTML = visible.length
         ? visible.map(renderItemCard).join('')
-        : '<div class="empty-state" role="status">No items match your search.</div>';
+        : '<div class="empty-state" role="status">' + esc(I.t('noMatch')) + '</div>';
       bindAddButtons();
     });
 
@@ -147,32 +163,38 @@
   function renderItemCard(item) {
     const soldOut = !item.is_available;
     const imgTag = item.image_path
-      ? '<img class="menu-item-img" loading="lazy" src="' + esc(item.image_path) + '" alt="">'
-      : '<div class="menu-item-img"></div>';
+      ? '<img class="sf-item-img" loading="lazy" src="' + esc(item.image_path) + '" alt="">'
+      : '<div class="sf-item-img"></div>';
     const badges =
-      (item.is_popular ? '<span class="badge badge-popular">Popular</span> ' : '') +
-      (soldOut ? '<span class="badge badge-soldout">Sold out</span>' : '');
+      '<div class="sf-badges">' +
+        (item.is_popular ? '<span class="sf-tag popular">' + esc(I.t('popular')) + '</span>' : '') +
+        (soldOut ? '<span class="sf-tag soldout">' + esc(I.t('soldOut')) + '</span>' : '') +
+      '</div>';
+
+    // Price ticket: amount + an in-ticket "+" to tag the dish into the basket.
+    const priceTicket = soldOut
+      ? '<span class="sf-price"><span class="sf-price-amt">' + fmtMoney(item.price_cents, view.settings.currency) + '</span></span>'
+      : '<span class="sf-price"><span class="sf-price-amt">' + fmtMoney(item.price_cents, view.settings.currency) + '</span>' +
+        '<button type="button" class="sf-add" data-item="' + esc(item.id) + '" aria-label="+" title="' + esc(I.t('add')) + '">+</button></span>';
 
     return (
-      '<article class="menu-item-card' + (soldOut ? ' unavailable' : '') + '" data-item="' + esc(item.id) + '">' +
+      '<article class="sf-item' + (soldOut ? ' unavailable' : '') + '" data-item="' + esc(item.id) + '">' +
         imgTag +
-        '<div class="menu-item-info">' +
-          '<h3 class="menu-item-name">' + esc(item.name) + '</h3>' +
-          badges +
-          (item.description ? '<p class="menu-item-desc">' + esc(item.description) + '</p>' : '') +
-          '<div class="flex-between mt-1">' +
-            '<span class="menu-item-price">' + fmtMoney(item.price_cents, view.settings.currency) + '</span>' +
-            (soldOut
-              ? ''
-              : '<button type="button" class="btn btn-sm add-btn" data-item="' + esc(item.id) + '">Add</button>') +
+        '<div class="sf-item-info">' +
+          '<div class="sf-item-line">' +
+            '<h3 class="sf-item-name">' + esc(item.name) + '</h3>' +
+            '<span class="sf-line-dot" aria-hidden="true"></span>' +
+            priceTicket +
           '</div>' +
+          badges +
+          (item.description ? '<p class="sf-item-desc">' + esc(item.description) + '</p>' : '') +
         '</div>' +
       '</article>'
     );
   }
 
   function bindAddButtons() {
-    document.querySelectorAll('.add-btn').forEach((btn) => {
+    document.querySelectorAll('.sf-add').forEach((btn) => {
       btn.addEventListener('click', () => addToCart(btn.dataset.item));
     });
   }
@@ -194,7 +216,7 @@
   }
 
   function totalUnits() {
-    return Object.values(cart).reduce((a, b) => a + b, 0);
+    return cartEntries().reduce((sum, e) => sum + e.qty, 0);
   }
 
   function updateCartBar() {
@@ -206,14 +228,64 @@
     }
     bar.classList.remove('hidden');
     document.getElementById('cart-summary').innerHTML =
-      units + ' item' + (units > 1 ? 's' : '') + ' &middot; ' +
-      fmtMoney(subtotalCents(), view.settings.currency);
+      esc(I.t('itemsCount', { n: units })) +
+      '<span class="sub">' + fmtMoney(subtotalCents(), view.settings.currency) + '</span>';
   }
 
   function addToCart(itemId) {
     cart[itemId] = Math.min((cart[itemId] || 0) + 1, 99);
     saveCart();
     updateCartBar();
+    flyToCart(itemId);
+  }
+
+  /* Ghost image flies from the menu card into the cart bar. */
+  function flyToCart(itemId) {
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const card = document.querySelector('.sf-item[data-item="' + itemId + '"]');
+    const bar = document.getElementById('cart-bar');
+    if (!card || !bar || typeof card.animate !== 'function') return;
+
+    const item = view.items.find((i) => i.id === itemId);
+    if (!item) return;
+
+    // Source point: the card's photo, or the card centre as a fallback.
+    const img = card.querySelector('.sf-item-img');
+    const s = (img || card).getBoundingClientRect();
+
+    // Target point: cart bar centre (it is visible now — updateCartBar ran).
+    const b = bar.getBoundingClientRect();
+    const targetX = b.left + Math.min(b.width * 0.25, 180);
+    const targetY = b.top + b.height / 2;
+
+    const ghost = document.createElement('div');
+    ghost.className = 'fly-ghost';
+    if (item.image_path && /^\/uploads\//.test(item.image_path)) {
+      ghost.style.backgroundImage = 'url("' + encodeURI(item.image_path).replace(/"/g, '%22') + '")';
+    } else {
+      ghost.textContent = (item.name || '?').trim().charAt(0);
+    }
+    ghost.style.left = (s.left + s.width / 2 - 27) + 'px';
+    ghost.style.top = (s.top + s.height / 2 - 27) + 'px';
+    document.body.appendChild(ghost);
+
+    const dx = targetX - (s.left + s.width / 2);
+    const dy = targetY - (s.top + s.height / 2);
+
+    const anim = ghost.animate(
+      [
+        { transform: 'translate(0,0) scale(1)', opacity: 1 },
+        { transform: 'translate(' + dx * 0.55 + 'px,' + (dy - 90) + 'px) scale(.72)', opacity: 1, offset: 0.6 },
+        { transform: 'translate(' + dx + 'px,' + dy + 'px) scale(.3)', opacity: 0.15 },
+      ],
+      { duration: 620, easing: 'cubic-bezier(.5,-0.1,.6,.9)' }
+    );
+    anim.onfinish = () => {
+      ghost.remove();
+      bar.classList.remove('pulse');
+      void bar.offsetWidth; /* restart the pulse animation */
+      bar.classList.add('pulse');
+    };
   }
 
   function setQty(itemId, qty) {
@@ -244,8 +316,8 @@
     const entries = cartEntries();
 
     if (entries.length === 0) {
-      content.innerHTML = '<h2>Your cart is empty</h2><p class="muted small">Add items from the menu first.</p>' +
-        '<button type="button" id="close-sheet-btn" class="btn btn-block btn-outline">Close</button>';
+      content.innerHTML = '<h2>' + esc(I.t('cartEmpty')) + '</h2><p class="muted small">' + esc(I.t('cartEmptyHint')) + '</p>' +
+        '<button type="button" id="close-sheet-btn" class="btn btn-block btn-outline">' + esc(I.t('close')) + '</button>';
       document.getElementById('close-sheet-btn').addEventListener('click', closeSheet);
       return;
     }
@@ -254,38 +326,39 @@
     const sub = subtotalCents();
 
     content.innerHTML =
-      '<h2>Your order</h2>' +
+      '<h2 class="sf-sheet-title">' + esc(I.t('yourOrder')) + '</h2>' +
       entries.map((e) =>
-        '<div class="cart-line">' +
-          '<div class="qty-controls">' +
-            '<button type="button" class="qty-btn" data-dec="' + esc(e.item.id) + '" aria-label="Decrease">&minus;</button>' +
+        '<div class="sf-cart-line">' +
+          '<div class="sf-qty">' +
+            '<button type="button" data-dec="' + esc(e.item.id) + '" aria-label="-">&minus;</button>' +
             '<span>' + e.qty + '</span>' +
-            '<button type="button" class="qty-btn" data-inc="' + esc(e.item.id) + '" aria-label="Increase">+</button>' +
+            '<button type="button" data-inc="' + esc(e.item.id) + '" aria-label="+">+</button>' +
           '</div>' +
-          '<span class="small">' + esc(e.item.name) + '</span>' +
-          '<span class="spacer"></span>' +
-          '<strong>' + fmtMoney(e.item.price_cents * e.qty, view.settings.currency) + '</strong>' +
+          '<span class="sf-cart-name">' + esc(e.item.name) + '</span>' +
+          '<strong class="sf-cart-price">' + fmtMoney(e.item.price_cents * e.qty, view.settings.currency) + '</strong>' +
         '</div>'
       ).join('') +
-      '<div class="type-toggle mt-2">' +
-        '<button type="button" data-type="pickup"' + (orderType === 'pickup' ? ' class="active"' : '') + '>Pickup</button>' +
-        '<button type="button" data-type="delivery"' + (orderType === 'delivery' ? ' class="active"' : '') + '>Delivery</button>' +
+      '<div class="sf-type-toggle">' +
+        '<button type="button" data-type="pickup"' + (orderType === 'pickup' ? ' class="active"' : '') + '>' + esc(I.t('pickup')) + '</button>' +
+        '<button type="button" data-type="delivery"' + (orderType === 'delivery' ? ' class="active"' : '') + '>' + esc(I.t('delivery')) + '</button>' +
       '</div>' +
-      '<div class="total-row"><span>Subtotal</span><span>' + fmtMoney(sub, view.settings.currency) + '</span></div>' +
-      (orderType === 'delivery'
-        ? '<div class="total-row"><span>Delivery fee</span><span>' + fmtMoney(fee, view.settings.currency) + '</span></div>'
-        : '') +
-      '<div class="total-row grand"><span>Total</span><span>' + fmtMoney(sub + fee, view.settings.currency) + '</span></div>' +
+      '<div class="sf-total-box">' +
+        '<div class="sf-total-row"><span>' + esc(I.t('subtotal')) + '</span><span>' + fmtMoney(sub, view.settings.currency) + '</span></div>' +
+        (orderType === 'delivery'
+          ? '<div class="sf-total-row"><span>' + esc(I.t('deliveryFee')) + '</span><span>' + fmtMoney(fee, view.settings.currency) + '</span></div>'
+          : '') +
+        '<div class="sf-total-row grand"><span>' + esc(I.t('total')) + '</span><span>' + fmtMoney(sub + fee, view.settings.currency) + '</span></div>' +
+      '</div>' +
       checkoutFormHtml() +
       '<div id="checkout-error" class="notice notice-error hidden mt-1"></div>' +
-      '<button type="submit" form="checkout-form" class="btn btn-block mt-2" id="place-order-btn">Place order</button>' +
-      '<button type="button" id="close-sheet-btn" class="btn btn-outline btn-block mt-1">Keep browsing</button>';
+      '<button type="submit" form="checkout-form" class="sf-checkout-cta mt-1" id="place-order-btn">' + esc(I.t('placeOrder')) + '</button>' +
+      '<button type="button" id="close-sheet-btn" class="btn btn-outline btn-block mt-1">' + esc(I.t('keepBrowsing')) + '</button>';
 
     // Wire quantity controls.
     content.querySelectorAll('[data-inc]').forEach((b) => b.addEventListener('click', () => setQty(b.dataset.inc, (cart[b.dataset.inc] || 0) + 1)));
     content.querySelectorAll('[data-dec]').forEach((b) => b.addEventListener('click', () => setQty(b.dataset.dec, (cart[b.dataset.dec] || 0) - 1)));
 
-    content.querySelectorAll('.type-toggle button').forEach((b) => {
+    content.querySelectorAll('.sf-type-toggle button').forEach((b) => {
       b.addEventListener('click', () => {
         orderType = b.dataset.type;
         localStorage.setItem('ordertype_' + slug, orderType);
@@ -301,15 +374,15 @@
     const needsAddress = orderType === 'delivery';
     return (
       '<form id="checkout-form" novalidate class="mt-2">' +
-        '<div class="field"><label for="co-name">Your name *</label>' +
+        '<div class="field"><label for="co-name">' + esc(I.t('yourName')) + '</label>' +
           '<input id="co-name" name="customerName" type="text" maxlength="80" required autocomplete="name"></div>' +
-        '<div class="field"><label for="co-wa">WhatsApp number *</label>' +
+        '<div class="field"><label for="co-wa">' + esc(I.t('whatsappNumber')) + '</label>' +
           '<input id="co-wa" name="customerWhatsapp" type="tel" maxlength="20" required placeholder="+15551234567" autocomplete="tel"></div>' +
-        '<div class="field"><label for="co-phone">Phone (optional)</label>' +
+        '<div class="field"><label for="co-phone">' + esc(I.t('phoneOptional')) + '</label>' +
           '<input id="co-phone" name="customerPhone" type="tel" maxlength="20" autocomplete="tel"></div>' +
-        '<div class="field"><label for="co-address">' + (needsAddress ? 'Delivery address *' : 'Address (optional)') + '</label>' +
+        '<div class="field"><label for="co-address">' + esc(needsAddress ? I.t('deliveryAddress') : I.t('addressOptional')) + '</label>' +
           '<textarea id="co-address" name="customerAddress" maxlength="250">' + '</textarea></div>' +
-        '<div class="field"><label for="co-notes">Notes (optional)</label>' +
+        '<div class="field"><label for="co-notes">' + esc(I.t('notesOptional')) + '</label>' +
           '<input id="co-notes" name="notes" type="text" maxlength="400"></div>' +
       '</form>'
     );
@@ -349,12 +422,12 @@
   function renderSuccess(order) {
     const content = document.getElementById('sheet-content');
     content.innerHTML =
-      '<h2>Order placed!</h2>' +
-      '<div class="notice notice-ok">Show this tracking code to follow your order.</div>' +
-      '<h1 class="order-code mt-1">' + esc(order.code) + '</h1>' +
-      '<p class="muted small">Total: <strong>' + fmtMoney(order.total_cents, view.settings.currency) + '</strong></p>' +
-      '<a class="btn btn-secondary btn-block mt-1" href="/track?code=' + encodeURIComponent(order.code) + '">Track my order</a>' +
-      '<button type="button" id="close-sheet-btn" class="btn btn-outline btn-block mt-1">Done</button>';
+      '<h2 class="sf-sheet-title">' + esc(I.t('placedHead')) + '</h2>' +
+      '<div class="notice notice-ok">' + esc(I.t('showCode')) + '</div>' +
+      '<div class="sf-success-code">' + esc(order.code) + '</div>' +
+      '<p class="muted small sf-success-total">' + esc(I.t('totalLabel')) + ' <strong>' + fmtMoney(order.total_cents, view.settings.currency) + '</strong></p>' +
+      '<a class="sf-link-cta" href="/track?code=' + encodeURIComponent(order.code) + '">' + esc(I.t('trackMyOrder')) + '</a>' +
+      '<button type="button" id="close-sheet-btn" class="btn btn-outline btn-block mt-1">' + esc(I.t('done')) + '</button>';
     document.getElementById('close-sheet-btn').addEventListener('click', closeSheet);
   }
 
@@ -362,11 +435,11 @@
 
   function sharePage() {
     const url = location.href;
-    const data = { title: view.name, text: 'Check out ' + view.name, url };
+    const data = { title: view.name, text: I.t('checkOut', { name: view.name }), url };
     if (navigator.share) {
       navigator.share(data).catch(() => {});
     } else if (navigator.clipboard) {
-      navigator.clipboard.writeText(url).then(() => window.App.toast('Link copied'));
+      navigator.clipboard.writeText(url).then(() => window.App.toast(I.t('linkCopied')));
     }
   }
 
@@ -390,9 +463,25 @@
     renderMenu();
     updateCartBar();
 
+    // Reorder from a previous order (navigated here with ?reorder=itemId:qty,...)
+    const reorderRaw = qsParam('reorder');
+    if (reorderRaw) {
+      try {
+        const entries = reorderRaw.split(',').map((p) => {
+          const [id, q] = p.split(':');
+          return { id: String(id).trim(), qty: Math.max(1, Math.min(Number(q), 99) || 1) };
+        });
+        entries.forEach((e) => {
+          if (view.items.some((i) => i.id === e.id)) cart[e.id] = e.qty;
+        });
+        saveCart();
+        updateCartBar();
+      } catch (_) { /* ignore malformed reorder param */ }
+    }
+
     const notices = [];
     if (!view.openNow) {
-      notices.push('<div class="notice notice-warn mt-2">This restaurant is currently closed — you can browse the menu, but new orders cannot be placed right now.</div>');
+      notices.push('<div class="notice notice-warn mt-2">' + esc(I.t('closedNotice')) + '</div>');
     }
     document.getElementById('notice-zone').innerHTML = notices.join('');
 
@@ -408,6 +497,24 @@
     document.getElementById('sheet-backdrop').addEventListener('click', closeSheet);
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') closeSheet();
+    });
+
+    // Re-render everything when the user switches language.
+    I.onChange(() => {
+      renderHero();
+      renderChips();
+      renderMenu();
+      updateCartBar();
+      const notices2 = [];
+      if (!view.openNow) {
+        notices2.push('<div class="notice notice-warn mt-2">' + esc(I.t('closedNotice')) + '</div>');
+      }
+      document.getElementById('notice-zone').innerHTML = notices2.join('');
+      const sb = document.getElementById('share-btn');
+      if (sb) sb.addEventListener('click', sharePage);
+      if (document.getElementById('sheet').classList.contains('open') && totalUnits() > 0) {
+        renderCartSheet();
+      }
     });
   }
 

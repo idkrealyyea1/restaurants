@@ -14,7 +14,9 @@ const menu = require('../services/menu.service');
 const orders = require('../services/orders.service');
 const settingsService = require('../services/settings.service');
 const sse = require('../middleware/sse');
+const delivery = require('../services/delivery.service');
 const { handleImageUpload, persistSavedImage, deleteUpload } = require('../middleware/upload');
+const { sendCsv } = require('../utils/csv');
 const { forbidden, notFound, badRequest } = require('../utils/errors');
 const { asyncHandler } = require('../utils/errors');
 const v = require('../validators');
@@ -72,6 +74,7 @@ async function dashboard(req, res) {
     itemCount: await restaurants.countItems(id),
     maxMenuItems: restaurant ? restaurant.max_menu_items : null,
     openNow: await settingsService.computeOpenNow(id),
+    subscription: await restaurants.getSubscription(id),
   });
 }
 
@@ -94,15 +97,20 @@ async function listOrders(req, res) {
 }
 
 async function getOrder(req, res) {
-  const row = await orders.getForRestaurant(tenantId(req), req.params.id);
+  const row = await orders.getForRestaurant(req.params.id, tenantId(req));
   res.json({ order: row });
 }
 
 async function changeOrderStatus(req, res) {
   const { status } = v.validateStatusChange(req.body);
-  const row = await orders.changeStatus(tenantId(req), req.params.id, status);
+  const row = await orders.changeStatus(req.params.id, tenantId(req), status);
   sse.broadcast(tenantId(req), 'order:status', { orderId: row.id, code: row.code, status: row.status });
   res.json({ order: row });
+}
+
+async function deleteOrder(req, res) {
+  const row = await orders.archiveOrder(req.params.id, tenantId(req));
+  res.json({ ok: true, order: row });
 }
 
 /* ------------------------ categories ---------------------------- */
@@ -233,11 +241,35 @@ async function analytics(req, res) {
   const id = tenantId(req);
   const days = Math.min(Math.max(Number.parseInt(req.query.days, 10) || 7, 1), 90);
   const tz = await tzOf(id);
-  const [series, top] = await Promise.all([
+  const [series, top, byDow, byHour] = await Promise.all([
     orders.analyticsSeries(id, tz, days),
     orders.topItems(id, Math.max(days, 30)),
+    orders.byDayOfWeek(id, tz, days),
+    orders.byHour(id, tz, days),
   ]);
-  res.json({ ...series, today: await orders.dashboardCounts(id, tz), topItems: top });
+  const averages = series.totals.orders > 0
+    ? { averageOrderValueCents: Math.round(series.totals.revenueCents / series.totals.orders) }
+    : { averageOrderValueCents: 0 };
+  res.json({ ...series, ...averages, today: await orders.dashboardCounts(id, tz), topItems: top, byDayOfWeek: byDow, byHour });
+}
+
+/* ----------------------------- reports ---------------------------- */
+
+/** GET /api/admin/reports/orders.csv — downloadable order log (revenue by default). */
+async function ordersReportCsv(req, res) {
+  const id = tenantId(req);
+  const revenueOnly = req.query.scope !== 'all';
+  const rows = await orders.exportRows(id, { revenueOnly, status: req.query.status || null });
+  const header = [
+    'Code', 'Status', 'Type', 'Customer', 'WhatsApp', 'Phone', 'Address', 'Notes',
+    'Subtotal (cents)', 'Delivery fee (cents)', 'Total (cents)', 'Created', 'Updated',
+  ];
+  const body = rows.map((r) => [
+    r.code, r.status, r.order_type, r.customer_name, r.customer_whatsapp, r.customer_phone,
+    r.customer_address, r.notes, r.subtotal_cents, r.delivery_fee_cents, r.total_cents,
+    r.created_at, r.updated_at,
+  ]);
+  sendCsv(res, `orders-${id.slice(0, 8)}.csv`, [header, ...body]);
 }
 
 /* ----------------------------- SSE ------------------------------- */
@@ -254,6 +286,18 @@ function events(req, res) {
   sse.addClient(id, res);
 }
 
+/* --------------------- delivery companies -------------------------- */
+
+async function listMyDeliveryGroups(req, res) {
+  res.json({ groups: await delivery.listForRestaurant(tenantId(req)) });
+}
+
+async function saveMyDeliveryGroups(req, res) {
+  const groupIds = v.validateDeliverySelection(req.body);
+  const groups = await delivery.setForRestaurant(tenantId(req), groupIds);
+  res.json({ groups });
+}
+
 module.exports = {
   tenantId,
   myRestaurant: asyncHandler(myRestaurant),
@@ -262,10 +306,13 @@ module.exports = {
   listOrders: asyncHandler(listOrders),
   getOrder: asyncHandler(getOrder),
   changeOrderStatus: asyncHandler(changeOrderStatus),
+  deleteOrder: asyncHandler(deleteOrder),
   listCategories: asyncHandler(listCategories),
   createCategory: asyncHandler(createCategory),
   updateCategory: asyncHandler(updateCategory),
   deleteCategory: asyncHandler(deleteCategory),
+  listMyDeliveryGroups: asyncHandler(listMyDeliveryGroups),
+  saveMyDeliveryGroups: asyncHandler(saveMyDeliveryGroups),
   listItems: asyncHandler(listItems),
   createItem: asyncHandler(createItem),
   updateItem: asyncHandler(updateItem),
@@ -277,5 +324,6 @@ module.exports = {
   uploadImage,
   qrCode: asyncHandler(qrCode),
   analytics: asyncHandler(analytics),
+  ordersReportCsv: asyncHandler(ordersReportCsv),
   events,
 };

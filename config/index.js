@@ -62,7 +62,8 @@ function resolveDbConfig() {
       user: process.env.DB_USERNAME || '',
       password: process.env.DB_PASSWORD || '',
       ssl: { rejectUnauthorized: false },
-      max: 10,
+      max: 3,
+      idleTimeoutMillis: 10000,
     };
   }
   // Nothing configured — pool creation succeeds, queries fail loudly later.
@@ -100,6 +101,9 @@ const config = Object.freeze({
 
   uploadDir,
   maxUploadBytes: maxUploadMb * 1024 * 1024,
+
+  // How long a customer may cancel their own order after placing it.
+  customerCancelGraceMs: intEnv('CANCEL_GRACE_MINUTES', 15) * 60 * 1000,
 
   rateLimits: {
     global: { windowMs: intEnv('RATE_LIMIT_WINDOW_MS', 15 * 60 * 1000), max: intEnv('RATE_LIMIT_MAX', 300) },

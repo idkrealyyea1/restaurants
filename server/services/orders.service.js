@@ -13,6 +13,35 @@ const { isOpenNow } = require('../utils/datetime');
 
 const STATUSES = ['pending', 'confirmed', 'preparing', 'ready', 'out_for_delivery', 'completed', 'cancelled'];
 
+/** Orders only start counting as revenue once the restaurant confirms them. */
+const REVENUE_STATUSES = ['confirmed', 'preparing', 'ready', 'out_for_delivery', 'completed'];
+const REVENUE_SQL = `status IN ('${REVENUE_STATUSES.join("','")}')`;
+const REVENUE_SQL_O = `o.status IN ('${REVENUE_STATUSES.join("','")}')`;
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/**
+ * Clients may reference an order by its UUID or by its short `code`.
+ * Resolving up front means a stale cached bundle that sends the code still
+ * works (previously a non-UUID produced Postgres 22P02 -> "Invalid data format").
+ */
+async function resolveOrderId(orderRef, restaurantId) {
+  if (UUID_RE.test(orderRef || '')) {
+    const { rows } = await query(
+      'SELECT id FROM orders WHERE id = $1 AND restaurant_id = $2',
+      [orderRef, restaurantId]
+    );
+    if (!rows[0]) throw notFound('Order not found');
+    return rows[0].id;
+  }
+  const { rows } = await query(
+    'SELECT id FROM orders WHERE code = $1 AND restaurant_id = $2',
+    [orderRef, restaurantId]
+  );
+  if (!rows[0]) throw notFound('Order not found');
+  return rows[0].id;
+}
+
 const TRANSITIONS = {
   pending: ['confirmed', 'preparing', 'cancelled'],
   confirmed: ['preparing', 'cancelled'],
@@ -170,8 +199,9 @@ async function createCheckout({ restaurantId, payload }) {
 /* ------------------------------------------------------------------ */
 
 async function listForRestaurant(restaurantId, { status, limit, offset }) {
+  if (status && !STATUSES.includes(status)) throw badRequest('Unknown order status');
   const params = [restaurantId];
-  let where = 'restaurant_id = $1';
+  let where = 'restaurant_id = $1 AND archived_at IS NULL';
   if (status) {
     params.push(status);
     where += ` AND status = $${params.length}`;
@@ -196,15 +226,16 @@ async function listForRestaurant(restaurantId, { status, limit, offset }) {
 }
 
 async function getForRestaurant(orderId, restaurantId) {
+  const id = await resolveOrderId(orderId, restaurantId);
   const order = (
-    await query('SELECT * FROM orders WHERE id = $1 AND restaurant_id = $2', [orderId, restaurantId])
+    await query('SELECT * FROM orders WHERE id = $1 AND restaurant_id = $2', [id, restaurantId])
   ).rows[0];
   if (!order) throw notFound('Order not found');
   order.items = (
     await query(
       `SELECT id, menu_item_id, item_name, unit_price_cents, quantity, line_total_cents
        FROM order_items WHERE order_id = $1 ORDER BY created_at`,
-      [orderId]
+      [id]
     )
   ).rows;
   return order;
@@ -234,15 +265,32 @@ async function updateStatus(orderId, restaurantId, nextStatus) {
 
 /** Validate then apply a status change (public helper used by controller). */
 async function changeStatus(orderId, restaurantId, nextStatus) {
+  const id = await resolveOrderId(orderId, restaurantId);
   const current = (
-    await query('SELECT status, order_type FROM orders WHERE id = $1 AND restaurant_id = $2', [orderId, restaurantId])
+    await query('SELECT status, order_type FROM orders WHERE id = $1 AND restaurant_id = $2', [id, restaurantId])
   ).rows[0];
   if (!current) throw notFound('Order not found');
   assertTransition(current.status, nextStatus, current.order_type);
-  return updateStatus(orderId, restaurantId, nextStatus);
+  return updateStatus(id, restaurantId, nextStatus);
 }
 
 /* ------------------------------------------------------------------ */
+/**
+ * Archive a finished order (completed/cancelled): it disappears from the
+ * dashboard lists but its money remains counted in all revenue queries.
+ */
+async function archiveOrder(orderId, restaurantId) {
+  const id = await resolveOrderId(orderId, restaurantId);
+  const { rows } = await query(
+    `UPDATE orders SET archived_at = now()
+     WHERE id = $1 AND restaurant_id = $2 AND status IN ('completed', 'cancelled') AND archived_at IS NULL
+     RETURNING id, code`,
+    [id, restaurantId]
+  );
+  if (!rows[0]) throw notFound('Only completed or cancelled orders can be deleted');
+  return rows[0];
+}
+
 /* Dashboard + analytics                                               */
 /* ------------------------------------------------------------------ */
 
@@ -254,7 +302,7 @@ async function dashboardCounts(restaurantId, timezone) {
        COUNT(*) FILTER (WHERE status IN ('confirmed','preparing','ready','out_for_delivery'))::int AS active_orders,
        COUNT(*) FILTER (WHERE status = 'completed' AND (updated_at AT TIME ZONE $2)::date = (now() AT TIME ZONE $2)::date)::int AS completed_today,
        COALESCE(SUM(total_cents) FILTER (
-         WHERE status <> 'cancelled' AND (created_at AT TIME ZONE $2)::date = (now() AT TIME ZONE $2)::date
+         WHERE ${REVENUE_SQL} AND (created_at AT TIME ZONE $2)::date = (now() AT TIME ZONE $2)::date
        ), 0)::bigint AS revenue_today_cents
      FROM orders
      WHERE restaurant_id = $1`,
@@ -276,8 +324,8 @@ async function analyticsSeries(restaurantId, timezone, days) {
             COUNT(*)::int AS orders,
             COALESCE(SUM(total_cents), 0)::bigint AS revenue_cents
      FROM orders
-     WHERE restaurant_id = $1 AND status <> 'cancelled'
-       AND (created_at AT TIME ZONE $2) >= date_trunc('day', now() AT TIME ZONE $2) - ($3::int - 1)
+     WHERE restaurant_id = $1 AND ${REVENUE_SQL}
+       AND (created_at AT TIME ZONE $2)::date >= ((now() AT TIME ZONE $2)::date - ($3::int - 1))
      GROUP BY 1
      ORDER BY 1`,
     [restaurantId, timezone, days]
@@ -313,7 +361,7 @@ async function topItems(restaurantId, days = 30, limit = 10) {
     `SELECT oi.item_name, SUM(oi.quantity)::int AS units, COALESCE(SUM(oi.line_total_cents),0)::bigint AS revenue_cents
      FROM order_items oi
      JOIN orders o ON o.id = oi.order_id
-     WHERE o.restaurant_id = $1 AND o.status <> 'cancelled'
+     WHERE o.restaurant_id = $1 AND ${REVENUE_SQL_O}
        AND o.created_at >= now() - ($2::int * INTERVAL '1 day')
      GROUP BY oi.item_name
      ORDER BY units DESC
@@ -323,11 +371,73 @@ async function topItems(restaurantId, days = 30, limit = 10) {
   return rows.map((r) => ({ ...r, revenueCents: Number(r.revenue_cents) }));
 }
 
+/** Orders grouped by day of week (0=Sunday..6) over the last `days`. */
+async function byDayOfWeek(restaurantId, timezone, days) {
+  const { rows } = await query(
+    `SELECT extract(dow FROM (o.created_at AT TIME ZONE $2))::int AS dow,
+            COUNT(*)::int AS orders,
+            COALESCE(SUM(o.total_cents), 0)::bigint AS revenue_cents
+     FROM orders o
+     WHERE o.restaurant_id = $1 AND ${REVENUE_SQL_O}
+       AND (o.created_at AT TIME ZONE $2)::date >= ((now() AT TIME ZONE $2)::date - ($3::int - 1))
+     GROUP BY dow
+     ORDER BY dow`,
+    [restaurantId, timezone, days]
+  );
+  return rows.map((r) => ({ dow: r.dow, orders: r.orders, revenueCents: Number(r.revenue_cents) }));
+}
+
+/** Orders grouped by hour of day (0..23, restaurant-local time) over the last `days`. */
+async function byHour(restaurantId, timezone, days) {
+  const { rows } = await query(
+    `SELECT extract(hour FROM (o.created_at AT TIME ZONE $2))::int AS hour,
+            COUNT(*)::int AS orders,
+            COALESCE(SUM(o.total_cents), 0)::bigint AS revenue_cents
+     FROM orders o
+     WHERE o.restaurant_id = $1 AND ${REVENUE_SQL_O}
+       AND (o.created_at AT TIME ZONE $2)::date >= ((now() AT TIME ZONE $2)::date - ($3::int - 1))
+     GROUP BY hour
+     ORDER BY hour`,
+    [restaurantId, timezone, days]
+  );
+  return rows.map((r) => ({ hour: r.hour, orders: r.orders, revenueCents: Number(r.revenue_cents) }));
+}
+
+/** True when `revenueOnly` and the status is not a revenue status. */
+function isNotRevenue(status) {
+  return !REVENUE_STATUSES.includes(status);
+}
+
+/**
+ * Flat, export-ready order rows for CSV/PDF reports. `revenueOnly` strips
+ * pending/cancelled so money-facing exports match dashboard revenue.
+ */
+async function exportRows(restaurantId, { revenueOnly, status, limit = 5000 } = {}) {
+  const params = [restaurantId];
+  let where = 'o.restaurant_id = $1';
+  if (revenueOnly) where += ` AND ${REVENUE_SQL_O}`;
+  if (status) {
+    params.push(status);
+    where += ` AND o.status = $${params.length}`;
+  }
+  params.push(limit);
+  const { rows } = await query(
+    `SELECT o.code, o.status, o.order_type, o.customer_name, o.customer_whatsapp,
+            o.customer_phone, o.customer_address, o.notes,
+            o.subtotal_cents, o.delivery_fee_cents, o.total_cents,
+            o.created_at, o.updated_at
+     FROM orders o
+     WHERE ${where} AND o.archived_at IS NULL
+     ORDER BY o.created_at DESC
+     LIMIT $${params.length}`,
+    params
+  );
+  return rows;
+}
+
 /* ------------------------------------------------------------------ */
 /* Customer tracking                                                   */
-/* ------------------------------------------------------------------ */
-
-async function getByCode(code) {
+/* ------------------------------------------------------------------ */async function getByCode(code) {
   const order = (
     await query(
       `SELECT o.id, o.code, o.status, o.order_type, o.total_cents, o.subtotal_cents, o.delivery_fee_cents,
@@ -344,7 +454,8 @@ async function getByCode(code) {
 
   order.items = (
     await query(
-      'SELECT item_name, unit_price_cents, quantity, line_total_cents FROM order_items WHERE order_id = $1 ORDER BY created_at',
+      `SELECT menu_item_id, item_name, unit_price_cents, quantity, line_total_cents
+       FROM order_items WHERE order_id = $1 ORDER BY created_at`,
       [order.id]
     )
   ).rows;
@@ -352,15 +463,55 @@ async function getByCode(code) {
   return order;
 }
 
+/**
+ * Customer-initiated cancellation. Only allowed while the restaurant has not
+ * begun preparing (status pending|confirmed) and within the grace window.
+ */
+async function cancelByCustomer(code, graceMs) {
+  const order = (
+    await query(
+      `SELECT o.id, o.status, o.created_at, r.id AS "restaurantId"
+       FROM orders o
+       JOIN restaurants r ON r.id = o.restaurant_id
+       WHERE UPPER(o.code) = UPPER($1)`,
+      [code]
+    )
+  ).rows[0];
+  if (!order) throw notFound('No order found for this tracking code');
+
+  if (order.status !== 'pending' && order.status !== 'confirmed') {
+    throw conflict('CANCEL_NOT_ALLOWED', 'This order can no longer be cancelled — it has already been prepared.');
+  }
+  if (new Date(order.created_at).getTime() + graceMs < Date.now()) {
+    throw conflict('CANCEL_WINDOW_EXPIRED', 'The cancellation window has passed. Please contact the restaurant.');
+  }
+
+  const { rows } = await query(
+    `UPDATE orders SET status = 'cancelled', updated_at = now()
+     WHERE id = $1 AND status IN ('pending', 'confirmed')
+     RETURNING id, code, status`,
+    [order.id]
+  );
+  if (!rows[0]) throw conflict('CANCEL_NOT_ALLOWED', 'This order can no longer be cancelled.');
+  return { ...rows[0], restaurantId: order.restaurantId };
+}
+
 module.exports = {
   STATUSES,
+  REVENUE_STATUSES,
+  REVENUE_SQL,
   TRANSITIONS,
   createCheckout,
   listForRestaurant,
   getForRestaurant,
   changeStatus,
+  archiveOrder,
   dashboardCounts,
   analyticsSeries,
   topItems,
+  byDayOfWeek,
+  byHour,
+  exportRows,
   getByCode,
+  cancelByCustomer,
 };

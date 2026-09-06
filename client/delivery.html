@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta name="theme-color" content="#22211d">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="/icons/icon.svg">
+  <title>لوحة التوصيل</title>
+  <link rel="stylesheet" href="/fonts/fonts.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner container">
+      <span class="brand" id="company-name">لوحة التوصيل</span>
+      <span class="spacer"></span>
+      <button id="refresh-btn" type="button" class="btn btn-outline btn-sm" data-i18n="refresh">تحديث</button>
+      <button id="logout-btn" type="button" class="btn btn-outline btn-sm" data-i18n="logout">خروج</button>
+    </div>
+  </header>
+
+  <main class="container mt-2" style="max-width:960px">
+    <div class="flex-between mb-2">
+      <h1 class="section-title" data-i18n="deliveryOrdersH">طلبات التوصيل</h1>
+      <select id="status-filter">
+        <option value="" data-i18n="allStatuses">كل الحالات</option>
+        <option value="pending" data-i18n="status_pending">قيد الانتظار</option>
+        <option value="confirmed" data-i18n="status_confirmed">مؤكد</option>
+        <option value="preparing" data-i18n="status_preparing">قيد التحضير</option>
+        <option value="ready" data-i18n="status_ready">جاهز</option>
+        <option value="out_for_delivery" data-i18n="status_out_for_delivery">في الطريق</option>
+        <option value="completed" data-i18n="status_completed">مكتمل</option>
+        <option value="cancelled" data-i18n="status_cancelled">ملغي</option>
+      </select>
+    </div>
+
+    <div id="delivery-orders-zone" class="card"><div class="empty-state">Loading&hellip;</div></div>
+
+    <div class="flex-between mt-2">
+      <span id="page-info" class="muted small"></span>
+      <div class="flex-between" style="gap:8px">
+        <button id="page-prev" class="btn btn-outline btn-sm" data-i18n="prev">السابق</button>
+        <button id="page-next" class="btn btn-outline btn-sm" data-i18n="next">التالي</button>
+      </div>
+    </div>
+  </main>
+
+  <script src="/js/i18n.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/delivery.js"></script>
+</body>
+</html>

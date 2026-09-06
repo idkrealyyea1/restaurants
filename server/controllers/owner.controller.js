@@ -10,14 +10,27 @@ const restaurants = require('../services/restaurants.service');
 const users = require('../services/users.service');
 const ordersService = require('../services/orders.service');
 const settingsService = require('../services/settings.service');
+const delivery = require('../services/delivery.service');
 const { normalizeSlug } = require('../utils/checks');
 const { conflict, notFound, badRequest } = require('../utils/errors');
 const { assertUuid } = require('../utils/checks');
+const { sendCsv } = require('../utils/csv');
 const { asyncHandler } = require('../utils/errors');
 const v = require('../validators');
 
 async function overview(req, res) {
   res.json(await restaurants.platformOverview());
+}
+
+/** GET /api/owner/reports/restaurants.csv — per-restaurant summary for owners. */
+async function restaurantsReportCsv(req, res) {
+  const rows = await restaurants.reportSummaryForOwner();
+  const header = ['Name', 'Slug', 'Active', 'Menu items', 'Orders (30d)', 'Revenue (30d cents)', 'Orders (all time)', 'Created'];
+  const body = rows.map((r) => [
+    r.name, r.slug, r.isActive ? 'yes' : 'no', r.itemCount,
+    r.orders30d, r.revenue30dCents, r.ordersAllTime, r.createdAt,
+  ]);
+  sendCsv(res, 'restaurants-summary.csv', [header, ...body]);
 }
 
 async function listRestaurants(req, res) {
@@ -241,8 +254,101 @@ async function listOrdersForRestaurant(req, res) {
   res.json({ total, page: page.page, limit: page.limit, orders: rows });
 }
 
+/* ------------------------ delivery groups --------------------------- */
+
+async function listDeliveryGroups(req, res) {
+  const rows = await delivery.listAll();
+  const groups = [];
+  for (const g of rows) {
+    const accounts = await users.listDeliveriesForGroup(g.id);
+    groups.push({ ...g, isActive: g.is_active, accounts: accounts.map((a) => ({
+      id: a.id, username: a.username, email: a.email,
+      isActive: a.is_active, createdAt: a.created_at,
+    })) });
+  }
+  res.json({ groups });
+}
+
+/** Create a delivery company login account. Returns a generated password when none given. */
+async function createDeliveryAccount(req, res) {
+  const groupId = assertUuid(req.params.id, 'id');
+  const group = await delivery.getById(groupId);
+  if (!group) throw notFound('Delivery company not found');
+
+  if (await users.findByGroup(groupId)) {
+    throw conflict('ACCOUNT_EXISTS', 'This delivery company already has a login account');
+  }
+
+  const username = req.body.username
+    ? v.validateUsername(req.body.username)
+    : 'dlv_' + (group.name.toLowerCase().replace(/[^a-z0-9]/g, '_').slice(0, 20) || 'company');
+  const email = v.validateEmailOptional(req.body.email);
+  const generated = !req.body.password;
+  const password = generated
+    ? crypto.randomBytes(12).toString('base64url')
+    : v.validatePassword(req.body.password);
+
+  const account = await users.createDelivery({ deliveryGroupId: groupId, username, email, password });
+  res.status(201).json({ account: { id: account.id, username: account.username }, ...(generated ? { password } : {}) });
+}
+
+async function resetDeliveryAccountPassword(req, res) {
+  const groupId = assertUuid(req.params.id, 'id');
+  const account = await users.findByGroup(groupId);
+  if (!account) throw notFound('No login account for this delivery company');
+  const generated = !req.body.password;
+  const password = generated
+    ? crypto.randomBytes(12).toString('base64url')
+    : v.validatePassword(req.body.password);
+  await users.setPassword(account.id, password);
+  res.json({ ok: true, ...(generated ? { password } : {}) });
+}
+
+async function toggleDeliveryAccountActive(req, res) {
+  const groupId = assertUuid(req.params.id, 'id');
+  const account = await users.findByGroup(groupId);
+  if (!account) throw notFound('No login account for this delivery company');
+  const result = await users.setDeliveryActive(account.id, Boolean(req.body.isActive));
+  if (!result) throw badRequest('Nothing changed');
+  res.json({ ok: true, isActive: Boolean(req.body.isActive) });
+}
+
+async function deleteDeliveryAccount(req, res) {
+  const groupId = assertUuid(req.params.id, 'id');
+  const account = await users.findByGroup(groupId);
+  if (!account) throw notFound('No login account for this delivery company');
+  await users.deleteDelivery(account.id);
+  res.json({ ok: true });
+}
+
+async function createDeliveryGroup(req, res) {
+  const data = v.validateDeliveryGroupCreate(req.body);
+  try {
+    res.status(201).json({ group: await delivery.create(data) });
+  } catch (err) {
+    if (err.code === '23505') throw conflict('GROUP_EXISTS', 'A company with this name already exists');
+    throw err;
+  }
+}
+
+async function updateDeliveryGroup(req, res) {
+  const patch = v.validateDeliveryGroupUpdate(req.body);
+  try {
+    res.json({ group: await delivery.rename(req.params.id, patch) });
+  } catch (err) {
+    if (err.code === '23505') throw conflict('GROUP_EXISTS', 'A company with this name already exists');
+    throw err;
+  }
+}
+
+async function deleteDeliveryGroup(req, res) {
+  await delivery.remove(req.params.id);
+  res.json({ ok: true });
+}
+
 module.exports = {
   overview: asyncHandler(overview),
+  restaurantsReportCsv: asyncHandler(restaurantsReportCsv),
   listRestaurants: asyncHandler(listRestaurants),
   createRestaurant: asyncHandler(createRestaurant),
   getRestaurant: asyncHandler(getRestaurant),
@@ -253,4 +359,12 @@ module.exports = {
   toggleAdminActive: asyncHandler(toggleAdminActive),
   deleteAdminUser: asyncHandler(deleteAdminUser),
   listOrdersForRestaurant: asyncHandler(listOrdersForRestaurant),
+  listDeliveryGroups: asyncHandler(listDeliveryGroups),
+  createDeliveryGroup: asyncHandler(createDeliveryGroup),
+  updateDeliveryGroup: asyncHandler(updateDeliveryGroup),
+  deleteDeliveryGroup: asyncHandler(deleteDeliveryGroup),
+  createDeliveryAccount: asyncHandler(createDeliveryAccount),
+  resetDeliveryAccountPassword: asyncHandler(resetDeliveryAccountPassword),
+  toggleDeliveryAccountActive: asyncHandler(toggleDeliveryAccountActive),
+  deleteDeliveryAccount: asyncHandler(deleteDeliveryAccount),
 };

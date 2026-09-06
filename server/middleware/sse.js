@@ -31,6 +31,10 @@ function addClient(restaurantId, res) {
       set.delete(res);
       if (set.size === 0) clients.delete(restaurantId);
     }
+    if (clients.size === 0 && heartbeat) {
+      clearInterval(heartbeat);
+      heartbeat = null;
+    }
   };
   res.on('close', remove);
   res.on('finish', remove);

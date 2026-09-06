@@ -173,7 +173,8 @@ CREATE TABLE IF NOT EXISTS order_items (
   item_name       TEXT NOT NULL,
   unit_price_cents INTEGER NOT NULL CHECK (unit_price_cents >= 0),
   quantity        INTEGER NOT NULL CHECK (quantity > 0),
-  line_total_cents INTEGER NOT NULL CHECK (line_total_cents >= 0)
+  line_total_cents INTEGER NOT NULL CHECK (line_total_cents >= 0),
+  created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 CREATE INDEX IF NOT EXISTS order_items_order_idx ON order_items (order_id);
@@ -183,11 +184,11 @@ CREATE INDEX IF NOT EXISTS order_items_order_idx ON order_items (order_id);
 -- The store can also create this itself; defined here as schema-of-record.
 -- ---------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS "session" (
-  sid    VARCHAR NOT NULL COLLATE "default" PRIMARY KEY,
+  sid    VARCHAR NOT NULL PRIMARY KEY,
   sess   JSON NOT NULL,
   expire TIMESTAMP(6) NOT NULL
 );
-CREATE INDEX IF NOT EXISTS session_expire_idx ON "session" (expire COLLATE "default");
+CREATE INDEX IF NOT EXISTS session_expire_idx ON "session" (expire);
 
 -- ---------------------------------------------------------------------------
 -- migration bookkeeping

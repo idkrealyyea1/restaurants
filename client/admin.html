@@ -1,40 +1,41 @@
 <!doctype html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Restaurant dashboard</title>
+  <title>لوحة تحكم المطعم</title>
+  <link rel="stylesheet" href="/fonts/fonts.css">
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
   <header class="topbar">
     <div class="topbar-inner container">
       <img id="brand-logo" class="logo-sm hidden" src="" alt="">
-      <span class="brand" id="restaurant-name">Dashboard</span>
+      <span class="brand" id="restaurant-name">لوحة التحكم</span>
       <span id="open-badge"></span>
       <span class="spacer"></span>
-      <button id="logout-btn" type="button" class="btn btn-outline btn-sm">Log out</button>
+      <button id="logout-btn" type="button" class="btn btn-outline btn-sm" data-i18n="logout">خروج</button>
     </div>
   </header>
 
   <div class="dash-layout">
     <nav class="dash-side" aria-label="Sections">
-      <button class="side-link active" data-tab="dashboard">Dashboard</button>
-      <button class="side-link" data-tab="orders">Orders <span id="orders-live-dot" class="badge badge-open hidden">live</span></button>
-      <button class="side-link" data-tab="menu">Menu</button>
-      <button class="side-link" data-tab="settings">Settings</button>
-      <button class="side-link" data-tab="analytics">Analytics</button>
-      <button class="side-link" data-tab="share">Share &amp; QR</button>
+      <button class="side-link active" data-tab="dashboard" data-i18n="dash">لوحة التحكم</button>
+      <button class="side-link" data-tab="orders"><span data-i18n="ordersTab">الطلبات</span> <span id="orders-live-dot" class="badge badge-open hidden" data-i18n="live">مباشر</span></button>
+      <button class="side-link" data-tab="menu" data-i18n="menuTab">القائمة</button>
+      <button class="side-link" data-tab="settings" data-i18n="settingsTab">الإعدادات</button>
+      <button class="side-link" data-tab="analytics" data-i18n="analyticsTab">التحليلات</button>
+      <button class="side-link" data-tab="share" data-i18n="shareNav">مشاركة</button>
     </nav>
 
     <main class="dash-main">
       <div class="tabs-mobile">
-        <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
-        <button class="tab-btn" data-tab="orders">Orders</button>
-        <button class="tab-btn" data-tab="menu">Menu</button>
-        <button class="tab-btn" data-tab="settings">Settings</button>
-        <button class="tab-btn" data-tab="analytics">Analytics</button>
-        <button class="tab-btn" data-tab="share">Share</button>
+        <button class="tab-btn active" data-tab="dashboard" data-i18n="dash">لوحة التحكم</button>
+        <button class="tab-btn" data-tab="orders" data-i18n="ordersTab">الطلبات</button>
+        <button class="tab-btn" data-tab="menu" data-i18n="menuTab">القائمة</button>
+        <button class="tab-btn" data-tab="settings" data-i18n="settingsTab">الإعدادات</button>
+        <button class="tab-btn" data-tab="analytics" data-i18n="analyticsTab">التحليلات</button>
+        <button class="tab-btn" data-tab="share" data-i18n="shareNav">مشاركة</button>
       </div>
 
       <div class="container mt-2">
@@ -53,7 +54,9 @@
     <div class="modal" id="modal-box" role="dialog" aria-modal="true"></div>
   </div>
 
+  <script src="/js/i18n.js"></script>
   <script src="/js/api.js"></script>
   <script src="/js/admin.js"></script>
 </body>
 </html>
+

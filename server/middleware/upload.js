@@ -2,19 +2,18 @@
 
 /**
  * Image upload handling.
- * - multer memory storage (nothing touches disk before validation)
+ * - multer memory storage (nothing is stored before validation)
  * - MIME type + magic-byte sniffing (extension is derived from content, not filename)
  * - size limit from config
  * - filenames are random UUIDs inside fixed subdirectories → no path traversal
+ * - bytes are persisted in PostgreSQL (files.service) so uploads survive redeploys
  */
 
-const fs = require('fs');
-const fsp = require('fs/promises');
-const path = require('path');
 const multer = require('multer');
 const config = require('../../config');
 const { badRequest } = require('../utils/errors');
 const { newId } = require('../utils/ids');
+const files = require('../services/files.service');
 
 const ALLOWED_TYPES = {
   'image/jpeg': { ext: 'jpg', magic: [0xff, 0xd8, 0xff] },
@@ -69,8 +68,6 @@ function handleImageUpload(req, res, next) {
 
       const spec = ALLOWED_TYPES[detected];
       const filename = `${newId()}.${spec.ext}`;
-      const absDir = path.join(config.uploadDir, subdir);
-      req.savedImagePath = path.join(absDir, filename); // absolute on purpose
       req.savedImagePublicPath = `/uploads/${subdir}/${filename}`;
       req.detectedMime = detected;
       next();
@@ -81,18 +78,14 @@ function handleImageUpload(req, res, next) {
 }
 
 async function persistSavedImage(req) {
-  await fsp.mkdir(path.dirname(req.savedImagePath), { recursive: true });
-  await fsp.writeFile(req.savedImagePath, req.file.buffer);
+  await files.put(req.savedImagePublicPath, req.detectedMime, req.file.buffer);
 }
 
 /** Delete a previously stored upload. Refuses paths outside the uploads root. */
 async function deleteUpload(publicPath) {
-  if (!publicPath || typeof publicPath !== 'string' || !publicPath.startsWith('/uploads/')) return;
-  const root = path.resolve(config.uploadDir);
-  const abs = path.resolve(root, publicPath.replace(/^\/uploads\//, ''));
-  if (!abs.startsWith(root + path.sep)) return; // traversal attempt — ignore
+  if (!publicPath || typeof publicPath !== 'string' || !files.PUBLIC_PATH_RE.test(publicPath)) return;
   try {
-    await fsp.unlink(abs);
+    await files.remove(publicPath);
   } catch {
     /* best effort */
   }

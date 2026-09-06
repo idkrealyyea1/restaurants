@@ -43,6 +43,7 @@ async function assertCategoryOwned(restaurantId, categoryId) {
 }
 
 async function createOwned(restaurantId, data) {
+  await assertCategoryOwned(restaurantId, data.categoryId);
   return withTx(async (client) => {
     // Lock the tenant row so concurrent creations cannot exceed the limit.
     const rest = await client.query(

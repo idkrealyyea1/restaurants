@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- warm paper tile (full-bleed for maskable PWA icons) -->
+  <rect width="512" height="512" fill="#f5f0e6"/>
+
+  <!-- the punched price ticket, one menu line: ······ price -->
+  <g transform="rotate(-4 256 256)">
+    <rect x="86" y="152" width="340" height="208" rx="26" fill="#22211d"/>
+
+    <!-- dotted menu leader across the ticket -->
+    <path d="M130 256 L386 256" fill="none" stroke="#f5f0e6" stroke-width="9"
+          stroke-linecap="round" stroke-dasharray="0 27"/>
+
+    <!-- rose price dot: the dish's price at the end of the line -->
+    <circle cx="108" cy="256" r="16" fill="#e11d48"/>
+
+    <!-- punched hole at the ticket's leading edge (paper shows through, rose ring) -->
+    <circle cx="426" cy="256" r="16" fill="#f5f0e6" stroke="#e11d48" stroke-width="9"/>
+  </g>
+</svg>

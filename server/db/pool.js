@@ -9,8 +9,8 @@ const config = require('../../config');
 
 const pool = new Pool({
   ...config.dbConfig,
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 8000,
+  idleTimeoutMillis: 10000,
+  connectionTimeoutMillis: 5000,
 });
 
 pool.on('error', (err) => {

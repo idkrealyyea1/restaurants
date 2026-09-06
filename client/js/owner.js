@@ -7,6 +7,7 @@
 
 (function () {
   const { api, esc, fmtMoney, fmtDateTime, debounce, toast, STATUS_LABELS } = window.App;
+  const I = window.I18N;
 
   let page = 1;
   let search = '';
@@ -35,7 +36,22 @@
       location.href = '/login.html';
     });
 
-    document.getElementById('new-restaurant-btn').addEventListener('click', createModal);
+        document.getElementById('new-restaurant-btn').addEventListener('click', createModal);
+
+    const dgForm = document.getElementById('delivery-form');
+    dgForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const nameInput = document.getElementById('dg-name');
+      const phoneInput = document.getElementById('dg-phone');
+      const name = nameInput.value.trim();
+      if (!name) { nameInput.focus(); return; }
+      try {
+        await api.post('/api/owner/delivery-groups', { name, phone: phoneInput.value.trim() });
+        nameInput.value = '';
+        phoneInput.value = '';
+        await loadDeliveryGroups();
+      } catch (err) { toast(err.message, 'error'); }
+    });
     document.getElementById('search-input').addEventListener('input', debounce(() => {
       search = document.getElementById('search-input').value.trim();
       page = 1;
@@ -56,7 +72,27 @@
       if (e.target === backdrop) closeModal();
     });
 
-    await Promise.all([loadOverview(), loadRestaurants()]);
+    document.getElementById('delivery-zone').addEventListener('click', async (e) => {
+      const acctBtn = e.target.closest('[data-account]');
+      if (acctBtn) { manageDeliveryAccount(acctBtn.getAttribute('data-account')); return; }
+      const editBtn = e.target.closest('[data-edit]');
+      if (editBtn) { editDeliveryGroup(editBtn.getAttribute('data-edit')); return; }
+      const btn = e.target.closest('[data-del]');
+      if (!btn) return;
+      if (!window.confirm(I.t('confirmDeleteGroup'))) return;
+      try {
+        await api.del('/api/owner/delivery-groups/' + btn.getAttribute('data-del'));
+        await loadDeliveryGroups();
+      } catch (err) { toast(err.message, 'error'); }
+    });
+
+    I18N.onChange(() => {
+      loadOverview();
+      loadRestaurants();
+      loadDeliveryGroups();
+    });
+
+    await Promise.all([loadOverview(), loadRestaurants(), loadDeliveryGroups()]);
   }
 
   function closeModal() {
@@ -74,30 +110,191 @@
       const o = await api.get('/api/owner/overview');
       document.getElementById('overview-zone').innerHTML =
         '<div class="grid-stats mb-2">' +
-          '<div class="stat"><div class="stat-label">Restaurants</div><div class="stat-value">' + o.restaurantsTotal + '</div></div>' +
-          '<div class="stat"><div class="stat-label">Active</div><div class="stat-value">' + o.restaurantsActive + '</div></div>' +
-          '<div class="stat"><div class="stat-label">Orders today</div><div class="stat-value">' + o.ordersToday + '</div></div>' +
-          '<div class="stat"><div class="stat-label">Revenue today</div><div class="stat-value">' + esc(String(fmtMoney(o.revenueTodayCents, 'USD'))) + '</div></div>' +
+          '<div class="stat"><div class="stat-label">' + I.t('ovRestaurants') + '</div><div class="stat-value">' + o.restaurantsTotal + '</div></div>' +
+          '<div class="stat"><div class="stat-label">' + I.t('ovActive') + '</div><div class="stat-value">' + o.restaurantsActive + '</div></div>' +
+          '<div class="stat"><div class="stat-label">' + I.t('ovOrdersToday') + '</div><div class="stat-value">' + o.ordersToday + '</div></div>' +
+          '<div class="stat"><div class="stat-label">' + I.t('ovRevenueToday') + '</div><div class="stat-value">' + esc(String(fmtMoney(o.revenueTodayCents, 'USD'))) + '</div></div>' +
         '</div>';
     } catch (err) {
       toast(err.message, 'error');
     }
   }
 
-  /* --------------------------- restaurants list ------------------------ */
+  /* --------------------------- delivery groups ------------------------ */
+
+  async function loadDeliveryGroups() {
+    const zone = document.getElementById('delivery-zone');
+    try {
+      const data = await api.get('/api/owner/delivery-groups');
+      if (!data.groups.length) {
+        zone.innerHTML = '<div class="empty-state">' + I.t('noGroupsYetOwner') + '</div>';
+        return;
+      }
+      zone.innerHTML =
+        '<div class="table-wrap"><table class="data"><thead><tr>' +
+        '<th>' + I.t('thName') + '</th><th>' + I.t('thPhone') + '</th><th>' + I.t('thRestaurants') + '</th><th></th>' +
+        '</tr></thead><tbody>' +
+        data.groups.map((g) =>
+          '<tr>' +
+            '<td><strong>' + esc(g.name) + '</strong>' +
+              (g.notes ? '<div class="small muted">' + esc(g.notes) + '</div>' : '') + '</td>' +
+            '<td class="muted">' + esc(g.phone || '&mdash;') + '</td>' +
+            '<td>' + g.restaurantCount + '</td>' +
+            '<td class="ta-r"><button type="button" class="btn btn-outline btn-sm" data-account="' + esc(g.id) + '">' + I.t('delAccountH') + '</button> ' +
+              '<button type="button" class="btn btn-outline btn-sm" data-edit="' + esc(g.id) + '">' + I.t('bEdit') + '</button> ' +
+              '<button type="button" class="btn btn-outline btn-sm" data-del="' + esc(g.id) + '">' + I.t('bDelete') + '</button></td>' +
+          '</tr>'
+        ).join('') +
+        '</tbody></table></div>';
+    } catch (err) { zone.innerHTML = '<div class="empty-state">' + esc(err.message) + '</div>'; }
+  }
+
+  async function editDeliveryGroup(id) {
+    try {
+      const data = await api.get('/api/owner/delivery-groups');
+      const g = data.groups.find((x) => x.id === id);
+      if (!g) { toast(I.t('noGroupsYetOwner'), 'error'); return; }
+      openModal(
+        '<div class="modal-head"><h2>' + I.t('mEditGroup') + '</h2><button type="button" class="modal-close">&times;</button></div>' +
+        '<form id="dg-edit-form">' +
+          '<div class="field"><label for="dg-edit-name">' + I.t('mCompanyName') + '</label><input id="dg-edit-name" maxlength="80" value="' + esc(g.name) + '" required></div>' +
+          '<div class="field"><label for="dg-edit-phone">' + I.t('mCompanyPhone') + '</label><input id="dg-edit-phone" type="tel" maxlength="20" value="' + esc(g.phone || '') + '"></div>' +
+          '<div class="field"><label for="dg-edit-notes">' + I.t('mNotes') + '</label><textarea id="dg-edit-notes" maxlength="300">' + esc(g.notes || '') + '</textarea></div>' +
+          '<button type="submit" class="btn btn-block">' + I.t('mSave') + '</button>' +
+        '</form>'
+      );
+      document.querySelector('.modal-close').addEventListener('click', closeModal);
+      document.getElementById('dg-edit-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        try {
+          await api.patch('/api/owner/delivery-groups/' + id, {
+            name: document.getElementById('dg-edit-name').value.trim(),
+            phone: document.getElementById('dg-edit-phone').value.trim(),
+            notes: document.getElementById('dg-edit-notes').value,
+          });
+          closeModal();
+          toast(I.t('groupSaved'), 'success');
+          await loadDeliveryGroups();
+        } catch (err) { toast(err.message, 'error'); }
+      });
+    } catch (err) { toast(err.message, 'error'); }
+  }
+
+  async function manageDeliveryAccount(id) {
+    try {
+      const data = await api.get('/api/owner/delivery-groups');
+      const g = data.groups.find((x) => x.id === id);
+      if (!g) { toast(I.t('noGroupsYetOwner'), 'error'); return; }
+      const acct = (g.accounts && g.accounts[0]) || null;
+
+      if (!acct) {
+        openModal(
+          '<div class="modal-head"><h2>' + I.t('delAccountH') + ' — ' + esc(g.name) + '</h2><button type="button" class="modal-close">&times;</button></div>' +
+          '<p class="muted small">' + I.t('noDelAccount') + '</p>' +
+          '<form id="dac-create-form">' +
+            '<div class="field"><label for="dac-user">' + I.t('dacUsername') + '</label><input id="dac-user" maxlength="40" placeholder="dlv_' + esc(g.name.toLowerCase().replace(/[^a-z0-9]/g, '_').slice(0, 20)) + '"></div>' +
+            '<div class="field"><label for="dac-pass">' + I.t('dacPassword') + '</label><input id="dac-pass" type="text" maxlength="200" placeholder="' + esc(I.t('dacPassHint')) + '"></div>' +
+            '<button type="submit" class="btn btn-block">' + I.t('dacCreate') + '</button>' +
+          '</form>' +
+          '<a class="btn btn-outline btn-block mt-1" href="/delivery.html" target="_blank" rel="noopener">' + I.t('dacOpenDash') + '</a>'
+        );
+        document.querySelector('.modal-close').addEventListener('click', closeModal);
+        document.getElementById('dac-create-form').addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const body = {};
+          const u = document.getElementById('dac-user').value.trim();
+          if (u) body.username = u;
+          const p = document.getElementById('dac-pass').value;
+          if (p) body.password = p;
+          try {
+            const res = await api.post('/api/owner/delivery-groups/' + id + '/account', body);
+            closeModal();
+            if (res.password) {
+              openModal(
+                '<div class="modal-head"><h2>' + I.t('dacCreated') + '</h2></div>' +
+                '<p>' + I.t('dacUsernameL') + ' <strong>' + esc(res.account.username) + '</strong></p>' +
+                '<p>' + I.t('dacPasswordL') + '</p><p class="order-code">' + esc(res.password) + '</p>' +
+                '<a class="btn btn-block" href="/delivery.html" target="_blank" rel="noopener">' + I.t('dacOpenDash') + '</a>'
+              );
+            } else {
+              toast(I.t('groupSaved'), 'success');
+            }
+            await loadDeliveryGroups();
+          } catch (err) { toast(err.message, 'error'); }
+        });
+        return;
+      }
+
+      openModal(
+        '<div class="modal-head"><h2>' + I.t('delAccountH') + ' — ' + esc(g.name) + '</h2><button type="button" class="modal-close">&times;</button></div>' +
+        '<div class="rank-row"><span><strong>' + esc(acct.username) + '</strong>' +
+          (acct.isActive ? '' : ' <span class="badge badge-closed">' + esc(I.t('mDisabled')) + '</span>') + '</span></div>' +
+        '<div class="flex-between mt-2" style="gap:8px">' +
+          '<button type="button" class="btn btn-outline btn-sm" id="dac-reset">' + I.t('mResetPw') + '</button>' +
+          (acct.isActive
+            ? '<button type="button" class="btn btn-danger btn-sm" id="dac-disable">' + I.t('bDisable') + '</button>'
+            : '<button type="button" class="btn btn-success btn-sm" id="dac-enable">' + I.t('bEnable') + '</button>') +
+          '<button type="button" class="btn btn-danger btn-sm" id="dac-delete">' + I.t('bDelete') + '</button>' +
+          '<a class="btn btn-outline btn-sm" href="/delivery.html" target="_blank" rel="noopener">' + I.t('dacOpenDash') + '</a>' +
+        '</div>'
+      );
+      document.querySelector('.modal-close').addEventListener('click', closeModal);
+
+      document.getElementById('dac-reset').addEventListener('click', async () => {
+        if (!window.confirm(I.t('confirmResetPw'))) return;
+        try {
+          const res = await api.post('/api/owner/delivery-groups/' + id + '/account/reset-password', {});
+          closeModal();
+          openModal(
+            '<div class="modal-head"><h2>' + I.t('mPwReset') + '</h2></div>' +
+            '<p>' + I.t('mNewTempPw') + '</p><p class="order-code">' + esc(res.password) + '</p>' +
+            '<button type="button" class="btn btn-block" id="pw-done3">' + I.t('mSavedIt') + '</button>'
+          );
+          document.getElementById('pw-done3').addEventListener('click', closeModal);
+        } catch (err) { toast(err.message, 'error'); }
+      });
+
+      const dis = document.getElementById('dac-disable');
+      if (dis) dis.addEventListener('click', async () => {
+        try {
+          await api.patch('/api/owner/delivery-groups/' + id + '/account', { isActive: false });
+          toast(I.t('toastAdminDisabled'), 'success');
+          manageDeliveryAccount(id);
+        } catch (err) { toast(err.message, 'error'); }
+      });
+      const en = document.getElementById('dac-enable');
+      if (en) en.addEventListener('click', async () => {
+        try {
+          await api.patch('/api/owner/delivery-groups/' + id + '/account', { isActive: true });
+          toast(I.t('toastAdminEnabled'), 'success');
+          manageDeliveryAccount(id);
+        } catch (err) { toast(err.message, 'error'); }
+      });
+      document.getElementById('dac-delete').addEventListener('click', async () => {
+        if (!window.confirm(I.t('dacDeleteConfirm'))) return;
+        try {
+          await api.del('/api/owner/delivery-groups/' + id + '/account');
+          closeModal();
+          toast(I.t('dacDeleted'), 'success');
+          await loadDeliveryGroups();
+        } catch (err) { toast(err.message, 'error'); }
+      });
+    } catch (err) { toast(err.message, 'error'); }
+  }
+
 
   async function loadRestaurants() {
     const zone = document.getElementById('restaurants-zone');
-    zone.innerHTML = '<div class="empty-state">Loading…</div>';
-    try {
-      const q = '?page=' + page + '&limit=20' +
-        (search ? '&search=' + encodeURIComponent(search) : '') +
-        (statusFilter ? '&status=' + statusFilter : '');
-      const data = await api.get('/api/owner/restaurants' + q);
+      zone.innerHTML = '<div class="empty-state">' + I.t('mLoading') + '</div>';
+      try {
+        const q = '?page=' + page + '&limit=20' +
+          (search ? '&search=' + encodeURIComponent(search) : '') +
+          (statusFilter ? '&status=' + statusFilter : '');
+        const data = await api.get('/api/owner/restaurants' + q);
 
-      zone.innerHTML = data.restaurants.length
-        ? '<div class="table-wrap"><table class="data"><thead><tr>' +
-            '<th>Name</th><th>Slug</th><th>Menu</th><th>Status</th><th>Created</th><th>Actions</th>' +
+        zone.innerHTML = data.restaurants.length
+          ? '<div class="table-wrap"><table class="data"><thead><tr>' +
+            '<th>' + I.t('thName') + '</th><th>' + I.t('thSlug') + '</th><th>' + I.t('thMenu') + '</th><th>' + I.t('thStatus') + '</th><th>' + I.t('thCreated') + '</th><th>' + I.t('thActions') + '</th>' +
           '</tr></thead><tbody>' +
           data.restaurants.map((r) =>
             '<tr>' +
@@ -106,27 +303,27 @@
               '<td>' + r.itemCount + ' / ' + r.maxMenuItems + '</td>' +
               '<td>' +
                 (r.isActive
-                  ? '<span class="badge badge-open">Active</span>'
-                  : '<span class="badge badge-closed">Deactivated</span>') + ' ' +
-                '<span class="badge">' + esc(r.status.replace('_', ' ')) + '</span>' +
+                  ? '<span class="badge badge-open">' + I.t('badgeActive') + '</span>'
+                  : '<span class="badge badge-closed">' + I.t('badgeDeactivated') + '</span>') + ' ' +
+                '<span class="badge">' + I.t('status_' + r.status) + '</span>' +
               '</td>' +
               '<td class="small muted">' + fmtDateTime(r.createdAt) + '</td>' +
               '<td><div class="flex-between">' +
-                '<a class="btn btn-outline btn-sm" href="/restaurant/' + encodeURIComponent(r.slug) + '" target="_blank" rel="noopener">Public</a>' +
-                '<button type="button" class="btn btn-outline btn-sm" data-manage="' + esc(r.id) + '">Manage</button>' +
-                '<button type="button" class="btn btn-outline btn-sm" data-edit="' + esc(r.id) + '">Edit</button>' +
+                '<a class="btn btn-outline btn-sm" href="/restaurant/' + encodeURIComponent(r.slug) + '" target="_blank" rel="noopener">' + I.t('bPublic') + '</a>' +
+                '<button type="button" class="btn btn-outline btn-sm" data-manage="' + esc(r.id) + '">' + I.t('bManage') + '</button>' +
+                '<button type="button" class="btn btn-outline btn-sm" data-edit="' + esc(r.id) + '">' + I.t('bEdit') + '</button>' +
                 (r.isActive
-                  ? '<button type="button" class="btn btn-danger btn-sm" data-deactivate="' + esc(r.id) + '" data-name="' + esc(r.name) + '">Disable</button>'
-                  : '<button type="button" class="btn btn-success btn-sm" data-activate="' + esc(r.id) + '">Enable</button>') +
-                '<button type="button" class="btn btn-danger btn-sm" data-delete="' + esc(r.id) + '" data-name="' + esc(r.name) + '">Delete</button>' +
+                  ? '<button type="button" class="btn btn-danger btn-sm" data-deactivate="' + esc(r.id) + '" data-name="' + esc(r.name) + '">' + I.t('bDisable') + '</button>'
+                  : '<button type="button" class="btn btn-success btn-sm" data-activate="' + esc(r.id) + '">' + I.t('bEnable') + '</button>') +
+                '<button type="button" class="btn btn-danger btn-sm" data-delete="' + esc(r.id) + '" data-name="' + esc(r.name) + '">' + I.t('bDelete') + '</button>' +
               '</div></td>' +
             '</tr>'
           ).join('') +
           '</tbody></table></div>'
-        : '<div class="empty-state">No restaurants found.</div>';
+        : '<div class="empty-state">' + I.t('noRestaurants') + '</div>';
 
       document.getElementById('page-info').textContent =
-        'Page ' + page + ' of ' + Math.max(1, Math.ceil(data.total / data.limit)) + ' (' + data.total + ')';
+        I.t('pageInfo', { p: page, t: Math.max(1, Math.ceil(data.total / data.limit)), n: data.total });
 
       wireRows(data.restaurants);
     } catch (err) {
@@ -149,7 +346,7 @@
 
     zone.querySelectorAll('[data-deactivate]').forEach((b) =>
       b.addEventListener('click', async () => {
-        if (!confirm('Deactivate "' + b.dataset.name + '"? Admins will be locked out and ordering stops.')) return;
+        if (!confirm(I.t('confirmDeactivate', { name: b.dataset.name }))) return;
         await act(() => api.patch('/api/owner/restaurants/' + b.dataset.deactivate, { isActive: false }));
       }));
 
@@ -160,7 +357,7 @@
 
     zone.querySelectorAll('[data-delete]').forEach((b) =>
       b.addEventListener('click', async () => {
-        if (!confirm('PERMANENTLY delete "' + b.dataset.name + '" with all menus, orders and accounts?')) return;
+        if (!confirm(I.t('confirmDeleteRest', { name: b.dataset.name }))) return;
         await act(() => api.del('/api/owner/restaurants/' + b.dataset.delete));
       }));
   }
@@ -168,7 +365,7 @@
   async function act(fn) {
     try {
       await fn();
-      toast('Done', 'success');
+      toast(I.t('toastDone'), 'success');
       closeModal();
       await Promise.all([loadOverview(), loadRestaurants()]);
     } catch (err) {
@@ -180,17 +377,17 @@
 
   function createModal() {
     openModal(
-      '<div class="modal-head"><h2>New restaurant</h2><button type="button" class="modal-close">&times;</button></div>' +
+      '<div class="modal-head"><h2>' + I.t('mNewRestaurant') + '</h2><button type="button" class="modal-close">&times;</button></div>' +
       '<form id="create-form">' +
-        '<div class="field"><label for="cr-name">Restaurant name *</label><input id="cr-name" maxlength="80" required></div>' +
-        '<div class="field"><label for="cr-slug">URL slug (optional)</label><input id="cr-slug" maxlength="63" placeholder="auto-generated from name">' +
-          '<div class="hint">Public page: /restaurant/&lt;slug&gt;</div></div>' +
-        '<div class="field"><label for="cr-max">Max menu items *</label><input id="cr-max" type="number" min="1" max="10000" value="30" required></div>' +
-        '<h3 class="section-title">First administrator (optional)</h3>' +
-        '<div class="field"><label for="cr-user">Admin username</label><input id="cr-user" maxlength="40"></div>' +
-        '<div class="field"><label for="cr-email">Admin email (optional)</label><input id="cr-email" type="email" maxlength="120"></div>' +
-        '<div class="field"><label for="cr-pass">Admin password</label><input id="cr-pass" type="text" maxlength="200" placeholder="leave empty to auto-generate"></div>' +
-        '<button type="submit" class="btn btn-block">Create restaurant</button>' +
+        '<div class="field"><label for="cr-name">' + I.t('mRestName') + '</label><input id="cr-name" maxlength="80" required></div>' +
+        '<div class="field"><label for="cr-slug">' + I.t('mSlug') + '</label><input id="cr-slug" maxlength="63" placeholder="' + I.t('mSlugHint') + '">' +
+          '<div class="hint">' + I.t('mPublicPage') + '</div></div>' +
+        '<div class="field"><label for="cr-max">' + I.t('mMaxItems') + '</label><input id="cr-max" type="number" min="1" max="10000" value="30" required></div>' +
+        '<h3 class="section-title">' + I.t('mFirstAdmin') + '</h3>' +
+        '<div class="field"><label for="cr-user">' + I.t('mAdminUser') + '</label><input id="cr-user" maxlength="40"></div>' +
+        '<div class="field"><label for="cr-email">' + I.t('mAdminEmail') + '</label><input id="cr-email" type="email" maxlength="120"></div>' +
+        '<div class="field"><label for="cr-pass">' + I.t('mAdminPass') + '</label><input id="cr-pass" type="text" maxlength="200" placeholder="' + I.t('mAdminPassHint') + '"></div>' +
+        '<button type="submit" class="btn btn-block">' + I.t('mCreate') + '</button>' +
       '</form>'
     );
     document.querySelector('.modal-close').addEventListener('click', closeModal);
@@ -214,14 +411,14 @@
         closeModal();
         if (res.admin && res.admin.generatedPassword) {
           openModal(
-            '<div class="modal-head"><h2>Restaurant created</h2></div>' +
-            '<p>Admin account <strong>' + esc(res.admin.username) + '</strong> created. Temporary password (shown once):</p>' +
+            '<div class="modal-head"><h2>' + I.t('mRestCreated') + '</h2></div>' +
+            '<p>' + I.t('mNewTempPw') + '</p>' +
             '<p class="order-code">' + esc(res.admin.generatedPassword) + '</p>' +
-            '<button type="button" class="btn btn-block" id="pw-done">I saved it</button>'
+            '<button type="button" class="btn btn-block" id="pw-done">' + I.t('mSavedIt') + '</button>'
           );
           document.getElementById('pw-done').addEventListener('click', closeModal);
         } else {
-          toast('Restaurant created', 'success');
+          toast(I.t('toastRestCreated'), 'success');
         }
         await Promise.all([loadOverview(), loadRestaurants()]);
       } catch (err) {
@@ -232,12 +429,12 @@
 
   function editModal(r) {
     openModal(
-      '<div class="modal-head"><h2>Edit ' + esc(r.name) + '</h2><button type="button" class="modal-close">&times;</button></div>' +
+      '<div class="modal-head"><h2>' + I.t('mEdit') + ' ' + esc(r.name) + '</h2><button type="button" class="modal-close">&times;</button></div>' +
       '<form id="edit-form">' +
-        '<div class="field"><label for="ed-name">Name</label><input id="ed-name" maxlength="80" value="' + esc(r.name) + '" required></div>' +
-        '<div class="field"><label for="ed-slug">Slug</label><input id="ed-slug" maxlength="63" value="' + esc(r.slug) + '" required></div>' +
-        '<div class="field"><label for="ed-max">Max menu items</label><input id="ed-max" type="number" min="1" max="10000" value="' + r.maxMenuItems + '" required></div>' +
-        '<button type="submit" class="btn btn-block">Save</button>' +
+        '<div class="field"><label for="ed-name">' + I.t('mName') + '</label><input id="ed-name" maxlength="80" value="' + esc(r.name) + '" required></div>' +
+        '<div class="field"><label for="ed-slug">' + I.t('mSlug2') + '</label><input id="ed-slug" maxlength="63" value="' + esc(r.slug) + '" required></div>' +
+        '<div class="field"><label for="ed-max">' + I.t('mMaxItems') + '</label><input id="ed-max" type="number" min="1" max="10000" value="' + r.maxMenuItems + '" required></div>' +
+        '<button type="submit" class="btn btn-block">' + I.t('mSave') + '</button>' +
       '</form>'
     );
     document.querySelector('.modal-close').addEventListener('click', closeModal);
@@ -261,45 +458,45 @@
         '<div class="modal-head"><h2>' + esc(r.name) + '</h2><button type="button" class="modal-close">&times;</button></div>' +
 
         '<div class="grid-stats mb-2">' +
-          '<div class="stat"><div class="stat-label">Menu items</div><div class="stat-value">' + d.stats.itemCount + '</div></div>' +
-          '<div class="stat"><div class="stat-label">Pending orders</div><div class="stat-value">' + d.stats.pendingOrders + '</div></div>' +
-          '<div class="stat"><div class="stat-label">Orders 7d</div><div class="stat-value">' + d.stats.ordersLast7d + '</div></div>' +
-          '<div class="stat"><div class="stat-label">Revenue 7d</div><div class="stat-value">' + esc(String(fmtMoney(d.stats.revenueLast7dCents, s.currency || 'USD'))) + '</div></div>' +
+          '<div class="stat"><div class="stat-label">' + I.t('mMenuItems') + '</div><div class="stat-value">' + d.stats.itemCount + '</div></div>' +
+          '<div class="stat"><div class="stat-label">' + I.t('mPendingOrders') + '</div><div class="stat-value">' + d.stats.pendingOrders + '</div></div>' +
+          '<div class="stat"><div class="stat-label">' + I.t('mOrders7d') + '</div><div class="stat-value">' + d.stats.ordersLast7d + '</div></div>' +
+          '<div class="stat"><div class="stat-label">' + I.t('mRevenue7d') + '</div><div class="stat-value">' + esc(String(fmtMoney(d.stats.revenueLast7dCents, s.currency || 'USD'))) + '</div></div>' +
         '</div>' +
 
-        '<h3 class="section-title">Administrators</h3>' +
+        '<h3 class="section-title">' + I.t('mAdmins') + '</h3>' +
         d.admins.map((a) =>
           '<div class="rank-row"><span><strong>' + esc(a.username) + '</strong>' +
-            (a.is_active ? '' : ' <span class="badge badge-closed">disabled</span>') + '</span>' +
+            (a.is_active ? '' : ' <span class="badge badge-closed">' + I.t('mDisabled') + '</span>') + '</span>' +
             '<span>' +
-              '<button type="button" class="btn btn-outline btn-sm" data-reset-pw="' + esc(a.id) + '">Reset password</button> ' +
+              '<button type="button" class="btn btn-outline btn-sm" data-reset-pw="' + esc(a.id) + '">' + I.t('mResetPw') + '</button> ' +
               (a.is_active
-                ? '<button type="button" class="btn btn-danger btn-sm" data-disable-admin="' + esc(a.id) + '">Disable</button>'
-                : '<button type="button" class="btn btn-success btn-sm" data-enable-admin="' + esc(a.id) + '">Enable</button>') +
+                ? '<button type="button" class="btn btn-danger btn-sm" data-disable-admin="' + esc(a.id) + '">' + I.t('bDisable') + '</button>'
+                : '<button type="button" class="btn btn-success btn-sm" data-enable-admin="' + esc(a.id) + '">' + I.t('bEnable') + '</button>') +
             '</span></div>'
         ).join('') +
         '<form id="new-admin-form" class="mt-2">' +
           '<div class="form-row form-row-2">' +
-            '<input id="na-user" placeholder="New admin username" maxlength="40" required>' +
-            '<input id="na-pass" placeholder="Password (min 10 chars)" maxlength="200" required>' +
+            '<input id="na-user" placeholder="' + I.t('mNewAdminUser') + '" maxlength="40" required>' +
+            '<input id="na-pass" placeholder="' + I.t('mNewAdminPass') + '" maxlength="200" required>' +
           '</div>' +
-          '<button type="submit" class="btn btn-outline btn-block mt-1">Add administrator</button>' +
+          '<button type="submit" class="btn btn-outline btn-block mt-1">' + I.t('mAddAdmin') + '</button>' +
         '</form>' +
 
-        '<h3 class="section-title">Recent orders</h3><div id="owner-orders" class="mb-2"><div class="empty-state small">Loading…</div></div>'
+        '<h3 class="section-title">' + I.t('mRecentOrders') + '</h3><div id="owner-orders" class="mb-2"><div class="empty-state small">' + I.t('mLoading') + '</div></div>'
       );
       document.querySelector('.modal-close').addEventListener('click', closeModal);
 
       // Recent orders inside the modal
       api.get('/api/owner/restaurants/' + id + '/orders?limit=5').then((res) => {
         const zone = document.getElementById('owner-orders');
-        zone.innerHTML = res.orders.length
-          ? res.orders.map((o) =>
-              '<div class="rank-row"><span><strong>' + esc(o.code) + '</strong> · ' + esc(o.customer_name) + '</span>' +
-              '<span><span class="badge status-' + esc(o.status) + '">' + (STATUS_LABELS[o.status] || esc(o.status)) + '</span> ' +
-              esc(String(fmtMoney(o.total_cents, s.currency || 'USD'))) + '</span></div>'
-            ).join('')
-          : '<p class="muted small">No orders yet.</p>';
+          zone.innerHTML = res.orders.length
+            ? res.orders.map((o) =>
+                '<div class="rank-row"><span><strong>' + esc(o.code) + '</strong> · ' + esc(o.customer_name) + '</span>' +
+                '<span><span class="badge status-' + esc(o.status) + '">' + I.t('status_' + o.status) + '</span> ' +
+                esc(String(fmtMoney(o.total_cents, s.currency || 'USD'))) + '</span></div>'
+              ).join('')
+            : '<p class="muted small">' + I.t('mNoOrders') + '</p>';
       }).catch(() => {});
 
       document.getElementById('new-admin-form').addEventListener('submit', async (e) => {
@@ -309,7 +506,7 @@
             username: document.getElementById('na-user').value.trim(),
             password: document.getElementById('na-pass').value,
           });
-          toast('Administrator added', 'success');
+           toast(I.t('toastAdminAdded'), 'success');
           manageModal(id);
         } catch (err) {
           toast(err.message, 'error');
@@ -318,14 +515,14 @@
 
       document.querySelectorAll('[data-reset-pw]').forEach((b) =>
         b.addEventListener('click', async () => {
-          if (!confirm('Reset this administrator\'s password? A new temporary password will be generated.')) return;
+          if (!confirm(I.t('confirmResetPw'))) return;
           try {
             const res = await api.post('/api/owner/restaurants/' + id + '/admins/' + b.dataset.resetPw + '/reset-password', {});
             openModal(
-              '<div class="modal-head"><h2>Password reset</h2></div>' +
-              '<p>New temporary password (shown once):</p>' +
+              '<div class="modal-head"><h2>' + I.t('mPwReset') + '</h2></div>' +
+              '<p>' + esc(I.t('mNewTempPw')) + '</p>' +
               '<p class="order-code">' + esc(res.password) + '</p>' +
-              '<button type="button" class="btn btn-block" id="pw-done2">I saved it</button>'
+              '<button type="button" class="btn btn-block" id="pw-done2">' + I.t('mSavedIt') + '</button>'
             );
             document.getElementById('pw-done2').addEventListener('click', () => { closeModal(); manageModal(id); });
           } catch (err) {
@@ -336,8 +533,8 @@
       document.querySelectorAll('[data-disable-admin]').forEach((b) =>
         b.addEventListener('click', async () => {
           try {
-            await api.patch('/api/owner/restaurants/' + id + '/admins/' + b.dataset.disableAdmin, { isActive: false });
-            toast('Administrator disabled', 'success');
+             await api.patch('/api/owner/restaurants/' + id + '/admins/' + b.dataset.disableAdmin, { isActive: false });
+            toast(I.t('toastAdminDisabled'), 'success');
             manageModal(id);
           } catch (err) { toast(err.message, 'error'); }
         }));
@@ -345,8 +542,8 @@
       document.querySelectorAll('[data-enable-admin]').forEach((b) =>
         b.addEventListener('click', async () => {
           try {
-            await api.patch('/api/owner/restaurants/' + id + '/admins/' + b.dataset.enableAdmin, { isActive: true });
-            toast('Administrator enabled', 'success');
+              await api.patch('/api/owner/restaurants/' + id + '/admins/' + b.dataset.enableAdmin, { isActive: true });
+            toast(I.t('toastAdminEnabled'), 'success');
             manageModal(id);
           } catch (err) { toast(err.message, 'error'); }
         }));

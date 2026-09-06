@@ -7,6 +7,9 @@
 const { query, withTx } = require('../db/pool');
 const { conflict, notFound } = require('../utils/errors');
 const { isOpenNow, timeToHhmm } = require('../utils/datetime');
+// Keep revenue semantics identical to orders.service (confirmed+ only).
+const { REVENUE_SQL } = require('./orders.service');
+const delivery = require('./delivery.service');
 
 async function slugExists(slug) {
   const { rowCount } = await query('SELECT 1 FROM restaurants WHERE slug = $1', [slug]);
@@ -87,6 +90,17 @@ async function getById(id) {
   return rows[0] || null;
 }
 
+/** Subscription status for the admin panel. NULL / future date = active. */
+async function getSubscription(restaurantId) {
+  const { rows } = await query(
+    'SELECT subscription_ends_at AS "endsAt" FROM restaurants WHERE id = $1',
+    [restaurantId]
+  );
+  const endsAt = rows[0] ? rows[0].endsAt : null;
+  const active = !endsAt || new Date(endsAt).getTime() > Date.now();
+  return { active, endsAt };
+}
+
 async function getBySlug(slug) {
   const { rows } = await query('SELECT * FROM restaurants WHERE slug = $1', [slug]);
   return rows[0] || null;
@@ -137,11 +151,14 @@ async function getPublicView(slug) {
     restaurant.status === 'open' &&
     (settings.ignore_opening_hours || isOpenNow(hours, settings.timezone));
 
+  const deliveryGroups = await delivery.namesForRestaurant(restaurant.id);
+
   return {
     name: restaurant.name,
     slug: restaurant.slug,
     status: restaurant.is_active ? restaurant.status : 'closed',
     openNow,
+    deliveryGroups,
     settings: {
       description: settings.description,
       phone: settings.phone,
@@ -178,8 +195,9 @@ async function listForOwner({ search, status, limit, offset }) {
   let where = 'TRUE';
 
   if (search) {
-    params.push(`%${search.toLowerCase()}%`);
-    where += ` AND (LOWER(r.name) LIKE $${params.length} OR r.slug LIKE $${params.length})`;
+    const escSearch = search.toLowerCase().replace(/[%_\\]/g, '\\$&');
+    params.push(`%${escSearch}%`);
+    where += ` AND (LOWER(r.name) LIKE $${params.length} ESCAPE '\\' OR r.slug LIKE $${params.length} ESCAPE '\\')`;
   }
   if (status === 'active') where += ' AND r.is_active = TRUE';
   if (status === 'inactive') where += ' AND r.is_active = FALSE';
@@ -209,7 +227,7 @@ async function ownerStats(restaurantId) {
     `SELECT COUNT(*)::int AS n, COALESCE(SUM(total_cents), 0)::bigint AS revenue_cents
      FROM orders
      WHERE restaurant_id = $1 AND created_at >= now() - INTERVAL '7 days'
-       AND status <> 'cancelled'`,
+       AND ${REVENUE_SQL}`,
     [restaurantId]
   );
   const pending = await query(
@@ -225,14 +243,13 @@ async function ownerStats(restaurantId) {
 }
 
 /** Platform-wide overview numbers. */
-async function platformOverview() {
-  const res = await query(
+async function platformOverview() {  const res = await query(
     `SELECT
        (SELECT COUNT(*)::int FROM restaurants) AS restaurants_total,
        (SELECT COUNT(*)::int FROM restaurants WHERE is_active) AS restaurants_active,
        (SELECT COUNT(*)::int FROM orders WHERE created_at >= date_trunc('day', now())) AS orders_today,
        (SELECT COALESCE(SUM(total_cents), 0)::bigint FROM orders
-          WHERE created_at >= date_trunc('day', now()) AND status <> 'cancelled') AS revenue_today_cents`
+          WHERE created_at >= date_trunc('day', now()) AND ${REVENUE_SQL}) AS revenue_today_cents`
   );
   const row = res.rows[0];
   return {
@@ -241,6 +258,79 @@ async function platformOverview() {
     ordersToday: row.orders_today,
     revenueTodayCents: Number(row.revenue_today_cents),
   };
+}
+
+/** Per-restaurant summary for owner CSV export (30-day window). */
+async function reportSummaryForOwner() {
+  const { rows } = await query(
+    `SELECT r.name, r.slug, r.is_active AS "isActive", r.created_at AS "createdAt",
+            COALESCE(items.n, 0)::int AS "itemCount",
+            COALESCE(o7.orders, 0)::int AS "orders30d",
+            COALESCE(o7.revenue, 0)::bigint AS "revenue30dCents",
+            COALESCE(o30.orders, 0)::int AS "ordersAllTime"
+     FROM restaurants r
+     LEFT JOIN (SELECT restaurant_id, COUNT(*) AS n FROM menu_items GROUP BY restaurant_id) items
+       ON items.restaurant_id = r.id
+     LEFT JOIN (
+       SELECT restaurant_id, COUNT(*) AS orders, SUM(total_cents) AS revenue
+       FROM orders WHERE ${REVENUE_SQL} AND created_at >= now() - INTERVAL '30 days'
+       GROUP BY restaurant_id
+     ) o7 ON o7.restaurant_id = r.id
+     LEFT JOIN (
+       SELECT restaurant_id, COUNT(*) AS orders
+       FROM orders WHERE ${REVENUE_SQL}
+       GROUP BY restaurant_id
+     ) o30 ON o30.restaurant_id = r.id
+     ORDER BY r.created_at ASC`
+  );
+  return rows.map((r) => ({ ...r, revenue30dCents: Number(r.revenue30dCents), isActive: Boolean(r.isActive) }));
+}
+
+/** Public homepage directory: every active restaurant with showcase data. */
+async function listPublicDirectory() {
+  const rows = (
+    await query(
+      `SELECT r.id, r.slug, r.name, r.status,
+              s.description, s.logo_path, s.cover_path, s.currency,
+              s.timezone, s.ignore_opening_hours,
+              (SELECT COUNT(*)::int FROM menu_items m
+                 WHERE m.restaurant_id = r.id AND m.is_available) AS item_count
+       FROM restaurants r
+       LEFT JOIN restaurant_settings s ON s.restaurant_id = r.id
+       WHERE r.is_active
+       ORDER BY r.created_at ASC`
+    )
+  ).rows;
+
+  if (rows.length === 0) return [];
+
+  const hoursRows = (
+    await query(
+      'SELECT restaurant_id, day_of_week, is_closed, opens_at, closes_at FROM restaurant_hours WHERE restaurant_id = ANY($1::uuid[])',
+      [rows.map((r) => r.id)]
+    )
+  ).rows;
+
+  return rows.map((r) => {
+    let openNow = false;
+    if (r.status === 'open') {
+      if (r.ignore_opening_hours) openNow = true;
+      else {
+        const mine = hoursRows.filter((h) => h.restaurant_id === r.id);
+        openNow = isOpenNow(mine, r.timezone);
+      }
+    }
+    return {
+      slug: r.slug,
+      name: r.name,
+      description: r.description || '',
+      logoPath: r.logo_path,
+      coverPath: r.cover_path,
+      currency: r.currency || 'USD',
+      itemCount: r.item_count || 0,
+      openNow,
+    };
+  });
 }
 
 async function assertExists(id) {
@@ -256,12 +346,15 @@ module.exports = {
   deleteById,
   getById,
   assertExists,
+  getSubscription,
   getBySlug,
   getSettings,
   getHours,
   getPublicView,
+  listPublicDirectory,
   countItems,
   listForOwner,
   ownerStats,
   platformOverview,
+  reportSummaryForOwner,
 };

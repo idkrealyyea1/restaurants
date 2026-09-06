@@ -1,40 +1,53 @@
 <!doctype html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="referrer" content="strict-origin-when-cross-origin">
-  <title>Order online — Restaurants Platform</title>
+  <meta name="theme-color" content="#22211d">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="/icons/icon.svg">
+  <title>منصة المطاعم — اطلب أونلاين</title>
+  <link rel="stylesheet" href="/fonts/fonts.css">
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
+  <div class="page-glow" aria-hidden="true"></div>
+
   <header class="topbar">
     <div class="topbar-inner container" style="max-width:960px">
-      <span class="brand">Restaurants Platform</span>
+      <span class="brand" data-i18n="brand">منصة المطاعم</span>
       <span class="spacer"></span>
-      <a class="btn btn-outline btn-sm" href="/login.html">Sign in</a>
+      <a class="btn btn-outline btn-sm" href="/track" data-i18n="trackAnOrder">تتبع طلب</a>
+      <a class="btn btn-outline btn-sm" href="/login.html" data-i18n="signIn">دخول</a>
     </div>
   </header>
 
   <main class="container mt-3">
-    <section class="card">
-      <h1>Order from your favorite local restaurants</h1>
-      <p class="muted">
-        Scan a restaurant's QR code or open their link to browse the menu,
-        add items to your cart and place an order — no account needed.
+    <!-- Hero: the platform's menu cover -->
+    <section class="home-hero">
+      <span class="home-eye" data-i18n="homeEyebrow">مطاعم من مدينتك</span>
+      <h1 data-i18n="homeTitle">اطلب من مطاعمك المفضلة</h1>
+      <p data-i18n="homeDesc">
+        امسح رمز QR للمطعم أو افتح رابطه لتصفح القائمة وإضافة الأصناف وإرسال طلبك — دون الحاجة إلى حساب.
       </p>
-      <div class="mt-2">
-        <a class="btn btn-secondary" href="/track">Track an order</a>
-        <a class="btn btn-outline" href="/login.html">Restaurant sign in</a>
-      </div>
     </section>
 
-    <section class="grid-stats">
-      <div class="stat"><div class="stat-label">Customers</div><div class="stat-value">No account</div></div>
-      <div class="stat"><div class="stat-label">Orders</div><div class="stat-value">Live tracking</div></div>
-    </section>
+    <!-- Restaurants directory -->
+    <div class="flex-between mb-1 home-rest-head">
+      <h2 class="section-title" data-i18n="homeRestH">المطاعم</h2>
+      <input id="rest-search" class="search-input" type="text" data-i18n-placeholder="searchRest" placeholder="ابحث عن مطعم…" maxlength="60">
+    </div>
 
-    <p class="footer-note">Are you a restaurant owner? Sign in to manage your menu and orders.</p>
+    <section id="rest-grid" class="rest-grid"></section>
+    <div id="rest-empty" class="empty-state card hidden"></div>
+
+    <p class="footer-note"><a href="/login.html" class="muted" data-i18n="footerOwner">هل أنت صاحب مطعم؟ سجّل الدخول لإدارة قائمتك وطلباتك.</a></p>
   </main>
+
+  <script src="/js/i18n.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/home.js"></script>
+  <script src="/js/pwa.js"></script>
 </body>
 </html>
