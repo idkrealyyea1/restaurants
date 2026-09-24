@@ -1,0 +1,44 @@
+/* ============================================================
+   Self-hosted Arabic type (CSP: style-src/font-src 'self')
+   Cairo / Almarai / El Messiri — Arabic + Latin, woff2 only.
+   ============================================================ */
+
+@font-face {
+  font-family: 'Cairo';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('cairo-700.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Cairo';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url('cairo-800.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Almarai';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('almarai-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Almarai';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('almarai-700.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'El Messiri';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('elmessiri-700.woff2') format('woff2');
+}

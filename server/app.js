@@ -26,7 +26,7 @@ const deliveryRoutes = require('./routes/delivery.routes');
 const leadsRoutes = require('./routes/leads.routes');
 const siteRoutes = require('./routes/site.routes');
 
-const CLIENT_DIR = path.join(__dirname, '..', 'client');
+const CLIENT_DIR = path.join(__dirname, '..', 'frontend', 'dist');
 
 function buildApp() {
   const app = express();
@@ -118,34 +118,36 @@ function buildApp() {
   /* --------------------- authenticated request context ------------------ */
   app.use(attachUser);
 
-  /* ------------------------------- pages ------------------------------- */
-  // Marketing app separation — root is marketing, /app is restaurant directory
+  /* --------------------- SPA fallback (React Router) -------------------- */
+  // The React app owns all page routes (/app, /restaurant/:slug, /track,
+  // /login, /owner, /admin, ...). Anything not matched above falls through
+  // here. API + uploads are never swallowed (JSON 404s preserved).
   app.get('/app', (req, res) => {
-    res.sendFile(path.join(CLIENT_DIR, 'app', 'index.html'));
+    res.sendFile(path.join(CLIENT_DIR, 'index.html'));
   });
   app.get('/app/', (req, res) => {
-    res.sendFile(path.join(CLIENT_DIR, 'app', 'index.html'));
+    res.sendFile(path.join(CLIENT_DIR, 'index.html'));
   });
   app.get('/resources', (req, res) => {
-    res.sendFile(path.join(CLIENT_DIR, 'resources', 'index.html'));
+    res.sendFile(path.join(CLIENT_DIR, 'index.html'));
   });
   app.get('/resources/', (req, res) => {
-    res.sendFile(path.join(CLIENT_DIR, 'resources', 'index.html'));
+    res.sendFile(path.join(CLIENT_DIR, 'index.html'));
   });
   app.get('/restaurant/:slug', (req, res) => {
-    res.sendFile(path.join(CLIENT_DIR, 'restaurant.html'));
+    res.sendFile(path.join(CLIENT_DIR, 'index.html'));
   });
   app.get('/track', (req, res) => {
-    res.sendFile(path.join(CLIENT_DIR, 'track.html'));
+    res.sendFile(path.join(CLIENT_DIR, 'index.html'));
   });
   app.get('/delivery', (req, res) => {
-    res.sendFile(path.join(CLIENT_DIR, 'delivery.html'));
+    res.sendFile(path.join(CLIENT_DIR, 'index.html'));
   });
   app.get('/leads', (req, res) => {
-    res.sendFile(path.join(CLIENT_DIR, 'leads.html'));
+    res.sendFile(path.join(CLIENT_DIR, 'index.html'));
   });
   app.get('/offer/:code', (req, res) => {
-    res.sendFile(path.join(CLIENT_DIR, 'offer.html'));
+    res.sendFile(path.join(CLIENT_DIR, 'index.html'));
   });
 
   /* ------------------------- PWA (manifest/SW) ------------------------- */
@@ -171,6 +173,17 @@ function buildApp() {
   app.use('/api/owner/leads', leadsRoutes);
   app.use('/api/delivery', deliveryRoutes);
   app.use('/api', publicRoutes);
+
+  /* ------------------------- SPA catch-all ---------------------------- */
+  // React Router owns the remaining page routes (/login, /owner, /admin,
+  // /features, /pricing, ...). Serve the app shell with 200; the router
+  // renders the right page (or the in-app 404). API/uploads untouched.
+  app.use((req, res, next) => {
+    if (req.method !== 'GET') return next();
+    if (req.path.startsWith('/api/') || req.path.startsWith('/uploads/')) return next();
+    if (!req.accepts('html')) return next();
+    res.sendFile(path.join(CLIENT_DIR, 'index.html'));
+  });
 
   /* -------------------------- error handling ---------------------------- */
   app.use(notFoundHandler);

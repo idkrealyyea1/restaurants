@@ -1,0 +1,14 @@
+export { HomePage } from './HomePage';
+export { FeaturesPage } from './FeaturesPage';
+export { PricingPage } from './PricingPage';
+export { HowItWorksPage } from './HowItWorksPage';
+export { ContactPage } from './ContactPage';
+export { IndustryPage } from './IndustryPage';
+export { AppPage } from './AppPage';
+export { RestaurantPage } from './RestaurantPage';
+export { TrackPage } from './TrackPage';
+export { LoginPage } from './LoginPage';
+export { OwnerPage } from './OwnerPage';
+export { AdminPage } from './AdminPage';
+export { DeliveryPage } from './DeliveryPage';
+export { LeadsPage, OffersPage, OfferPage, NotFoundPage } from './SimplePages';

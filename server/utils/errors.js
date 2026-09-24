@@ -44,7 +44,7 @@ function asyncHandler(fn) {
 
 function notFoundHandler(req, res) {
   if (req.accepts('html') && !req.path.startsWith('/api/')) {
-    res.status(404).sendFile(require('path').join(__dirname, '..', '..', 'client', '404.html'));
+    res.status(404).sendFile(require('path').join(__dirname, '..', '..', 'frontend', 'dist', 'index.html'));
     return;
   }
   res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Resource not found' } });
