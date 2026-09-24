@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Leads / Outreach — Restivo</title>
+  <link rel="stylesheet" href="/fonts/fonts.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/skeleton.css">
+  <link rel="stylesheet" href="/css/offers.css">
+  <style>
+    .crm-top{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+    .crm-top h1{font-family:var(--font-display);font-size:1.5rem;margin:0}
+    .sync-badge{background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:6px 12px;font-size:.8rem;font-weight:700;display:flex;gap:6px;align-items:center}
+    .sync-badge i{width:8px;height:8px;border-radius:50%;background:var(--success);display:inline-block}
+    .summary-grid{display:grid;gap:10px;grid-template-columns:repeat(4,1fr)}
+    @media(max-width:900px){.summary-grid{grid-template-columns:repeat(2,1fr)}}
+    .sum-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;position:relative}
+    .sum-card b{font-family:var(--font-ui);font-size:1.6rem;font-weight:800;display:block;color:var(--ink)}
+    .sum-card span{font-size:.7rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+    .sum-card.ready{border-color:var(--primary);background:linear-gradient(180deg,var(--surface),var(--primary-light))}
+    .lead-table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+    .lead-table{width:100%;border-collapse:collapse;font-size:.9rem}
+    .lead-table th{font-size:.7rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:10px 12px;border-bottom:1px solid var(--border);background:var(--surface-muted);text-align:right;white-space:nowrap}
+    .lead-table td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+    .lead-table tr:hover{background:var(--surface-muted)}
+    .avatar{width:40px;height:40px;border-radius:10px;object-fit:cover;border:1px solid var(--border);background:var(--surface-muted)}
+    .badge-new{background:#eff6ff;color:#1e40af} .badge-ready{background:#fef3c7;color:#92400e} .badge-contacted{background:#e0e7ff;color:#3730a3}
+    .badge-replied{background:#d1fae5;color:#065f46} .badge-interested{background:#fef3c7;color:#92400e} .badge-trial{background:#dbeafe;color:#1e40af}
+    .badge-customer{background:#d1fae5;color:#065f46} .badge-not{background:#fee2e2;color:#991b1b} .badge-dnc{background:#1f2937;color:#fff}
+    .quick-actions{display:flex;gap:4px;flex-wrap:wrap}
+    .quick-actions .btn{padding:5px 8px;font-size:.78rem;border-radius:8px}
+    .drawer{position:fixed;inset:0;z-index:80;display:none}
+    .drawer.open{display:block}
+    .drawer-backdrop{position:absolute;inset:0;background:rgba(27,30,28,.45);z-index:1}
+    .drawer-panel{position:absolute;top:0;inset-inline-end:0;width:min(560px,100%);height:100%;background:var(--surface);border-inline-start:1px solid var(--border);overflow-y:auto;box-shadow:var(--shadow-lg);z-index:2}
+    .drawer-head{position:sticky;top:0;background:var(--surface);padding:14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;z-index:3}
+    .section{padding:14px;border-bottom:1px solid var(--border)}
+    .section h3{font-family:var(--font-display);font-size:1rem;margin:0 0 10px;display:flex;align-items:center;gap:8px}
+    .section h3::before{content:"";width:3px;height:14px;border-radius:2px;background:var(--primary);display:inline-block}
+    .offer-box{border:1.5px solid var(--primary);border-radius:12px;padding:12px;background:linear-gradient(180deg,var(--surface),var(--primary-light))}
+    .demo-card{border:1px solid var(--border);border-radius:12px;padding:12px;background:var(--surface-muted)}
+    .timeline{border-inline-start:2px solid var(--border);margin-inline-start:8px;padding-inline-start:12px}
+    .timeline div{position:relative;padding:6px 0}
+    .timeline div::before{content:"";position:absolute;inset-inline-start:-19px;top:10px;width:8px;height:8px;border-radius:50%;background:var(--primary)}
+    @media(max-width:640px){.lead-table{font-size:.82rem} .lead-table th:nth-child(4),.lead-table td:nth-child(4){display:none}}
+  </style>
+</head>
+<body>
+  <!-- Skeleton loader: visible until page fully loads / offline handling -->
+  <div id="app-skeleton" aria-hidden="false" aria-label="Loading">
+    <div class="sk-skeleton-topbar">
+      <div class="sk-logo shimmer" aria-hidden="true"></div>
+      <div class="sk-brand shimmer"></div>
+      <div class="sk-nav" aria-hidden="true"><span class="shimmer"></span><span class="shimmer"></span><span class="shimmer"></span><span class="shimmer"></span></div>
+      <div class="sk-actions"><span class="sk-btn shimmer"></span><span class="sk-btn shimmer" style="width:110px"></span></div>
+    </div>
+    <div class="sk-hero">
+      <div class="sk-hero-left">
+        <div class="sk-pill shimmer"></div>
+        <div class="sk-h1 shimmer"></div><div class="sk-h1-2 shimmer"></div>
+        <div class="sk-p shimmer"></div><div class="sk-p-2 shimmer"></div>
+        <div class="sk-cta"><span class="shimmer"></span><span class="shimmer"></span></div>
+      </div>
+      <div class="sk-visual shimmer"><div class="sk-phone shimmer"></div><div class="sk-card shimmer"></div><div class="sk-card shimmer"></div><div class="sk-card shimmer"></div></div>
+    </div>
+    <div class="sk-cards"><div class="sk-mini shimmer"></div><div class="sk-mini shimmer"></div><div class="sk-mini shimmer"></div><div class="sk-mini shimmer"></div><div class="sk-mini shimmer"></div></div>
+  </div>
+  <div id="sk-offline" class="sk-offline" role="status" aria-live="polite">You appear offline — check your connection <button id="sk-offline-retry" type="button">Retry</button></div>
+  <div id="sk-retry" class="sk-retry" role="alert"><p style="margin:0 0 8px; font-weight:700">Connection is slow or offline</p><p class="muted small" style="margin:0 0 12px">The page is taking longer than usual. Check your internet or try again.</p><button id="sk-retry-btn" class="btn btn-sm" type="button">Retry</button></div>
+
+  <header class="topbar">
+    <div class="topbar-inner container">
+      <a class="brand" href="/owner.html">Restivo</a>
+      <span style="font-weight:800;color:var(--muted)">LEADS / OUTREACH</span>
+      <span class="spacer"></span>
+      <span id="last-sync" class="sync-badge"><i></i> Last sync: —</span>
+      <a class="btn btn-outline btn-sm" href="/owner.html">لوحة المالك</a>
+      <button id="logout-btn" type="button" class="btn btn-outline btn-sm">خروج</button>
+    </div>
+  </header>
+  <main class="container mt-2" style="max-width:1200px">
+    <div id="guard" class="card" style="text-align:center;padding:40px"><p>جارٍ التحميل…</p></div>
+    <div id="app" class="hidden">
+      <!-- Summary -->
+      <div class="summary-grid" id="summary"></div>
+
+      <!-- Filters -->
+      <div class="card mt-2" style="padding:12px">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <input id="f-search" placeholder="ابحث LEAD-000003 / اسم / هاتف" style="flex:1;min-width:160px">
+          <select id="f-status"><option value="">كل الحالات</option><option>NEW</option><option>READY</option><option>CONTACTED</option><option>REPLIED</option><option>INTERESTED</option><option>TRIAL ACTIVE</option><option>CUSTOMER</option><option>NOT INTERESTED</option><option>DO NOT CONTACT</option></select>
+          <select id="f-source"><option value="">كل المصادر</option><option value="agent-reach">Agent Reach</option><option value="manual">Manual</option></select>
+          <select id="f-city"><option value="">كل المدن</option><option>Amman</option><option>Nablus</option><option>Gaza</option><option>Ramallah</option><option>Jenin</option><option>Hebron</option><option>Beirut</option><option>Cairo</option></select>
+          <select id="f-trial"><option value="">كل التجارب</option><option value="ACTIVE">نشط</option><option value="EXPIRED">منتهي</option><option value="NONE">بدون</option></select>
+          <select id="f-sort"><option value="newest">الأحدث</option><option value="oldest">الأقدم</option><option value="last_contacted">آخر تواصل</option><option value="priority">الأولوية</option></select>
+          <button id="f-apply" type="button" class="btn btn-sm">تطبيق</button>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+          <button id="discover-btn" type="button" class="btn btn-sm">🔍 Find New (Agent Reach)</button>
+          <button id="new-lead-btn" type="button" class="btn btn-outline btn-sm">+ يدوي</button>
+          <span class="small muted">أو قل في الشات: <code>ابحث 5 في عمان</code></span>
+        </div>
+      </div>
+
+      <!-- Discover / Manual / Merge -->
+      <div id="discover-box" class="card hidden mt-2">
+        <h3>Find New Restaurants — Agent Reach</h3>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <input id="d-city" placeholder="المدينة" value="Amman" style="width:120px">
+          <input id="d-query" placeholder="مطاعم بدون موقع + انستغرام نشط" style="flex:1;min-width:180px" value="restaurants without website Instagram">
+          <label style="display:flex;gap:6px;align-items:center;font-size:.85rem"><input type="checkbox" id="d-findnew" checked> Find New Only</label>
+          <button id="d-run" type="button" class="btn btn-sm">اكتشاف</button>
+        </div>
+        <div id="d-result" class="small muted mt-1"></div>
+      </div>
+      <div id="manual-box" class="card hidden mt-2">
+        <h3>إضافة يدوية</h3>
+        <div style="display:grid;gap:8px;grid-template-columns:1fr 1fr">
+          <input id="m-name" placeholder="اسم المطعم *"><input id="m-city" placeholder="المدينة">
+          <input id="m-phone" placeholder="هاتف"><input id="m-whatsapp" placeholder="واتساب">
+          <input id="m-insta" placeholder="انستغرام"><input id="m-website" placeholder="موقع">
+        </div>
+        <button id="m-create" type="button" class="btn btn-sm mt-1">إنشاء Lead</button>
+      </div>
+
+      <!-- Lead Table -->
+      <div class="lead-table-wrap mt-2">
+        <table class="lead-table">
+          <thead><tr><th><input type="checkbox" id="check-all"></th><th>المطعم</th><th>الموقع/التصنيف</th><th>تواصل</th><th>المصدر</th><th>الحالة</th><th>التجربة</th><th>آخر تواصل</th><th>التالي</th><th>إجراءات</th></tr></thead>
+          <tbody id="lead-tbody"></tbody>
+        </table>
+        <div id="pagination" style="display:flex;justify-content:space-between;align-items:center;padding:10px;border-top:1px solid var(--border)">
+          <button id="prev-page" type="button" class="btn btn-outline btn-sm">السابق</button><span id="page-info" class="small muted"></span><button id="next-page" type="button" class="btn btn-outline btn-sm">التالي</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Drawer -->
+  <div id="drawer" class="drawer">
+    <div class="drawer-backdrop" id="drawer-close"></div>
+    <div class="drawer-panel">
+      <div class="drawer-head"><h3 id="drawer-title" style="margin:0"></h3><button id="drawer-x" type="button" class="btn btn-outline btn-sm">×</button></div>
+      <div id="drawer-body"></div>
+    </div>
+  </div>
+
+  <script src="/js/i18n.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/leads.js"></script>
+  <script src="/js/skeleton.js"></script>
+</body>
+</html>

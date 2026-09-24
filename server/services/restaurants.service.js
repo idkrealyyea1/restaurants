@@ -17,16 +17,16 @@ async function slugExists(slug) {
 }
 
 /** Create tenant + default settings + 7 default hour rows in one transaction. */
-async function createRestaurant({ name, slug, maxMenuItems }) {
+async function createRestaurant({ name, slug, maxMenuItems, subscriptionEndsAt }) {
   return withTx(async (client) => {
     // Serialize on slug uniqueness explicitly for a clean error message.
     const dupe = await client.query('SELECT 1 FROM restaurants WHERE slug = $1', [slug]);
     if (dupe.rowCount > 0) throw conflict('SLUG_TAKEN', 'A restaurant with this URL slug already exists');
 
     const { rows } = await client.query(
-      `INSERT INTO restaurants (name, slug, max_menu_items)
-       VALUES ($1, $2, $3) RETURNING *`,
-      [name, slug, maxMenuItems]
+      `INSERT INTO restaurants (name, slug, max_menu_items, subscription_ends_at)
+       VALUES ($1, $2, $3, $4) RETURNING *`,
+      [name, slug, maxMenuItems, subscriptionEndsAt || null]
     );
     const restaurant = rows[0];
     await client.query(
@@ -126,6 +126,9 @@ async function getHours(restaurantId) {
 async function getPublicView(slug) {
   const restaurant = await getBySlug(slug);
   if (!restaurant || !restaurant.is_active) return null;
+  // 7-day trial: public page also expires — ponytail: reuse getSubscription
+  const sub = await getSubscription(restaurant.id);
+  if (!sub.active) return null;
 
   const settings = await getSettings(restaurant.id);
   const hours = await getHours(restaurant.id);
@@ -297,7 +300,7 @@ async function listPublicDirectory() {
                  WHERE m.restaurant_id = r.id AND m.is_available) AS item_count
        FROM restaurants r
        LEFT JOIN restaurant_settings s ON s.restaurant_id = r.id
-       WHERE r.is_active
+       WHERE r.is_active AND (r.subscription_ends_at IS NULL OR r.subscription_ends_at > now())
        ORDER BY r.created_at ASC`
     )
   ).rows;

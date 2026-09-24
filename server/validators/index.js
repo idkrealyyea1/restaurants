@@ -281,6 +281,36 @@ function validateStatusChange(body = {}) {
   return { status };
 }
 
+function validatePlatformPricing(body = {}) {
+  const patch = {};
+  if (body.pricingCents !== undefined) patch.pricingCents = toIntInRange(body.pricingCents, 'pricingCents', { min: 0, max: 1000000 });
+  if (body.pricingCurrency !== undefined) {
+    const cur = String(body.pricingCurrency).trim().toUpperCase();
+    if (!/^[A-Z]{3}$/.test(cur)) throw badRequest('pricingCurrency must be 3-letter code', [{ field: 'pricingCurrency' }]);
+    patch.pricingCurrency = cur;
+  }
+  if (body.pricingPeriod !== undefined) {
+    const p = String(body.pricingPeriod).trim().toLowerCase();
+    if (!['month','year'].includes(p)) throw badRequest('pricingPeriod must be month or year', [{ field: 'pricingPeriod' }]);
+    patch.pricingPeriod = p;
+  }
+  if (body.trialDays !== undefined) patch.trialDays = toIntInRange(body.trialDays, 'trialDays', { min: 0, max: 365 });
+  if (body.brandName !== undefined) patch.brandName = requireText(body.brandName, { field: 'brandName', min: 1, max: 40 });
+  if (Object.keys(patch).length === 0) throw badRequest('No updatable fields provided');
+  return patch;
+}
+
+function validateRestaurantRequest(body = {}) {
+  return {
+    customerName: requireText(body.customerName, { field: 'customerName', min: 2, max: 80 }),
+    restaurantName: requireText(body.restaurantName, { field: 'restaurantName', min: 2, max: 80 }),
+    phone: cleanPhone(body.phone, { field: 'phone', required: true }),
+    whatsapp: cleanPhone(body.whatsapp, { field: 'whatsapp', required: true }),
+    city: cleanText(body.city, { field: 'city', max: 60 }) || '',
+    notes: cleanText(body.notes, { field: 'notes', max: 500 }) || '',
+  };
+}
+
 function validatePagination(query) {
   const limit = Math.min(toIntInRange(query.limit, 'limit', { min: 1, max: 100, fallback: 25 }), 100);
   const page = Math.max(toIntInRange(query.page, 'page', { min: 1, max: 1000000, fallback: 1 }), 1);
@@ -308,5 +338,7 @@ module.exports = {
   validateDeliveryGroupCreate,
   validateDeliveryGroupUpdate,
   validateDeliverySelection,
+  validatePlatformPricing,
+  validateRestaurantRequest,
   validatePagination,
 };

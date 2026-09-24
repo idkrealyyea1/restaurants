@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex, follow">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta name="theme-color" content="#22211d">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="/icons/icon.svg">
+  <title>Restaurants — Restivo App</title>
+  <link rel="stylesheet" href="/fonts/fonts.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/skeleton.css">
+</head>
+<body>
+  <!-- Skeleton loader: visible until page fully loads / offline handling -->
+  <div id="app-skeleton" aria-hidden="false" aria-label="Loading">
+    <div class="sk-skeleton-topbar">
+      <div class="sk-logo shimmer" aria-hidden="true"></div>
+      <div class="sk-brand shimmer"></div>
+      <div class="sk-nav" aria-hidden="true"><span class="shimmer"></span><span class="shimmer"></span><span class="shimmer"></span><span class="shimmer"></span></div>
+      <div class="sk-actions"><span class="sk-btn shimmer"></span><span class="sk-btn shimmer" style="width:110px"></span></div>
+    </div>
+    <div class="sk-hero">
+      <div class="sk-hero-left">
+        <div class="sk-pill shimmer"></div>
+        <div class="sk-h1 shimmer"></div><div class="sk-h1-2 shimmer"></div>
+        <div class="sk-p shimmer"></div><div class="sk-p-2 shimmer"></div>
+        <div class="sk-cta"><span class="shimmer"></span><span class="shimmer"></span></div>
+      </div>
+      <div class="sk-visual shimmer"><div class="sk-phone shimmer"></div><div class="sk-card shimmer"></div><div class="sk-card shimmer"></div><div class="sk-card shimmer"></div></div>
+    </div>
+    <div class="sk-cards"><div class="sk-mini shimmer"></div><div class="sk-mini shimmer"></div><div class="sk-mini shimmer"></div><div class="sk-mini shimmer"></div><div class="sk-mini shimmer"></div></div>
+  </div>
+  <div id="sk-offline" class="sk-offline" role="status" aria-live="polite">You appear offline — check your connection <button id="sk-offline-retry" type="button">Retry</button></div>
+  <div id="sk-retry" class="sk-retry" role="alert"><p style="margin:0 0 8px; font-weight:700">Connection is slow or offline</p><p class="muted small" style="margin:0 0 12px">The page is taking longer than usual. Check your internet or try again.</p><button id="sk-retry-btn" class="btn btn-sm" type="button">Retry</button></div>
+
+  <div class="page-glow" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <div class="topbar-inner container" style="max-width:960px">
+      <span class="brand" data-i18n="brand">Restivo</span>
+      <span class="spacer"></span>
+      <a class="btn btn-outline btn-sm" href="/track" data-i18n="trackAnOrder">تتبع طلب</a>
+      <a class="btn btn-outline btn-sm" href="/login.html" data-i18n="signIn">دخول</a>
+    </div>
+  </header>
+
+  <main class="container mt-3">
+    <!-- Hero: the platform's menu cover -->
+    <section class="home-hero">
+      <span class="home-eye" data-i18n="homeEyebrow">مطاعم من مدينتك</span>
+      <h1 data-i18n="homeTitle">اطلب من مطاعمك المفضلة</h1>
+      <p data-i18n="homeDesc">
+        امسح رمز QR للمطعم أو افتح رابطه لتصفح القائمة وإضافة الأصناف وإرسال طلبك — دون الحاجة إلى حساب.
+      </p>
+    </section>
+
+    <!-- Restaurants directory -->
+    <div class="flex-between mb-1 home-rest-head">
+      <h2 class="section-title" data-i18n="homeRestH">المطاعم</h2>
+      <input id="rest-search" class="search-input" type="text" data-i18n-placeholder="searchRest" placeholder="ابحث عن مطعم…" maxlength="60">
+    </div>
+
+    <section id="rest-grid" class="rest-grid"></section>
+    <div id="rest-empty" class="empty-state card hidden"></div>
+
+    <p class="footer-note"><a href="/login.html" class="muted" data-i18n="footerOwner">هل أنت صاحب مطعم؟ سجّل الدخول لإدارة قائمتك وطلباتك.</a></p>
+  </main>
+
+  <script src="/js/i18n.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/home.js"></script>
+  <script src="/js/pwa.js"></script>
+  <script src="/js/skeleton.js"></script>
+</body>
+</html>

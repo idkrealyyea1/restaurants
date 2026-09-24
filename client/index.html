@@ -4,50 +4,398 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="referrer" content="strict-origin-when-cross-origin">
-  <meta name="theme-color" content="#22211d">
+  <meta name="theme-color" content="#c73d18">
+  <meta name="description" content="أنشئ منيو إلكتروني ومطعم رقمي مع Restivo — قائمة QR وطلب أونلاين وواتساب ولوحة تحكم واحدة. $8.99/شهر.">
+  <link rel="canonical" href="/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Restivo — منيو إلكتروني وطلب أونلاين للمطاعم | QR وواتساب">
+  <meta property="og:description" content="حوّل قائمتك إلى تجربة طلب أونلاين — قائمة QR، سلة للجوال، وطلبات واتساب مباشرة إلى لوحتك.">
+  <meta property="og:image" content="/icons/icon-512.png">
+  <meta property="og:locale" content="ar_AR">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="icon" type="image/svg+xml" href="/icons/icon.svg">
-  <title>منصة المطاعم — اطلب أونلاين</title>
+  <title>Restivo — منيو إلكتروني وطلب أونلاين للمطاعم</title>
   <link rel="stylesheet" href="/fonts/fonts.css">
   <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/marketing.css">
+  <link rel="stylesheet" href="/css/skeleton.css">
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"Organization",
+    "name":"Restivo",
+    "url":"/",
+    "logo":"/icons/icon-512.png"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"SoftwareApplication",
+    "name":"Restivo",
+    "applicationCategory":"BusinessApplication",
+    "operatingSystem":"Web",
+    "offers":{"@type":"Offer","price":"8.99","priceCurrency":"USD","priceValidUntil":"2027-12-31"},
+    "description":"Digital menu, QR ordering, online ordering and WhatsApp orders for restaurants."
+  }
+  </script>
 </head>
 <body>
+  <!-- Skeleton loader -->
+  <div id="app-skeleton" aria-hidden="false" aria-label="Loading">
+    <div class="sk-skeleton-topbar">
+      <div class="sk-logo shimmer"></div>
+      <div class="sk-brand shimmer"></div>
+      <div class="sk-nav" aria-hidden="true"><span class="shimmer"></span><span class="shimmer"></span><span class="shimmer"></span></div>
+      <div class="sk-actions"><span class="sk-btn shimmer"></span><span class="sk-btn shimmer" style="width:110px"></span></div>
+    </div>
+    <div class="sk-hero">
+      <div class="sk-hero-left">
+        <div class="sk-pill shimmer"></div>
+        <div class="sk-h1 shimmer"></div><div class="sk-h1-2 shimmer"></div>
+        <div class="sk-p shimmer"></div><div class="sk-p-2 shimmer"></div>
+        <div class="sk-cta"><span class="shimmer"></span><span class="shimmer"></span></div>
+      </div>
+      <div class="sk-visual shimmer"><div class="sk-phone shimmer"></div><div class="sk-card shimmer"></div><div class="sk-card shimmer"></div><div class="sk-card shimmer"></div></div>
+    </div>
+    <div class="sk-cards"><div class="sk-mini shimmer"></div><div class="sk-mini shimmer"></div><div class="sk-mini shimmer"></div><div class="sk-mini shimmer"></div><div class="sk-mini shimmer"></div></div>
+  </div>
+  <div id="sk-offline" class="sk-offline" role="status" aria-live="polite">يبدو أنك غير متصل — تحقق من الاتصال <button id="sk-offline-retry" type="button">إعادة المحاولة</button></div>
+  <div id="sk-retry" class="sk-retry" role="alert"><p style="margin:0 0 8px; font-weight:700">الاتصال بطيء أو غير متصل</p><p class="muted small" style="margin:0 0 12px">الصفحة تستغرق وقتًا أطول من المعتاد. تحقق من الإنترنت أو حاول مجددًا.</p><button id="sk-retry-btn" class="btn btn-sm" type="button">إعادة المحاولة</button></div>
+
+  <a href="#main" class="hidden" style="position:absolute;left:-999px">تخطي إلى المحتوى</a>
   <div class="page-glow" aria-hidden="true"></div>
 
-  <header class="topbar">
-    <div class="topbar-inner container" style="max-width:960px">
-      <span class="brand" data-i18n="brand">منصة المطاعم</span>
-      <span class="spacer"></span>
-      <a class="btn btn-outline btn-sm" href="/track" data-i18n="trackAnOrder">تتبع طلب</a>
-      <a class="btn btn-outline btn-sm" href="/login.html" data-i18n="signIn">دخول</a>
+  <nav class="mk-nav" aria-label="Primary">
+    <div class="mk-container mk-nav-inner">
+      <a class="mk-brand" href="/" aria-label="Restivo"><span class="mk-brand-mark">ر</span><span>Restivo</span></a>
+      <div class="mk-links" role="navigation">
+        <a href="#features" data-i18n="navFeatures">المميزات</a>
+        <a href="#how" data-i18n="navHow">كيف يعمل</a>
+        <a href="#pricing" data-i18n="navPricing">الأسعار</a>
+        <a href="/app/" data-i18n="navLive">مطعم حي</a>
+        <a href="#request" data-i18n="navRequest">اطلب صفحتك</a>
+      </div>
+      <span class="spacer" style="flex:1"></span>
+      <div class="mk-actions">
+        <a class="btn btn-outline btn-sm" href="/login.html" data-i18n="signIn">دخول</a>
+        <a class="mk-try" href="/app/" id="nav-live-btn" data-i18n="heroCTA">جرّب الديمو الحي</a>
+        <button id="mk-burger" class="mk-burger" aria-label="القائمة" aria-expanded="false"><span></span></button>
+      </div>
     </div>
-  </header>
+    <div id="mk-drawer" class="mk-drawer" role="dialog" aria-label="Menu">
+      <a href="#features" data-i18n="navFeatures">المميزات</a>
+      <a href="#how" data-i18n="navHow">كيف يعمل</a>
+      <a href="#pricing" data-i18n="navPricing">الأسعار</a>
+      <a href="/app/" data-i18n="navLive">مطعم حي</a>
+      <a href="#request" data-i18n="navRequest" style="color:var(--primary)">اطلب صفحتك ←</a>
+      <a href="/login.html" data-i18n="signIn">دخول</a>
+      <a href="/app/" data-i18n="appLink">المطاعم</a>
+      <a href="/for-restaurants.html" data-i18n="indRest">المطاعم</a>
+      <a href="/for-cafes.html" data-i18n="indCafe">المقاهي</a>
+      <a href="/for-dessert-shops.html" data-i18n="indDessert">محلات الحلويات</a>
+      <a href="/for-cake-shops.html" data-i18n="indCake">محلات الكيك</a>
+      <a href="/contact.html" data-i18n="contactLink">تواصل</a>
+    </div>
+  </nav>
 
-  <main class="container mt-3">
-    <!-- Hero: the platform's menu cover -->
-    <section class="home-hero">
-      <span class="home-eye" data-i18n="homeEyebrow">مطاعم من مدينتك</span>
-      <h1 data-i18n="homeTitle">اطلب من مطاعمك المفضلة</h1>
-      <p data-i18n="homeDesc">
-        امسح رمز QR للمطعم أو افتح رابطه لتصفح القائمة وإضافة الأصناف وإرسال طلبك — دون الحاجة إلى حساب.
-      </p>
+  <main id="main">
+    <!-- HERO -->
+    <section class="mk-hero mk-container">
+      <div class="mk-strip">
+        <div class="mk-strip-t"><span class="mk-strip-ic">⚡</span><div><b data-i18n="stripTitle">جاهز لمطعمك المستقل</b><small data-i18n="stripSub">اشتراك واحد · بدون عمولة · $8.99 / شهر</small></div></div>
+        <div class="mk-strip-tags"><span>QR</span><span data-i18n="flowCart">سلة</span><span>WhatsApp</span></div>
+      </div>
+      <div class="mk-hero-grid">
+        <div>
+          <span class="mk-eyebrow"><i></i><span data-i18n="heroBadge">منيوك جاهز للزحمة</span>&nbsp;/ Restivo</span>
+          <h1 class="mk-h1"><span data-i18n="heroTitle">من المسح إلى الطلب</span><br><em data-i18n="heroTitleB">في أقل من 30 ثانية</em></h1>
+          <p class="mk-lead" data-i18n="heroDesc">امنح زبائنك قائمة رقمية سريعة وتجربة طلب عبر QR وطريقة سهلة لإرسال الطلبات مباشرة إلى مطعمك.</p>
+          <div class="mk-cta-row">
+            <a class="mk-btn-primary" href="/app/" id="hero-live-btn"><span data-i18n="heroCTA">جرّب الديمو الحي</span><span aria-hidden="true">←</span></a>
+            <a class="mk-btn-ghost" href="#request" data-i18n="heroCTA2">ابدأ الآن</a>
+          </div>
+          <div class="mk-proof">
+            <span class="mk-proof-avatars"><span style="background:#f5c84b">س</span><span style="background:#ed6b4c;color:#fff">م</span><span style="background:#27615f;color:#fff">ر</span></span>
+            <span data-i18n="heroNote">لا يحتاج الزبائن إلى حساب • يعمل على أي هاتف</span>
+          </div>
+        </div>
+        <div class="mk-hero-visual" aria-hidden="true">
+          <div class="mk-qr-card">⛶</div>
+          <div class="mk-phone-frame">
+            <div class="mk-phone-screen">
+              <div class="mk-phone-top"><img src="/images/restivo-food-table.jpg" alt=""><span class="ov"></span><span class="cap"><small>Restivo Demo</small><b data-i18n="liveMockName">مطعم الشام</b></span></div>
+              <div class="mk-phone-body">
+                <div class="mk-phone-meta"><span>MENU / 01</span><span class="mk-badge" data-i18n="openNow">مفتوح الآن</span></div>
+                <div class="mk-phone-pills"><span class="on" data-i18n="popular">الأكثر طلبًا</span><span data-i18n="flowMenu">قائمة</span><span data-i18n="flowOrder">طلب</span></div>
+                <div class="mk-menu-card"><div class="mk-food-thumb" style="background:linear-gradient(135deg,#fde9e2,#f8c8a0)">🍔</div><div><b data-i18n="hm1n">برجر كلاسيك</b><p data-i18n="hm1d">لحم أنجوس وشيدر</p></div><span class="mk-price">$8.50</span></div>
+                <div class="mk-menu-card"><div class="mk-food-thumb" style="background:linear-gradient(135deg,#fef3d6,#f5d76e)">🍕</div><div><b data-i18n="hm2n">بيتزا مارجريتا</b><p data-i18n="hm2d">صلصة طماطم وموزاريلا</p></div><span class="mk-price">$12.00</span></div>
+                <div class="mk-menu-card"><div class="mk-food-thumb" style="background:linear-gradient(135deg,#e8ece8,#cfe3c0)">🍯</div><div><b data-i18n="hm3n">علبة بقلاوة</b><p data-i18n="hm3d">12 قطعة فستق</p></div><span class="mk-price">$9.99</span></div>
+                <button class="mk-phone-cta" type="button" tabindex="-1"><span data-i18n="heroCTA">جرّب الديمو الحي</span><span>↗</span></button>
+              </div>
+            </div>
+          </div>
+          <div class="mk-cart-float"><div style="display:flex;justify-content:space-between;opacity:.6"><span data-i18n="flowOrder">طلب</span><span>الآن</span></div><div style="display:flex;justify-content:space-between;margin-top:6px"><span data-i18n="hm1n">برجر كلاسيك</span><span>× 2</span></div><div class="tot"><span data-i18n="total">المجموع</span><span>$24</span></div></div>
+        </div>
+      </div>
     </section>
 
-    <!-- Restaurants directory -->
-    <div class="flex-between mb-1 home-rest-head">
-      <h2 class="section-title" data-i18n="homeRestH">المطاعم</h2>
-      <input id="rest-search" class="search-input" type="text" data-i18n-placeholder="searchRest" placeholder="ابحث عن مطعم…" maxlength="60">
-    </div>
+    <!-- TICKER -->
+    <section class="mk-ticker" aria-hidden="true">
+      <div class="mk-container mk-ticker-in"><span data-i18n="tick1">لا عمولة على الطلب</span><span class="hl" data-i18n="tick2">بدون تطبيق للعميل</span><span data-i18n="tick3">صفحة بهوية مطعمك</span><span data-i18n="tick4">اشتراك واحد واضح</span></div>
+    </section>
 
-    <section id="rest-grid" class="rest-grid"></section>
-    <div id="rest-empty" class="empty-state card hidden"></div>
+    <!-- STORY -->
+    <section class="mk-section">
+      <div class="mk-container mk-two-col">
+        <div>
+          <div class="mk-story-img-main"><img src="/images/restivo-food-table.jpg" alt=""><div class="mk-story-tag" data-i18n="storyTag">صورة حقيقية. تجربة أوضح.</div></div>
+          <div class="mk-story-img-sub"><img src="/images/restivo-owner-tablet.jpg" alt=""><div data-i18n="storyOwner">صاحب مطعم مستقل</div></div>
+        </div>
+        <div style="max-width:560px">
+          <span class="mk-kicker" data-i18n="storyEye">من مطبخك إلى شاشة العميل</span>
+          <h2 class="mk-section-title"><span data-i18n="storyTitleA">خلّ الناس تشوف</span><br><span style="color:var(--teal)" data-i18n="storyTitleB">اللي تقدمه فعلًا.</span></h2>
+          <p class="mk-muted" style="margin-top:22px;line-height:2" data-i18n="storyBody">الصورة الجيدة تفتح الشهية، والطلب المرتب يخلّي فريقك أسرع. Restivo يجمع الاثنين في تجربة واحدة تشبه مطعمك.</p>
+          <div class="mk-proof"><span class="mk-proof-avatars"><span style="background:var(--sun)">01</span></span><span data-i18n="liveNote">تستخدم مطاعم حقيقية من المنصة — لا عرض ثابت.</span></div>
+          <div class="mt-1" style="display:flex; gap:10px; flex-wrap:wrap; margin-top:18px">
+            <a class="mk-btn-primary" href="/app/" id="live-open-btn"><span data-i18n="liveBtn">افتح المطعم الحي</span></a>
+            <a class="mk-btn-ghost" href="/app/" data-i18n="browseAll">تصفح كل المطاعم →</a>
+          </div>
+        </div>
+      </div>
+    </section>
 
-    <p class="footer-note"><a href="/login.html" class="muted" data-i18n="footerOwner">هل أنت صاحب مطعم؟ سجّل الدخول لإدارة قائمتك وطلباتك.</a></p>
+    <!-- PROBLEM → SOLUTION -->
+    <section class="mk-section">
+      <div class="mk-container">
+        <div class="mk-problem">
+          <div>
+            <span class="mk-badge" data-i18n="beforeTag">قبل</span>
+            <h2 class="mk-section-title" data-i18n="probTitle">الطلب عبر المحادثات يصبح فوضى</h2>
+            <ul class="mt-1">
+              <li data-i18n="prob1">الزبائن يطلبون القائمة على واتساب</li>
+              <li data-i18n="prob2">أسعار القائمة تتغير باستمرار</li>
+              <li data-i18n="prob3">الطلب عبر الرسائل يصبح معقدًا</li>
+              <li data-i18n="prob4">الزبائن يحتاجون طريقة أسهل لتصفح المنتجات</li>
+              <li data-i18n="prob5">القوائم الورقية لا تتحدث فورًا</li>
+            </ul>
+          </div>
+          <div class="mk-solution">
+            <span class="mk-badge" data-i18n="afterTag">بعد</span>
+            <h3 style="margin:0 0 8px; font-family:var(--font-ui)" data-i18n="solTitle">Restivo يحلها — ببساطة</h3>
+            <p class="muted" data-i18n="solDesc">رابط واحد + رمز QR واحد. حدّث الأسعار والتوفر فورًا. يتصفح الزبائن على جوالهم، يبنون السلة، ويرسلون الطلب. تستلمه منظمًا في لوحتك وعلى واتساب.</p>
+            <div class="mt-1" style="display:flex; gap:8px; flex-wrap:wrap">
+              <span class="badge badge-open" data-i18n="solB1">تحديث فوري</span><span class="badge badge-open" data-i18n="solB2">بدون تطبيق</span><span class="badge" data-i18n="solB3">جاهز لواتساب</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SHOWCASE -->
+    <section class="mk-section" style="background: var(--surface-muted); border-top:1px solid var(--border); border-bottom:1px solid var(--border)">
+      <div class="mk-container">
+        <div class="mk-showcase">
+          <div class="mk-show-card">
+            <div class="mk-kicker" data-i18n="showcaseCust">ما يراه زبائنك</div>
+            <h3 data-i18n="showcaseCustTitle">واجهة مطعم على الجوال</h3>
+            <p class="muted" data-i18n="showcaseCustDesc">صورة غلاف وشعار وحالة مفتوح وأقسام وأصناف مع تسعيرة وزر +.</p>
+            <div class="mt-1" style="border:1px solid var(--border); border-radius:14px; overflow:hidden; background:var(--surface)">
+              <div class="mk-live-cover" style="height:110px">
+                <svg viewBox="0 0 400 110" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="400" height="110" fill="#2f3f2e"/><circle cx="344" cy="18" r="44" fill="#e9b44c" opacity=".2"/><g stroke="#1b1e1c" stroke-width="2" opacity=".6"><line x1="120" y1="0" x2="120" y2="26"/><line x1="200" y1="0" x2="200" y2="18"/><line x1="280" y1="0" x2="280" y2="26"/></g><g fill="#ffd98a"><ellipse cx="120" cy="34" rx="9" ry="11"/><ellipse cx="200" cy="26" rx="7" ry="9"/><ellipse cx="280" cy="34" rx="9" ry="11"/></g><g fill="#1b1e1c" opacity=".55"><rect x="40" y="82" width="70" height="8" rx="4"/><rect x="150" y="86" width="90" height="8" rx="4"/><rect x="280" y="82" width="70" height="8" rx="4"/></g></svg>
+                <span class="badge badge-open" style="position:absolute; top:8px; inset-inline-start:8px" data-i18n="openBadge">مفتوح</span>
+              </div>
+              <div style="padding:0 10px 10px">
+                <div style="display:flex; align-items:center; gap:8px; margin-top:-20px; margin-bottom:6px">
+                  <span class="mk-live-logo" style="width:40px; height:40px; font-size:1rem">ش</span>
+                  <b style="font-size:.9rem" data-i18n="liveMockName">مطعم الشام</b>
+                </div>
+                <div style="display:flex; gap:6px; margin-bottom:6px"><span class="badge" data-i18n="all">الكل</span><span class="badge" data-i18n="popular">الأكثر طلبًا</span></div>
+                <div class="mk-menu-card"><div class="mk-food-thumb" style="background:linear-gradient(135deg,#fef3d6,#f5d76e)" aria-hidden="true"><svg viewBox="0 0 48 48" width="30" height="30" aria-hidden="true"><path d="M8 10 L40 10 L24 42 Z" fill="#f0b429"/><circle cx="22" cy="20" r="3" fill="#c73d18"/><circle cx="27" cy="27" r="2.4" fill="#c73d18"/></svg></div><div><b data-i18n="sm1n">بيتزا مارجريتا</b><p data-i18n="sm1d">موزاريلا طازجة</p></div><span class="mk-price">$12.00</span></div>
+                <div class="mk-menu-card"><div class="mk-food-thumb" style="background:linear-gradient(135deg,#fde9e2,#f8c8a0)" aria-hidden="true"><svg viewBox="0 0 48 48" width="30" height="30" aria-hidden="true"><path d="M10 22 L38 22 L34 34 L14 34 Z" fill="#e8a34c"/><path d="M12 22 Q24 10 36 22 Z" fill="#c96f2a"/><rect x="14" y="26" width="20" height="3" rx="1.5" fill="#6fbf5a"/></svg></div><div><b data-i18n="lm1n">شاورما دجاج</b><p data-i18n="lm1d">ثومية ومخلل</p></div><span class="mk-price">$6.50</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="mk-show-card">
+            <div class="mk-kicker" data-i18n="showcaseTeam">ما يديره فريقك</div>
+            <h3 data-i18n="showcaseTeamTitle">لوحة المطعم</h3>
+            <p class="muted" data-i18n="showcaseTeamDesc">طلبات وحجوزات وقائمة وإعدادات وتحليلات ورمز QR — على الجوال والمكتب.</p>
+            <div class="mt-1" style="border:1px solid var(--border); border-radius:14px; overflow:hidden; background:var(--ink); color:#fff; padding:12px">
+              <div style="display:flex; gap:8px; margin-bottom:8px"><span style="width:10px;height:10px;border-radius:50%;background:#f55"></span><span style="width:10px;height:10px;border-radius:50%;background:var(--saffron)"></span><span style="width:10px;height:10px;border-radius:50%;background:var(--success)"></span></div>
+              <div style="display:grid; grid-template-columns: repeat(2,1fr); gap:8px"><div style="background:#1d241e; border-radius:10px; padding:10px"><span data-i18n="ordersToday">طلبات اليوم</span><br><b>12</b></div><div style="background:#1d241e; border-radius:10px; padding:10px"><span data-i18n="revenueToday">الإيراد</span><br><b>$184</b></div><div style="background:#1d241e; border-radius:10px; padding:10px"><span data-i18n="pendingL">قيد الانتظار</span><br><b>3</b></div><div style="background:#1d241e; border-radius:10px; padding:10px"><span data-i18n="menuItemsL">أصناف القائمة</span><br><b>24</b></div></div>
+              <div style="margin-top:8px; background:#1d241e; border-radius:10px; padding:10px; font-size:.85rem; display:flex; gap:8px; align-items:center"><span class="badge badge-open" data-i18n="status_preparing">قيد التحضير</span><b>#A3F9K2</b><span style="margin-inline-start:auto">$24.50</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+            <p class="mk-mock-note" data-i18n="mockNote">صور توضيحية للواجهة — افتح مطعمًا حيًا لرؤيتها تعمل حقيقة.</p>
+      </section>
+
+<!-- HOW IT WORKS -->
+    <section id="how" class="mk-section" style="background: var(--cream-deep); border-top:1px solid var(--border); border-bottom:1px solid var(--border)">
+      <div class="mk-container">
+        <div style="text-align:center; max-width:640px; margin:0 auto 14px">
+          <h2 class="mk-section-title" data-i18n="howTitle">كيف يعمل</h2>
+          <p class="mk-muted" data-i18n="howDesc">ثلاث خطوات من المسح إلى الطلب — تُفهم في ثوانٍ.</p>
+        </div>
+        <div class="mk-steps">
+          <div class="mk-step"><div class="mk-step-num">01</div><h3 data-i18n="how1Title">أنشئ مطعمك</h3><p class="muted" data-i18n="how1Desc">أضف شعارك وأقسامك ومنتجاتك وأسعارك ومعلوماتك. حدد ساعات العمل ورسوم التوصيل والهوية.</p></div>
+          <div class="mk-step"><div class="mk-step-num">02</div><h3 data-i18n="how2Title">شارك قائمتك</h3><p class="muted" data-i18n="how2Desc">استخدم رمز QR الخاص بك ورابط موقعك أو وسائل التواصل. يفتحه الزبائن على أي هاتف دون حساب.</p></div>
+          <div class="mk-step"><div class="mk-step-num">03</div><h3 data-i18n="how3Title">استلم الطلبات</h3><p class="muted" data-i18n="how3Desc">يتصفح الزبائن ويضيفون المنتجات ويرسلون طلبهم. تديره في لوحة التحكم وتؤكده على واتساب.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TRUST STRIP -->
+    <section class="mk-section" style="padding-top:12px">
+      <div class="mk-container">
+        <div class="mk-trust">
+          <div class="mk-trust-card"><i>◫</i><strong data-i18n="trustQR">قائمة QR</strong><span data-i18n="trustQRDesc">مسح وتصفح فوري</span></div>
+          <div class="mk-trust-card"><i>🛒</i><strong data-i18n="trustOnline">طلب أونلاين</strong><span data-i18n="trustOnlineDesc">سلة مناسبة للجوال</span></div>
+          <div class="mk-trust-card"><i>💬</i><strong data-i18n="trustWA">طلبات واتساب</strong><span data-i18n="trustWADesc">مباشرة إلى واتسابك</span></div>
+          <div class="mk-trust-card"><i>▦</i><strong data-i18n="trustDash">لوحة المطعم</strong><span data-i18n="trustDashDesc">القائمة والطلبات</span></div>
+          <div class="mk-trust-card"><i>📊</i><strong data-i18n="trustInsight">مبيعات وتحليلات</strong><span data-i18n="trustInsightDesc">الطلبات والأصناف</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section id="features" class="mk-section">
+      <div class="mk-container">
+        <div style="max-width:640px; margin:0 auto 14px; text-align:center">
+          <h2 class="mk-section-title" data-i18n="featTitle">مميزات حقيقية — لا شيء وهمي</h2>
+          <p class="mk-muted" data-i18n="featDesc">كل بطاقة أدناه هي قدرة موجودة فعلًا في المنصة.</p>
+        </div>
+        <div class="mk-feature-grid">
+          <div class="mk-feat f1"><h3 data-i18n="featDigital">قائمة رقمية</h3><p data-i18n="featDigitalDesc">اعرض منتجات وأقسام وأسعار وصور وتوفر. ميّز الشائع أو غير المتوفر.</p></div>
+          <div class="mk-feat f2"><h3 data-i18n="featQR2">قائمة QR</h3><p data-i18n="featQRDesc2">رابط واحد لكل مطعم مع QR قابل للطباعة. بدون تطبيق.</p></div>
+          <div class="mk-feat f3"><h3 data-i18n="featOnline2">طلب أونلاين</h3><p data-i18n="featOnlineDesc2">تصفح وسلة ودفع وفرز عبر الجوال، بدون حساب.</p></div>
+          <div class="mk-feat f4"><h3 data-i18n="featWA2">طلب واتساب</h3><p data-i18n="featWADesc2">طلب عبر الموقع أو رسالة واتساب جاهزة بنفس السلة.</p></div>
+          <div class="mk-feat f1"><h3 data-i18n="featDash2">لوحة المطعم</h3><p data-i18n="featDashDesc2">إدارة الأقسام والأصناف مع رفع الصور وتتبع مباشر.</p></div>
+                    <div class="mk-feat f2"><h3 data-i18n="featAnalytics">تحليلات</h3><p data-i18n="featAnalyticsDesc">طلبات اليوم والإيراد والأصناف الأكثر مبيعًا.</p></div>
+                  </div>
+      </div>
+    </section>
+
+    <!-- INDUSTRIES -->
+    <section class="mk-section">
+      <div class="mk-container">
+        <div style="text-align:center; max-width:640px; margin:0 auto 14px">
+          <h2 class="mk-section-title" data-i18n="indTitle">مصمم لمختلف مشاريع الطعام</h2>
+          <p class="mk-muted" data-i18n="indDesc">نفس المنصة، محتوى مخصص لكل نوع.</p>
+        </div>
+        <div class="mk-industry">
+          <a class="mk-ind" href="/for-restaurants.html" style="text-decoration:none; color:inherit"><div class="mk-ind-cover"><svg viewBox="0 0 300 104" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="300" height="104" fill="#3a2318"/><rect y="66" width="300" height="38" fill="#241610"/><g stroke="#6b4423" stroke-width="3"><line x1="0" y1="74" x2="300" y2="74"/><line x1="0" y1="84" x2="300" y2="84"/><line x1="0" y1="94" x2="300" y2="94"/></g><g><rect x="86" y="22" width="9" height="58" rx="4.5" fill="#8a5a1a" transform="rotate(10 90 51)"/><rect x="146" y="22" width="9" height="58" rx="4.5" fill="#8a5a1a" transform="rotate(-8 150 51)"/><rect x="206" y="22" width="9" height="58" rx="4.5" fill="#8a5a1a" transform="rotate(6 210 51)"/><circle cx="93" cy="40" r="7" fill="#c73d18"/><circle cx="148" cy="34" r="7" fill="#e9b44c"/><circle cx="212" cy="42" r="7" fill="#c73d18"/></g><path d="M40 104 Q60 72 80 104 Q100 72 120 104 Q140 72 160 104" fill="#e07b2a" opacity=".75"/></svg></div><div class="mk-ind-body"><h3 data-i18n="indRest">المطاعم</h3><p class="muted small" data-i18n="indRestDesc">قائمة كاملة وQR للطاولات واستلام وتوصيل وحجوزات.</p><span class="small" style="color:var(--primary); font-weight:700">data-i18n="explore">استكشف →</span></div></a>
+          <a class="mk-ind" href="/for-cafes.html" style="text-decoration:none; color:inherit"><div class="mk-ind-cover"><svg viewBox="0 0 300 104" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="300" height="104" fill="#4a2f1d"/><ellipse cx="150" cy="92" rx="70" ry="8" fill="#2e1c10"/><path d="M110 30 L190 30 L182 82 L118 82 Z" fill="#fffdf5"/><path d="M190 38 Q214 38 208 56 Q203 70 182 68 L184 60 Q196 61 198 54 Q200 44 190 44 Z" fill="#fffdf5"/><rect x="114" y="36" width="72" height="14" rx="4" fill="#6f4a2a"/><path d="M130 22 Q134 14 130 8 M150 22 Q154 14 150 8 M170 22 Q174 14 170 8" stroke="#fffdf5" stroke-width="3" fill="none" stroke-linecap="round" opacity=".7"/><ellipse cx="90" cy="24" rx="7" ry="9" fill="#6f4a2a" transform="rotate(-20 90 24)"/><ellipse cx="212" cy="20" rx="7" ry="9" fill="#6f4a2a" transform="rotate(20 212 20)"/></svg></div><div class="mk-ind-body"><h3 data-i18n="indCafe">المقاهي</h3><p class="muted small" data-i18n="indCafeDesc">طلب قهوة سريع، استلام، طلبات متكررة، تأكيد واتساب.</p><span class="small" style="color:var(--primary); font-weight:700">data-i18n="explore">استكشف →</span></div></a>
+          <a class="mk-ind" href="/for-dessert-shops.html" style="text-decoration:none; color:inherit"><div class="mk-ind-cover"><svg viewBox="0 0 300 104" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="300" height="104" fill="#8a5a1a"/><rect y="72" width="300" height="32" fill="#5e3c10"/><ellipse cx="150" cy="72" rx="120" ry="10" fill="#fffdf5" opacity=".85"/><g><ellipse cx="95" cy="52" rx="26" ry="22" fill="#e8a34c"/><ellipse cx="95" cy="52" rx="10" ry="8" fill="#8a5a1a"/><ellipse cx="185" cy="46" rx="26" ry="22" fill="#d98a2b"/><ellipse cx="185" cy="46" rx="10" ry="8" fill="#5e3c10"/></g><g fill="#3a7a4b"><circle cx="80" cy="42" r="3"/><circle cx="105" cy="58" r="3"/><circle cx="170" cy="36" r="3"/><circle cx="198" cy="56" r="3"/></g><g fill="#fff"><circle cx="90" cy="48" r="2"/><circle cx="180" cy="50" r="2"/></g></svg></div><div class="mk-ind-body"><h3 data-i18n="indDessert">محلات الحلويات</h3><p class="muted small" data-i18n="indDessertDesc">عرض بصري وصناديق وبوفيهات وسلة سهلة.</p><span class="small" style="color:var(--primary); font-weight:700">data-i18n="explore">استكشف →</span></div></a>
+          <a class="mk-ind" href="/for-cake-shops.html" style="text-decoration:none; color:inherit"><div class="mk-ind-cover"><svg viewBox="0 0 300 104" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="300" height="104" fill="#a34a5e"/><ellipse cx="150" cy="94" rx="90" ry="8" fill="#7c3243"/><rect x="100" y="66" width="100" height="22" rx="4" fill="#f7d9e0"/><rect x="112" y="48" width="76" height="20" rx="4" fill="#fff"/><rect x="124" y="32" width="52" height="18" rx="4" fill="#f7d9e0"/><line x1="150" y1="12" x2="150" y2="32" stroke="#5e3c10" stroke-width="3"/><ellipse cx="150" cy="10" rx="4" ry="6" fill="#ffb340"/><circle cx="150" cy="28" r="5" fill="#c73d18"/><g fill="#c73d18"><circle cx="120" cy="58" r="3"/><circle cx="180" cy="58" r="3"/><circle cx="135" cy="76" r="3"/><circle cx="165" cy="76" r="3"/></g></svg></div><div class="mk-ind-body"><h3 data-i18n="indCake">محلات الكيك</h3><p class="muted small" data-i18n="indCakeDesc">طلب مسبق وفترات استلام وملاحظات وأسعار واضحة.</p><span class="small" style="color:var(--primary); font-weight:700">data-i18n="explore">استكشف →</span></div></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRICING -->
+    <section id="pricing" class="mk-section mk-teal">
+      <div class="mk-container mk-pricing">
+        <div style="text-align:center; margin-bottom:14px">
+          <h2 class="mk-section-title" data-i18n="pricingTitle">سعر بسيط</h2>
+          <p class="mk-muted" data-i18n="pricingDesc">خطة واحدة. بدون عمولة. احتفظ بـ 100% من طلباتك.</p>
+        </div>
+        <div class="mk-price-card">
+          <div class="mk-kicker">Restivo</div>
+          <div class="mk-price-amount"><span id="mk-price">$8.99</span><sup id="mk-price-period">/شهر</sup></div>
+          <p class="muted small" data-i18n="pricingTrial">تجربة 7 أيام • إلغاء في أي وقت • السعر قابل للتعديل من لوحة المالك</p>
+          <ul style="text-align:right; max-width: 420px; margin:14px auto; padding-right:18px; color: var(--text); line-height:1.8">
+            <li data-i18n="pricingFeat1">قائمة رقمية ورمز QR</li>
+            <li data-i18n="pricingFeat2">طلب أونلاين + واتساب</li>
+            <li data-i18n="pricingFeat3">لوحة تحكم وطلبات وحجوزات</li>
+            <li data-i18n="pricingFeat4">تحليلات وأصناف أكثر مبيعًا</li>
+            <li data-i18n="pricingFeat5">هويتك وألوانك وشعارك وغلافك</li>
+          </ul>
+          <div class="mt-1" style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap">
+            <a class="btn" href="#request" data-i18n="pricingCTA">اجعل مطعمك أونلاين</a>
+            <a class="btn btn-outline" href="/app/" data-i18n="heroCTA">شاهد مطعم حي</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- REQUEST FORM — احصل على صفحتك -->
+    <section id="request" class="mk-section" style="background: var(--surface-muted); border-top:1px solid var(--border); border-bottom:1px solid var(--border)">
+      <div class="mk-container">
+        <div class="mk-request">
+          <h2 data-i18n="rqTitle">اطلب صفحتك الخاصة</h2>
+          <p class="muted small" data-i18n="rqDesc">املأ بياناتك وسننشئ لك صفحة مطعمك الخاصة — تراها في لوحة تحكم المالك.</p>
+          <form id="request-form" novalidate>
+            <div class="form-row form-row-2" style="display:grid; grid-template-columns:1fr 1fr; gap:12px">
+              <div class="mk-field"><label for="rq-name" data-i18n="rqNameL">اسمك *</label><input id="rq-name" name="customerName" type="text" maxlength="80" required placeholder="أحمد" data-i18n-placeholder="rqNamePh"></div>
+              <div class="mk-field"><label for="rq-rest" data-i18n="rqRestL">اسم المطعم *</label><input id="rq-rest" name="restaurantName" type="text" maxlength="80" required placeholder="مطعم الشام" data-i18n-placeholder="rqRestPh"></div>
+            </div>
+            <div class="form-row form-row-2" style="display:grid; grid-template-columns:1fr 1fr; gap:12px">
+              <div class="mk-field"><label for="rq-phone" data-i18n="rqPhoneL">رقم الهاتف *</label><input id="rq-phone" name="phone" type="tel" maxlength="20" required placeholder="+972 5xxxxxxx" data-i18n-placeholder="rqPhonePh"></div>
+              <div class="mk-field"><label for="rq-wa" data-i18n="rqWaL">واتساب *</label><input id="rq-wa" name="whatsapp" type="tel" maxlength="20" required placeholder="+972 5xxxxxxx" data-i18n-placeholder="rqWaPh"></div>
+            </div>
+            <div class="mk-field"><label for="rq-city" data-i18n="rqCityL">المدينة</label><input id="rq-city" name="city" type="text" maxlength="60" placeholder="رام الله" data-i18n-placeholder="rqCityPh"></div>
+            <div class="mk-field"><label for="rq-notes" data-i18n="rqNotesL">ملاحظات (اختياري)</label><textarea id="rq-notes" name="notes" maxlength="500" rows="3" placeholder="عدد الأصناف، هل لديك شعار؟" data-i18n-placeholder="rqNotesPh"></textarea></div>
+            <button type="submit" class="btn btn-block" id="rq-submit" data-i18n="rqSubmit">إرسال الطلب — سنرد خلال ساعة</button>
+            <a class="btn btn-block mt-1" style="background:#25D366;color:#fff;border:0" target="_blank" rel="noopener" id="rq-wa-fast" href="https://wa.me/972567439846?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%20Restivo%20%E2%80%94%20%D8%A3%D8%B1%D9%8A%D8%AF%20%D8%B5%D9%81%D8%AD%D8%A9%20%D9%84%D9%85%D8%B7%D8%B9%D9%85%D9%8A" data-i18n="rqWaFast">تواصل واتساب للرد السريع ⚡</a>
+            <div id="rq-msg" class="notice hidden mt-1" role="status"></div>
+            <p class="small muted" style="text-align:center; margin-top:8px" data-i18n="rqConsent">بالإرسال توافق على أن نتواصل معك على واتساب. للرد الفوري استخدم زر واتساب.</p>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="mk-section">
+      <div class="mk-container mk-faq">
+        <h2 class="mk-section-title" style="text-align:center" data-i18n="faqTitle">أسئلة شائعة</h2>
+        <details><summary data-i18n="faqQRQ">كيف تعمل قائمة QR؟</summary><p data-i18n="faqQRA">ننشئ QR لرابط مطعمك (/restaurant/اسمك). اطبعه على الطاولات — يمسحه الزبون ويفتح القائمة فورًا بدون تطبيق.</p></details>
+        <details><summary data-i18n="faqOrderQ">هل يمكن للزبائن الطلب من جوالاتهم؟</summary><p data-i18n="faqOrderA">نعم. يتصفحون الأقسام، يضيفون للسلة، يختارون استلام أو توصيل، يدخلون الاسم وواتساب، ويُرسلون. الأسعار تُفحص في الخادم.</p></details>
+        <details><summary data-i18n="faqUpdateQ">هل أستطيع تحديث الأسعار والمنتجات؟</summary><p data-i18n="faqUpdateA">نعم في أي وقت من لوحة التحكم. التغيير فوري — لا حاجة لإعادة الطباعة.</p></details>
+        <details><summary data-i18n="faqReceiveQ">كيف أستلم الطلبات؟</summary><p data-i18n="faqReceiveA">مباشرة في اللوحة (تنبيه لحظي) وكملخص منظم يمكنك إرساله على واتساب. لكل طلب رمز تتبع.</p></details>
+        <details><summary data-i18n="faqBrandQ">هل أستطيع استخدام شعار مطعمي؟</summary><p data-i18n="faqBrandA">نعم. كل مطعم يحدد شعاره وغلافه وألوانه وعملته ورسوم التوصيل.</p></details>
+        <details><summary data-i18n="faqMobileQ">هل يعمل على الجوال؟</summary><p data-i18n="faqMobileA">نعم، مصمم للجوال أولاً ويعمل على كل الأجهزة.</p></details>
+        <details><summary data-i18n="faqSalesQ">هل أرى مبيعاتي؟</summary><p data-i18n="faqSalesA">نعم. لوحة التحكم تعرض طلبات اليوم والإيراد والأصناف الأكثر مبيعًا والتحليلات مع تصدير CSV.</p></details>
+        <details><summary data-i18n="faqCreateQ">كيف أنشئ حساب مطعم؟</summary><p data-i18n="faqCreateA">تواصل معنا أو سجّل دخولك — مالك المنصة ينشئ مطعمك ومستخدمك.</p></details>
+        <details><summary data-i18n="faqTryQ">هل أستطيع التجربة قبل الاشتراك؟</summary><p data-i18n="faqTryA">نعم — افتح مطعمًا حيًا من /app لترى نفس تجربة الزبون قبل إنشاء مطعمك.</p></details>
+      </div>
+    </section>
+
+    <!-- FINAL CTA -->
+    <section class="mk-final">
+      <div class="mk-container">
+        <div style="font-size:2rem" aria-hidden="true">✦</div>
+        <h2><span data-i18n="ctaTitle">ابدأ مطعمك أونلاين</span></h2>
+        <p data-i18n="ctaDesc">قائمة رقمية وQR وطلب — جاهز خلال دقائق.</p>
+        <div><a class="mk-final-cta" href="#request" style="text-decoration:none"><span data-i18n="navRequest">اطلب صفحتك</span><span aria-hidden="true">←</span></a></div>
+      </div>
+    </section>
+
   </main>
+
+  <footer class="mk-footer">
+    <div class="mk-container" style="display:flex; gap:14px; flex-wrap:wrap; align-items:flex-end; justify-content:space-between">
+      <div><a class="mk-brand" href="/" aria-label="Restivo" style="color:#f8f0df"><span class="mk-brand-mark">ر</span><span>Restivo</span></a>
+      <p class="small" style="margin:12px 0 0; color:rgba(248,240,223,.45)" data-i18n="footNote">© Restivo — منيو وطلب للمطاعم.</p></div>
+      <span style="display:flex; gap:12px; flex-wrap:wrap">
+        <a href="/features.html" data-i18n="navFeatures">المميزات</a>
+        <a href="/how-it-works.html" data-i18n="navHow">كيف يعمل</a>
+        <a href="/pricing.html" data-i18n="navPricing">الأسعار</a>
+        <a href="#request" data-i18n="navRequest">اطلب صفحتك</a>
+        <a href="/for-restaurants.html" data-i18n="indRest">المطاعم</a>
+        <a href="/contact.html" data-i18n="contactLink">تواصل</a>
+        <a href="/app/" data-i18n="appLink">المطاعم</a>
+      </span>
+    </div>
+  </footer>
+
+  <a id="wa-float" href="https://wa.me/972567439846?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%20Restivo%20%E2%80%94%20%D8%A3%D8%B1%D9%8A%D8%AF%20%D8%B5%D9%81%D8%AD%D8%A9%20%D9%84%D9%85%D8%B7%D8%B9%D9%85%D9%8A" target="_blank" rel="noopener" aria-label="تواصل واتساب" style="position:fixed;bottom:18px;inset-inline-end:18px;z-index:60;width:52px;height:52px;border-radius:50%;background:#25D366;display:grid;place-items:center;box-shadow:0 8px 24px rgba(0,0,0,.22);text-decoration:none"><span style="font-size:26px" aria-hidden="true">💬</span></a>
 
   <script src="/js/i18n.js"></script>
   <script src="/js/api.js"></script>
-  <script src="/js/home.js"></script>
+  <script src="/js/site.js"></script>
   <script src="/js/pwa.js"></script>
+  <script src="/js/skeleton.js"></script>
 </body>
 </html>

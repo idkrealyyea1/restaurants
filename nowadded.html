@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>المبيعات AI — Restivo</title>
+  <link rel="stylesheet" href="/fonts/fonts.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/offers.css">
+  <style>
+    .sales-hero{display:grid;gap:16px;padding:20px;border-radius:20px;background:linear-gradient(135deg,#1b1e1c 0%,#2f3f2e 55%,#3a1f18 100%);color:#fffdf5;position:relative;overflow:hidden}
+    @media(min-width:860px){.sales-hero{grid-template-columns:1.2fr 320px;align-items:center;padding:24px}}
+    .sales-steps{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+    .sales-steps span{background:rgba(255,253,245,.1);border:1px solid rgba(255,253,245,.15);padding:5px 10px;border-radius:999px;font-size:.78rem;font-weight:700}
+    .sales-steps span.active{background:var(--oh-accent);color:#1b1e1c;border-color:var(--oh-accent)}
+    .dash6{display:grid;gap:10px;grid-template-columns:repeat(3,1fr)}
+    @media(min-width:700px){.dash6{grid-template-columns:repeat(6,1fr)}}
+    .dash6 .dash-card{padding:14px}
+    .dash6 b{font-size:1.5rem}
+    .how-grid{display:grid;gap:10px;grid-template-columns:1fr}
+    @media(min-width:700px){.how-grid{grid-template-columns:repeat(3,1fr)}}
+    .how-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center}
+    .how-card b{font-family:var(--font-display);font-size:1rem}
+    .bulk-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:10px;background:var(--surface-muted);border:1px solid var(--border);border-radius:12px;margin:10px 0}
+    .lead-card{border-radius:16px}
+    .lead-tabs{display:flex;gap:4px;padding:8px;background:var(--surface-muted);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+    .lead-tabs button{flex:1;padding:7px;border:0;background:transparent;border-radius:8px;font-weight:800;font-size:.78rem;cursor:pointer;color:var(--muted)}
+    .lead-tabs button.active{background:var(--ink);color:#fff}
+    .lead-pane{padding:12px;display:none}
+    .lead-pane.active{display:block}
+    .filters{gap:6px}
+    .filters select,.filters input{font-size:.85rem;padding:7px 10px}
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner container">
+      <a class="brand" href="/owner.html">Restivo</a>
+      <span class="spacer"></span>
+      <span class="badge" style="background:var(--oh-accent);color:#1b1e1c">Sales Control</span>
+      <a class="btn btn-outline btn-sm" href="/owner.html">لوحة المالك</a>
+      <button id="logout-btn" type="button" class="btn btn-outline btn-sm">خروج</button>
+    </div>
+  </header>
+  <main class="container oh-page mt-2">
+    <div id="guard" class="card" style="text-align:center;padding:40px"><p>جارٍ التحميل…</p></div>
+    <div id="app" class="hidden">
+      <section class="sales-hero">
+        <div>
+          <span class="oh-eyebrow"><i></i> Chat → Website → Send — صفحة واحدة</span>
+          <h1 style="font-family:var(--font-display);margin:10px 0 8px;font-size:clamp(1.6rem,4vw,2.3rem)">قل لي هنا <span style="color:var(--oh-accent)">“ابحث عن مطاعم”</span> → تجدهم هنا جاهزين</h1>
+          <p style="opacity:.9;max-width:58ch">كلّمني هنا في الشات: <code>ابحث 5 مطاعم في عمان بدون موقع</code> → أنا أبحث بـ Agent Reach (Exa) + أمنع التكرار بـ 5 معرفات + أقيّم HOT/WARM + أجهّز ديمو حي + عرض + رسائل. أنت فقط تفتح <strong>المبيعات</strong> وتضغط <strong>إرسال</strong>.</p>
+          <div class="sales-steps"><span class="active">1 Find (chat)</span><span>2 Add here</span><span>3 Send</span><span>4 Convert</span></div>
+          <div class="oh-actions" style="margin-top:12px">
+            <button id="discover-btn" type="button" class="btn btn-sm" style="background:#fff;color:var(--ink)">🔍 Find New (من الموقع احتياطي)</button>
+            <button id="new-lead-btn" type="button" class="btn btn-outline btn-sm" style="background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.3)">+ يدوي</button>
+            <span class="small" style="opacity:.85">أو قل لي في الشات: <em>ابحث 3 في غزة</em></span>
+          </div>
+        </div>
+        <div class="oh-preview" aria-hidden="true">
+          <div class="oh-preview-head"><div class="oh-dot">AI</div><div class="oh-meta"><small>Agent Reach → Exa</small><strong>مطاعم بدون موقع + انستغرام نشط</strong></div></div>
+          <div class="oh-lines">
+            <div class="oh-line"><span>لا موقع</span><em>+25 HOT</em></div>
+            <div class="oh-line"><span>انستغرام 2k</span><em>+10</em></div>
+            <div class="oh-line"><span>بدون طلب</span><em>+10 → 92</em></div>
+          </div>
+          <div class="oh-qr"><div class="oh-qr-box">92</div><p><strong>HOT — 92/100</strong><br>جاهز للديمو والعرض</p></div>
+        </div>
+      </section>
+
+      <div class="how-grid mt-2">
+        <div class="how-card"><b>💬 Chat</b><br><small class="muted">تقول لي هنا: <code>ابحث 5 في عمان</code> → أنا أبحث بـ Agent Reach + أضيفهم هنا جاهزين (تقييم + ديمو + عرض + رسائل).</small></div>
+        <div class="how-card"><b>👀 Website</b><br><small class="muted">تفتح <strong>المبيعات</strong> → تشوف HOT أولاً + ديمو حي + عرض احترافي — كل شيء جاهز، ما تحتاج Prepare.</small></div>
+        <div class="how-card"><b>📤 Send</b><br><small class="muted">تضغط <code>WhatsApp / Email / Instagram</code> → رسالة شخصية + رابط الديمو + يوزر/باس → تم التواصل.</small></div>
+      </div>
+
+      <div class="oh-label"><span>لوحة</span><b>المبيعات — 6 أرقام</b></div>
+      <div id="dash" class="dash6"></div>
+      <div id="d-history" class="small muted mt-1" style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px"></div>
+
+      <div class="filters mt-2">
+        <input id="f-search" placeholder="ابحث LEAD-000003 أو اسم/انستا" style="flex:1;min-width:140px">
+        <select id="f-city"><option value="">كل المدن</option><option>Amman</option><option>Gaza</option><option>Ramallah</option><option>Beirut</option><option>Cairo</option></select>
+        <select id="f-status"><option value="">كل الحالات</option><option>NEW</option><option>QUALIFIED</option><option>CONTACTED</option><option>TRIAL</option><option>CONVERTED</option><option>NOT_INTERESTED</option></select>
+        <select id="f-level"><option value="">HOT/WARM/COLD</option><option>HOT</option><option>WARM</option><option>COLD</option></select>
+        <button id="f-apply" type="button" class="btn btn-sm">فلتر</button>
+        <button id="f-clear" type="button" class="btn btn-outline btn-sm">مسح</button>
+      </div>
+
+      <div class="bulk-bar">
+        <span class="small muted" id="bulk-count">0 محدد</span>
+        <button id="bulk-prepare" type="button" class="btn btn-sm" disabled>Prepare Selected (HOT)</button>
+        <button id="bulk-contact" type="button" class="btn btn-outline btn-sm" disabled>Mark Contacted</button>
+        <span class="spacer"></span>
+        <button id="show-history" type="button" class="btn btn-outline btn-sm">سجل البحث</button>
+        <button id="show-merge" type="button" class="btn btn-outline btn-sm">Merge</button>
+      </div>
+
+      <div id="discover-box" class="card hidden">
+        <h3>Find New Restaurants — Agent Reach</h3>
+        <p class="small muted">اكتب بلغة طبيعية. مثال: <code>مطاعم عمان بدون موقع</code> أو <code>cafes in Gaza with Instagram but no website</code> — نترجمها لـ Exa + نفلتر المكرر تلقائياً.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <input id="d-city" placeholder="المدينة" value="Amman" style="width:120px">
+          <input id="d-query" place<input id="d-query" placeholder="مثال: مطاعم بدون موقع + انستغرام نشط" style="flex:1;min-width:180px" value="restaurants Amman without website Instagram">
+          <label style="display:flex;gap:6px;align-items:center;font-size:.85rem"><input type="checkbox" id="d-findnew" checked> Find New Only</label>
+          <button id="d-run" type="button" class="btn btn-sm">اكتشاف</button>
+        </div>
+        <div id="d-result" class="small muted mt-1"></div>
+      </div>
+
+      <div id="manual-box" class="card hidden">
+        <h3>إضافة يدوية</h3>
+        <div style="display:grid;gap:8px;grid-template-columns:1fr 1fr">
+          <input id="m-name" placeholder="اسم المطعم *">
+          <input id="m-city" placeholder="المدينة">
+          <input id="m-phone" placeholder="هاتف">
+          <input id="m-whatsapp" placeholder="واتساب">
+          <input id="m-insta" placeholder="انستغرام">
+          <input id="m-website" placeholder="موقع">
+          <input id="m-menu" placeholder="رابط المنيو">
+          <input id="m-category" placeholder="تصنيف">
+        </div>
+        <textarea id="m-notes" placeholder="ملاحظات" rows="2" style="margin-top:8px"></textarea>
+        <button id="m-create" type="button" class="btn btn-sm mt-1">إنشاء Lead</button>
+      </div>
+
+      <div id="merge-box" class="card hidden">
+        <h3>دمج مكرر</h3>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <input id="merge-target" placeholder="LEAD-000003 يبقى" style="flex:1">
+          <input id="merge-source" placeholder="LEAD-000005 يحذف" style="flex:1">
+          <button id="merge-run" type="button" class="btn btn-sm">دمج</button>
+        </div>
+        <div id="merge-result" class="small muted mt-1"></div>
+      </div>
+      <div id="history-zone" class="card hidden"></div>
+
+      <div id="leads-zone" class="mt-2"></div>
+    </div>
+  </main>
+  <script src="/js/i18n.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/leads.js"></script>
+</body>
+</html>

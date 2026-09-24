@@ -25,6 +25,12 @@ async function login(req, res) {
     // Deactivated tenant blocks login even if the account itself is active.
     const rest = await restaurants.getById(user.restaurant_id);
     if (!rest || !rest.is_active) throw unauthorized('Invalid credentials');
+    // 7-day trial enforcement — ponytail: single check here covers all admin logins
+    const sub = await restaurants.getSubscription(user.restaurant_id);
+    if (!sub.active) {
+      const { forbidden } = require('../utils/errors');
+      throw forbidden('SUBSCRIPTION_EXPIRED', 'انتهت فترة التجربة 7 أيام — تواصل مع الإدارة للتجديد عبر واتساب +972567439846 ($8.99/شهر) | 7-day trial finished — contact +972567439846 to renew ($8.99/mo)');
+    }
   }
   if (user.role === 'delivery') {
     const group = (

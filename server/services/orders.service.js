@@ -90,12 +90,12 @@ async function createCheckout({ restaurantId, payload }) {
      const rest = restRes.rows[0];
     if (!rest || !rest.is_active) throw conflict('RESTAURANT_UNAVAILABLE', 'This restaurant is not accepting orders');
 
-    // $20/month subscription gate — NULL or future = active
+    // $8.99/month subscription gate — NULL or future = active
     {
       const sub = await client.query('SELECT subscription_ends_at FROM restaurants WHERE id = $1', [restaurantId]);
       const endsAt = sub.rows[0] ? sub.rows[0].subscription_ends_at : null;
       const active = !endsAt || new Date(endsAt).getTime() > Date.now();
-      if (!active) throw conflict('SUBSCRIPTION_EXPIRED', 'Subscription expired — please renew ($20/month)');
+      if (!active) throw require('../utils/errors').forbidden('SUBSCRIPTION_EXPIRED', 'Subscription expired — please renew ($8.99/month) | انتهت التجربة — تواصل +972567439846');
     }
 
     if (rest.status !== 'open') {

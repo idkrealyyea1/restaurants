@@ -92,9 +92,37 @@
       loadOverview();
       loadRestaurants();
       loadDeliveryGroups();
+      loadRequests();
     });
 
-    await Promise.all([loadOverview(), loadRestaurants(), loadDeliveryGroups()]);
+    await Promise.all([loadOverview(), loadRestaurants(), loadDeliveryGroups(), loadPricing(), loadRequests()]);
+
+    // Requests filters
+    const reqStatus = document.getElementById('requests-status');
+    if(reqStatus) reqStatus.addEventListener('change', ()=>{ reqPage=1; loadRequests(); });
+    const reqRefresh = document.getElementById('requests-refresh');
+    if(reqRefresh) reqRefresh.addEventListener('click', loadRequests);
+    const rp = document.getElementById('req-prev');
+    if(rp) rp.addEventListener('click', ()=>{ if(reqPage>1){ reqPage--; loadRequests(); }});
+    const rn = document.getElementById('req-next');
+    if(rn) rn.addEventListener('click', ()=>{ reqPage++; loadRequests(); });
+
+    // Pricing form — owner only
+    const pricingForm = document.getElementById('pricing-form');
+    if (pricingForm && !pricingForm.dataset.bound) {
+      pricingForm.dataset.bound = '1';
+      pricingForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const priceMaj = parseFloat(document.getElementById('pricing-price').value);
+        const cur = document.getElementById('pricing-currency').value;
+        if (!Number.isFinite(priceMaj) || priceMaj < 0) { toast('Invalid price', 'error'); return; }
+        try {
+          await api.patch('/api/owner/platform-pricing', { pricingCents: Math.round(priceMaj * 100), pricingCurrency: cur });
+          toast('Pricing saved', 'success');
+          await loadPricing();
+        } catch (err) { toast(err.message, 'error'); }
+      });
+    }
 
     // Staff: hide delete/password UI, owner: load staff panel
     if (currentRole === 'owner') {
@@ -119,6 +147,8 @@
     } else if (currentRole === 'staff') {
       const sc = document.getElementById('staff-card');
       if (sc) sc.style.display = 'none';
+      const ol = document.getElementById('offers-link');
+      if (ol) ol.style.display = 'none';
       // hide delete buttons (server still blocks)
       document.querySelectorAll('[data-delete],[data-del]').forEach((b) => { b.style.display = 'none'; });
     }
@@ -355,6 +385,11 @@
         I.t('pageInfo', { p: page, t: Math.max(1, Math.ceil(data.total / data.limit)), n: data.total });
 
       wireRows(data.restaurants);
+      // ponytail: hide staff delete after every re-render (pagination/search re-creates DOM)
+      if (currentRole === 'staff') {
+        document.querySelectorAll('#restaurants-zone [data-delete],[data-deactivate],[data-activate]').forEach((b) => { b.style.display = 'none'; });
+        document.querySelectorAll('#delivery-zone [data-del],[data-edit]').forEach((b) => { b.style.display = 'none'; });
+      }
     } catch (err) {
       zone.innerHTML = '<div class="notice notice-error">' + esc(err.message) + '</div>';
     }
@@ -579,6 +614,48 @@
     } catch (err) {
       toast(err.message, 'error');
     }
+  }
+
+  async function loadPricing() {
+    const zone = document.getElementById('pricing-zone');
+    if (!zone) return;
+    try {
+      const data = await api.get('/api/owner/platform-pricing').catch(() => api.get('/api/pricing'));
+      const p = data.pricing || data;
+      const major = (p.pricing_cents / 100).toFixed(2);
+      document.getElementById('pricing-price').value = major;
+      document.getElementById('pricing-currency').value = p.pricing_currency || 'USD';
+      zone.textContent = 'Current: ' + fmtMoney(p.pricing_cents, p.pricing_currency || 'USD') + ' / ' + (p.pricing_period || 'month') + ' — trial ' + (p.trial_days || 7) + ' days';
+    } catch (err) {
+      zone.textContent = err.message;
+    }
+  }
+
+  let reqPage=1;
+  async function loadRequests(){
+    const zone=document.getElementById('requests-zone');
+    if(!zone) return;
+    const status=document.getElementById('requests-status')?.value || '';
+    const q='?page='+reqPage+'&limit=10'+(status?'&status='+encodeURIComponent(status):'');
+    zone.innerHTML='<div class="empty-state small">جاري التحميل…</div>';
+    try{
+      const data=await api.get('/api/owner/restaurant-requests'+q);
+      const list=data.requests||[];
+      const pendingAll = await api.get('/api/owner/restaurant-requests?limit=1&status=pending').catch(()=>({total:0}));
+      const badge=document.getElementById('req-count-badge');
+      if(badge){ const n=pendingAll.total||0; badge.textContent=n? n+' جديد':''; badge.style.display=n?'inline-block':'none'; }
+      if(!list.length){ zone.innerHTML='<div class="empty-state small">لا توجد طلبات.</div>'; document.getElementById('req-page-info').textContent=''; return; }
+      zone.innerHTML='<div class="table-wrap"><table class="data"><thead><tr><th>الكود</th><th>العميل</th><th>المطعم</th><th>الهاتف</th><th>الحالة</th><th>تاريخ</th><th></th></tr></thead><tbody>'+
+        list.map(r=>'<tr><td><span class="order-code">'+esc(r.code)+'</span></td><td>'+esc(r.customer_name)+'<div class="muted small">'+esc(r.city||'')+'</div></td><td><strong>'+esc(r.restaurant_name)+'</strong></td><td class="small">'+esc(r.phone)+'<br>'+esc(r.whatsapp)+'</td><td><span class="badge '+(r.status==='pending'?'badge-closed':r.status==='approved'?'badge-open':'')+'">'+esc(r.status)+'</span></td><td class="small muted">'+esc(String(r.created_at).slice(0,10))+'</td><td><div style="display:flex;gap:4px;flex-wrap:wrap"><select data-req-status="'+esc(r.id)+'"><option value="pending"'+(r.status==='pending'?' selected':'')+'>pending</option><option value="contacted"'+(r.status==='contacted'?' selected':'')+'>contacted</option><option value="approved"'+(r.status==='approved'?' selected':'')+'>approved</option><option value="rejected"'+(r.status==='rejected'?' selected':'')+'>rejected</option></select><a class="btn btn-outline btn-sm" href="https://wa.me/'+encodeURIComponent(String(r.whatsapp).replace(/[^0-9]/g,''))+'" target="_blank" rel="noopener">واتساب</a><button type="button" class="btn btn-danger btn-sm" data-req-del="'+esc(r.id)+'">حذف</button></div>'+(r.notes?'<div class="muted small" style="margin-top:4px">'+esc(r.notes)+'</div>':'')+'</td></tr>').join('')+'</tbody></table></div>';
+      document.getElementById('req-page-info').textContent='صفحة '+data.page+' من '+Math.max(1,Math.ceil(data.total/data.limit))+' ('+data.total+')';
+      zone.querySelectorAll('[data-req-status]').forEach(sel=> sel.addEventListener('change', async ()=>{
+        try{ await api.patch('/api/owner/restaurant-requests/'+sel.getAttribute('data-req-status'), {status: sel.value}); toast('تم التحديث','success'); }catch(e){ toast(e.message,'error'); }
+      }));
+      zone.querySelectorAll('[data-req-del]').forEach(b=> b.addEventListener('click', async ()=>{
+        if(!confirm('حذف الطلب '+b.getAttribute('data-req-del')+'؟')) return;
+        try{ await api.del('/api/owner/restaurant-requests/'+b.getAttribute('data-req-del')); toast('تم الحذف','success'); loadRequests(); }catch(e){ toast(e.message,'error'); }
+      }));
+    }catch(err){ zone.innerHTML='<div class="notice notice-error">'+esc(err.message)+'</div>'; }
   }
 
   async function loadStaff() {

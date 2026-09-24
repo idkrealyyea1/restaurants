@@ -10,13 +10,14 @@ env:
   NODE_ENV: production
   TRUST_PROXY: '1'
 capabilities:
+  instaboot:
+    mode: null
+    requests:
+    - path: /
+    - path: /api/healthz
+    max_age: 12h
   database:
     engine: postgres
-  instaboot:
-    max_age: 12h
-    requests:
-      - path: /
-      - path: /api/healthz
 annotations:
   anybuild.run/config:
     commands:
@@ -30,7 +31,11 @@ annotations:
     node_package_name: restaurants-platform
     node_remove_native_binaries: true
     node_server: express
+    services:
+    - engine: postgres
+      name: database
+    npm_version: '11'
   anybuild.run/provider: node
-  anybuild.run/version: 0.28.2
-  wasmer.io/version: 7.4.0
+  anybuild.run/version: 0.29.0
+  wasmer.io/version: 7.4.2
 enableDatabase: true

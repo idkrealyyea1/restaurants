@@ -10,43 +10,52 @@
    ============================================================ */
 
 :root {
-  /* Restaurant brand (overridden per-restaurant on the storefront) */
-  --primary: #c73d18;
-  --secondary: #2f3f2e;
+  /* Restivo new identity — warm cream canvas, ink text, coral/sun/teal accents.
+     Brand vars are overridden per-restaurant on the storefront. */
+  --primary: #ed6b4c;
+  --secondary: #1f3439;
   /* Pattern fill for primary/secondary brand graphics */
-  --primary-pattern: #c73d18;
-  --secondary-pattern: #2f3f2e;
+  --primary-pattern: #ed6b4c;
+  --secondary-pattern: #1f3439;
   /* Derived brand shades (computed from primary/secondary) */
-  --primary-dark: #a33214;
-  --primary-light: #fde9e2;
-  --primary-soft: #fef0e8;
-  --secondary-dark: #1f2a1f;
-  --secondary-soft: #e8ece8;
+  --primary-dark: #d84632;
+  --primary-light: #fbe3d8;
+  --primary-soft: #fbe9dd;
+  --secondary-dark: #15272b;
+  --secondary-soft: #dce8df;
   /* Contrast-aware text: --on-primary sits on --primary, --on-secondary on --secondary */
-  --on-primary: #ffffff;
-  --on-secondary: #ffffff;
+  --on-primary: #fffaf0;
+  --on-secondary: #f8f0df;
 
-  /* Souq palette — parchment, ink, sumac, olive, saffron */
-  --bg: #fdf6ec;
-  --surface: #fffdf5;
-  --surface-muted: #fdf1d8;
-  --ink: #1b1e1c;
-  --text: #2a2e26;
-  --muted: #7a756e;
-  --border: #e8ddd0;
-  --border-strong: #d9c8b0;
-  --saffron: #e9b44c;
-  --saffron-soft: #fef3d6;
+  /* Cream palette — parchment, ink, coral, teal, sun */
+  --bg: #f8f0df;
+  --surface: #fffaf0;
+  --surface-muted: #f1e4c9;
+  --ink: #1f3439;
+  --text: #1f3439;
+  --muted: rgba(31, 52, 57, .6);
+  --border: rgba(31, 52, 57, .12);
+  --border-strong: rgba(31, 52, 57, .2);
+  --saffron: #f5c84b;
+  --saffron-soft: #fdf0cd;
   --saffron-ink: #7a5a12;
-  --danger: #c23a26;
+  --danger: #d84632;
   --danger-soft: #f9e4df;
   --danger-ink: #94301f;
-  --success: #3a7a4b;
-  --success-soft: #e6f0e6;
-  --success-ink: #2f5a3a;
+  --success: #27615f;
+  --success-soft: #dce8df;
+  --success-ink: #27615f;
   --warning: #a3741c;
   --warning-soft: #f7ecd3;
   --warning-ink: #7c5510;
+
+  /* New-identity accents (use literally in marketing/storefront) */
+  --coral: #ed6b4c;
+  --coral-dark: #d84632;
+  --sun: #f5c84b;
+  --teal: #27615f;
+  --cream: #f8f0df;
+  --cream-deep: #f1e4c9;
 
   /* Type */
   --font-display: 'El Messiri', 'Cairo', system-ui, sans-serif;
@@ -54,11 +63,14 @@
   --font-body: 'Almarai', 'Cairo', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-mono: ui-monospace, 'SF Mono', 'Cascadia Code', Menlo, Consolas, 'Liberation Mono', monospace;
 
-  /* Shape & depth */
-  --radius: 14px;
-  --radius-lg: 20px;
-  --shadow: 0 1px 2px rgba(43, 41, 34, .05), 0 10px 26px -18px rgba(43, 41, 34, .18);
-  --shadow-lg: 0 2px 4px rgba(43, 41, 34, .06), 0 28px 56px -28px rgba(43, 41, 34, .3);
+  /* Shape & depth — soft system + hard neo-brutalist accents */
+  --radius: 18px;
+  --radius-lg: 24px;
+  --shadow: 0 6px 18px rgba(31, 52, 57, .07);
+  --shadow-lg: 0 18px 45px rgba(31, 52, 57, .12);
+  --hard-sm: 4px 4px 0 var(--ink);
+  --hard-coral: 5px 5px 0 var(--coral);
+  --hard-sun: 6px 6px 0 var(--sun);
 }
 
 * { box-sizing: border-box; }
@@ -69,10 +81,10 @@ body {
   margin: 0;
   font-family: var(--font-body);
   background:
-    radial-gradient(1px 1px at 20% 30%, rgba(27,30,28,.035) 1px, transparent 0),
-    radial-gradient(1px 1px at 80% 70%, rgba(199,61,24,.04) 1px, transparent 0),
+    linear-gradient(to right, rgba(31, 52, 57, .05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(31, 52, 57, .05) 1px, transparent 1px),
     var(--bg);
-  background-size: 42px 42px, 64px 64px, auto;
+  background-size: 48px 48px, 48px 48px, auto;
   color: var(--text);
   line-height: 1.5;
   font-size: 16px;

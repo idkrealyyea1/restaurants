@@ -1,4 +1,4 @@
-# Restaurants Platform — Engineering Handoff & Product Spec
+# Restivo — Engineering Handoff & Product Spec
 
 > **Purpose of this document:** a complete, self-contained description of the
 > `restaurants-platform` project — what it is, how it is built, what it can do,

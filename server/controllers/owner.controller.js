@@ -70,6 +70,18 @@ async function createRestaurant(req, res) {
   if (await restaurants.slugExists(data.slug)) {
     throw conflict('SLUG_TAKEN', 'A restaurant with this URL slug already exists');
   }
+  // 7-day trial support — ponytail: single field, owner sets trialDays=7 to auto-expire
+  let subscriptionEndsAt = null;
+  if (req.body.trialDays !== undefined) {
+    const days = Number(req.body.trialDays);
+    if (Number.isInteger(days) && days >= 1 && days <= 365) {
+      subscriptionEndsAt = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();
+    }
+  } else if (req.body.subscriptionEndsAt) {
+    const d = new Date(req.body.subscriptionEndsAt);
+    if (!Number.isNaN(d.getTime())) subscriptionEndsAt = d.toISOString();
+  }
+  data.subscriptionEndsAt = subscriptionEndsAt;
   const restaurant = await restaurants.createRestaurant(data);
 
   // Optionally create the first admin account in the same request.
@@ -387,6 +399,40 @@ async function deleteDeliveryGroup(req, res) {
   res.json({ ok: true });
 }
 
+async function getPlatformPricing(req, res) {
+  const platform = require('../services/platform.service');
+  const p = await platform.getPricing();
+  res.json({ pricing: p });
+}
+async function updatePlatformPricing(req, res) {
+  const platform = require('../services/platform.service');
+  const v = require('../validators');
+  const patch = v.validatePlatformPricing(req.body);
+  const p = await platform.updatePricing(patch);
+  res.json({ pricing: p });
+}
+
+async function listRestaurantRequests(req, res) {
+  const svc = require('../services/restaurantRequests.service');
+  const page = v.validatePagination(req.query);
+  const status = req.query.status && ['pending','contacted','approved','rejected'].includes(String(req.query.status)) ? String(req.query.status) : null;
+  const data = await svc.list({ status, limit: page.limit, offset: page.offset });
+  res.json({ total: data.total, page: page.page, limit: page.limit, requests: data.requests });
+}
+async function updateRestaurantRequestStatus(req, res) {
+  const svc = require('../services/restaurantRequests.service');
+  const id = assertUuid(req.params.id, 'id');
+  const status = String(req.body.status||'').trim().toLowerCase();
+  const row = await svc.setStatus(id, status);
+  res.json({ request: row });
+}
+async function deleteRestaurantRequest(req, res) {
+  const svc = require('../services/restaurantRequests.service');
+  const id = assertUuid(req.params.id, 'id');
+  await svc.remove(id);
+  res.json({ ok: true });
+}
+
 module.exports = {
   overview: asyncHandler(overview),
   restaurantsReportCsv: asyncHandler(restaurantsReportCsv),
@@ -413,4 +459,9 @@ module.exports = {
   resetDeliveryAccountPassword: asyncHandler(resetDeliveryAccountPassword),
   toggleDeliveryAccountActive: asyncHandler(toggleDeliveryAccountActive),
   deleteDeliveryAccount: asyncHandler(deleteDeliveryAccount),
+  getPlatformPricing: asyncHandler(getPlatformPricing),
+  updatePlatformPricing: asyncHandler(updatePlatformPricing),
+  listRestaurantRequests: asyncHandler(listRestaurantRequests),
+  updateRestaurantRequestStatus: asyncHandler(updateRestaurantRequestStatus),
+  deleteRestaurantRequest: asyncHandler(deleteRestaurantRequest),
 };

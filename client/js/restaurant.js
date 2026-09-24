@@ -27,7 +27,7 @@
 
   let view = null;          // public menu payload
   let cart = loadCart();    // { itemId: qty }
-  let orderType = localStorage.getItem('ordertype_' + slug) || 'pickup';
+  let orderType = (()=>{ try{ return localStorage.getItem('ordertype_' + slug) || 'pickup'; }catch(_){ return 'pickup'; } })();
 
   function loadCart() {
     try {
@@ -43,7 +43,7 @@
   }
 
   function saveCart() {
-    localStorage.setItem(CART_KEY, JSON.stringify(cart));
+    try{ localStorage.setItem(CART_KEY, JSON.stringify(cart)); }catch(_){}
   }
 
   /* ------------------------ theme + hero ---------------------------- */
@@ -65,23 +65,22 @@
         encodeURIComponent(s.whatsapp.replace(/[^0-9]/g, '')) + '">WhatsApp</a>'
       : '';
 
+    const addr = s.address ? '<span>' + esc(s.address) + '</span>' : '';
+
     document.getElementById('hero').innerHTML =
       '<section class="sf-hero">' +
         (s.coverPath ? '<img class="sf-hero-cover" src="' + esc(s.coverPath) + '" alt="">' : '') +
         '<div class="sf-hero-body">' +
           '<div class="sf-hero-top">' +
-            '<img class="sf-hero-logo" src="' + esc(s.logoPath || '/images/logo-placeholder.svg') + '" alt="Logo">' +
-            '<div class="sf-hero-badges">' + statusBadge + '</div>' +
+            statusBadge +
+            '<button id="share-btn" type="button" class="sf-hero-action">' + esc(I.t('share')) + '</button>' +
           '</div>' +
           '<div class="sf-hero-brand">' +
-            '<div>' +
-              '<h1 class="sf-hero-name">' + esc(view.name) + '</h1>' +
-              (s.description ? '<p class="sf-hero-desc">' + esc(s.description) + '</p>' : '') +
+            '<h1 class="sf-hero-name">' + esc(view.name) + '</h1>' +
+            (s.description ? '<p class="sf-hero-desc">' + esc(s.description) + '</p>' : '') +
+            '<div class="sf-hero-meta">' + addr + waBtn +
+              '<button id="book-btn" type="button" class="sf-hero-action">' + esc(I.t('bookTable')) + '</button>' +
             '</div>' +
-          '</div>' +
-          '<div class="sf-hero-meta">' + waBtn +
-            '<button id="share-btn" type="button" class="sf-hero-action">' + esc(I.t('share')) + '</button>' +
-            '<button id="book-btn" type="button" class="sf-hero-action">' + esc(I.t('bookTable')) + '</button>' +
           '</div>' +
         '</div>' +
       '</section>';
@@ -99,7 +98,6 @@
     chipsEl.innerHTML = cats.map((c) =>
       '<button type="button" class="sf-chip' + (c.id === activeCategory ? ' active' : '') +
       '" data-cat="' + esc(c.id) + '">' +
-      (c.id === activeCategory ? '<span class="sim"></span>' : '') +
       esc(c.name) + '</button>'
     ).join('');
 
@@ -120,42 +118,68 @@
     return item.category_id === activeCategory;
   }
 
+  function sectionLabel() {
+    if (activeCategory === 'all') return I.t('all');
+    if (activeCategory === 'popular') return I.t('popular');
+    const c = view.categories.find((x) => x.id === activeCategory);
+    return c ? c.name : I.t('all');
+  }
+
   function renderMenu() {
     const zone = document.getElementById('menu-zone');
-    const items = view.items.filter(itemVisible);
 
     if (view.items.length === 0) {
       zone.innerHTML = '<div class="empty-state card">' + esc(I.t('menuEmpty')) + '</div>';
       return;
     }
-    if (items.length === 0) {
-      zone.innerHTML = '<div class="empty-state card">' + esc(I.t('noMatch')) + '</div>';
-      return;
-    }
 
     zone.innerHTML =
+      '<p class="sf-menu-eyebrow">' + esc(I.t('menuEye')) + '</p>' +
+      '<h2 class="sf-menu-title">' + esc(I.t('menuTitle')) + '</h2>' +
       '<div class="sf-search"><span class="sf-search-icon"></span>' +
         '<input id="menu-search" type="text" placeholder="' + esc(I.t('searchMenu')) + '" maxlength="60" value="' + esc(searchTerm) + '">' +
       '</div>' +
-      '<div class="sf-section-h"><span class="bar"></span><h2>' + esc(I.t('bestSellers')) + '</h2></div>' +
-      '<div id="menu-grid" class="sf-menu-grid mt-1">' + items.map((item) => renderItemCard(item)).join('') + '</div>';
+      '<div id="menu-featured"></div>' +
+      '<div class="sf-section-h"><h2 id="menu-list-title"></h2><span class="count" id="menu-list-count"></span></div>' +
+      '<div id="menu-grid" class="sf-menu-grid mt-1"></div>';
 
-    // Staggered entrance for the cards.
-    zone.querySelectorAll('.sf-item').forEach((el, i) => {
-      el.style.animation = 'rise .4s ease backwards';
-      el.style.animationDelay = Math.min(i * 35, 420) + 'ms';
-    });
+    updateGrids();
 
     const search = document.getElementById('menu-search');
     search.addEventListener('input', () => {
       searchTerm = search.value.trim().toLowerCase();
-      // Update only the grid so the search box keeps focus.
-      const grid = document.getElementById('menu-grid');
-      const visible = view.items.filter(itemVisible);
-      grid.innerHTML = visible.length
-        ? visible.map(renderItemCard).join('')
-        : '<div class="empty-state" role="status">' + esc(I.t('noMatch')) + '</div>';
-      bindAddButtons();
+      updateGrids();
+    });
+  }
+
+  function updateGrids() {
+    const items = view.items.filter(itemVisible);
+    const featuredBox = document.getElementById('menu-featured');
+    const grid = document.getElementById('menu-grid');
+    if (!grid) return;
+
+    const showFeatured = activeCategory === 'all' && !searchTerm;
+    const featured = showFeatured ? items.filter((i) => i.is_popular) : [];
+    const rest = showFeatured ? items.filter((i) => !i.is_popular) : items;
+
+    featuredBox.innerHTML = featured.length
+      ? '<div class="sf-section-h"><h2>' + esc(I.t('popular')) + '</h2><span class="count">' +
+        String(featured.length).padStart(2, '0') + '</span></div>' +
+        '<div class="sf-menu-grid">' + featured.map((item) => renderItemCard(item)).join('') + '</div>'
+      : '';
+
+    document.getElementById('menu-list-title').textContent =
+      showFeatured ? I.t('all') : sectionLabel();
+    document.getElementById('menu-list-count').textContent =
+      String(rest.length).padStart(2, '0');
+    grid.innerHTML = rest.length
+      ? rest.map(renderItemCard).join('')
+      : '<div class="empty-state" role="status">' + esc(I.t('noMatch')) + '</div>';
+
+    // Staggered entrance for the cards.
+    document.querySelectorAll('#menu-zone .sf-item').forEach((el, i) => {
+      el.style.animation = 'rise .4s ease backwards';
+      el.style.animationDelay = Math.min(i * 35, 420) + 'ms';
     });
 
     bindAddButtons();
@@ -165,30 +189,30 @@
     const soldOut = !item.is_available;
     const imgTag = item.image_path
       ? '<img class="sf-item-img" loading="lazy" src="' + esc(item.image_path) + '" alt="">'
-      : '<div class="sf-item-img"></div>';
-    const badges =
-      '<div class="sf-badges">' +
-        (item.is_popular ? '<span class="sf-tag popular">' + esc(I.t('popular')) + '</span>' : '') +
-        (soldOut ? '<span class="sf-tag soldout">' + esc(I.t('soldOut')) + '</span>' : '') +
+      : '<div class="sf-item-img" aria-hidden="true">🍽</div>';
+    const photo =
+      '<div class="sf-item-photo">' + imgTag +
+        (item.is_popular ? '<span class="sf-feat">★ ' + esc(I.t('featured')) + '</span>' : '') +
       '</div>';
 
-    // Price ticket: amount + an in-ticket "+" to tag the dish into the basket.
-    const priceTicket = soldOut
-      ? '<span class="sf-price"><span class="sf-price-amt">' + fmtMoney(item.price_cents, view.settings.currency) + '</span></span>'
-      : '<span class="sf-price"><span class="sf-price-amt">' + fmtMoney(item.price_cents, view.settings.currency) + '</span>' +
-        '<button type="button" class="sf-add" data-item="' + esc(item.id) + '" aria-label="+" title="' + esc(I.t('add')) + '">+</button></span>';
+    // Coral price + red add pill (matches the reference customer menu).
+    const action = soldOut
+      ? ''
+      : '<button type="button" class="sf-add" data-item="' + esc(item.id) + '" aria-label="' + esc(I.t('add')) + '">+ ' + esc(I.t('add')) + '</button>';
 
     return (
       '<article class="sf-item' + (soldOut ? ' unavailable' : '') + '" data-item="' + esc(item.id) + '">' +
-        imgTag +
+        photo +
         '<div class="sf-item-info">' +
-          '<div class="sf-item-line">' +
+          '<div>' +
             '<h3 class="sf-item-name">' + esc(item.name) + '</h3>' +
-            '<span class="sf-line-dot" aria-hidden="true"></span>' +
-            priceTicket +
+            (item.description ? '<p class="sf-item-desc">' + esc(item.description) + '</p>' : '') +
+            (soldOut ? '<div class="sf-badges"><span class="sf-tag soldout">' + esc(I.t('soldOut')) + '</span></div>' : '') +
           '</div>' +
-          badges +
-          (item.description ? '<p class="sf-item-desc">' + esc(item.description) + '</p>' : '') +
+          '<div class="sf-item-foot">' +
+            '<span class="sf-price"><span class="sf-price-amt">' + fmtMoney(item.price_cents, view.settings.currency) + '</span></span>' +
+            action +
+          '</div>' +
         '</div>' +
       '</article>'
     );
@@ -332,6 +356,9 @@
       '<h2 class="sf-sheet-title">' + esc(I.t('yourOrder')) + '</h2>' +
       entries.map((e) =>
         '<div class="sf-cart-line">' +
+          (e.item.image_path
+            ? '<img class="sf-cart-thumb" src="' + esc(e.item.image_path) + '" alt="">'
+            : '') +
           '<div class="sf-qty">' +
             '<button type="button" data-dec="' + esc(e.item.id) + '" aria-label="-">&minus;</button>' +
             '<span>' + e.qty + '</span>' +
@@ -367,7 +394,7 @@
     content.querySelectorAll('.sf-type-toggle button').forEach((b) => {
       b.addEventListener('click', () => {
         orderType = b.dataset.type;
-        localStorage.setItem('ordertype_' + slug, orderType);
+        try{ localStorage.setItem('ordertype_' + slug, orderType); }catch(_){}
         renderCartSheet();
       });
     });

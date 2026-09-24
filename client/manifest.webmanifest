@@ -1,6 +1,6 @@
 {
-  "name": "Restaurants Platform",
-  "short_name": "Restaurants",
+  "name": "Restivo",
+  "short_name": "Restivo",
   "description": "Order from your favorite local restaurants",
   "start_url": "/",
   "scope": "/",

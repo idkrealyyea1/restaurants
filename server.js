@@ -17,6 +17,7 @@ async function boot() {
       console.log('[migrate] up to date');
     } catch (err) {
       console.error('[migrate] failed:', err.message);
+      process.exit(1);
     }
   }
   const app = buildApp();
@@ -42,4 +43,4 @@ async function boot() {
   process.on('SIGINT', () => shutdown('SIGINT'));
 }
 
-if (require.main === module) boot();
+if (require.main === module) boot().catch((e) => { console.error(e); process.exit(1); });

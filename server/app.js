@@ -23,6 +23,8 @@ const publicRoutes = require('./routes/public.routes');
 const adminRoutes = require('./routes/admin.routes');
 const ownerRoutes = require('./routes/owner.routes');
 const deliveryRoutes = require('./routes/delivery.routes');
+const leadsRoutes = require('./routes/leads.routes');
+const siteRoutes = require('./routes/site.routes');
 
 const CLIENT_DIR = path.join(__dirname, '..', 'client');
 
@@ -40,7 +42,7 @@ function buildApp() {
         directives: {
           defaultSrc: ["'self'"],
           scriptSrc: ["'self'"],
-          styleSrc: ["'self'"],
+          styleSrc: ["'self'", "'unsafe-inline'"],
           imgSrc: ["'self'", 'data:', 'blob:'],
           connectSrc: ["'self'"],
           fontSrc: ["'self'"],
@@ -117,6 +119,19 @@ function buildApp() {
   app.use(attachUser);
 
   /* ------------------------------- pages ------------------------------- */
+  // Marketing app separation — root is marketing, /app is restaurant directory
+  app.get('/app', (req, res) => {
+    res.sendFile(path.join(CLIENT_DIR, 'app', 'index.html'));
+  });
+  app.get('/app/', (req, res) => {
+    res.sendFile(path.join(CLIENT_DIR, 'app', 'index.html'));
+  });
+  app.get('/resources', (req, res) => {
+    res.sendFile(path.join(CLIENT_DIR, 'resources', 'index.html'));
+  });
+  app.get('/resources/', (req, res) => {
+    res.sendFile(path.join(CLIENT_DIR, 'resources', 'index.html'));
+  });
   app.get('/restaurant/:slug', (req, res) => {
     res.sendFile(path.join(CLIENT_DIR, 'restaurant.html'));
   });
@@ -125,6 +140,12 @@ function buildApp() {
   });
   app.get('/delivery', (req, res) => {
     res.sendFile(path.join(CLIENT_DIR, 'delivery.html'));
+  });
+  app.get('/leads', (req, res) => {
+    res.sendFile(path.join(CLIENT_DIR, 'leads.html'));
+  });
+  app.get('/offer/:code', (req, res) => {
+    res.sendFile(path.join(CLIENT_DIR, 'offer.html'));
   });
 
   /* ------------------------- PWA (manifest/SW) ------------------------- */
@@ -139,11 +160,15 @@ function buildApp() {
     res.sendFile(path.join(CLIENT_DIR, 'sw.js'));
   });
 
+  /* ----------------------------- site (seo) ----------------------------- */
+  app.use('/', siteRoutes);
+
   /* -------------------------------- API -------------------------------- */
   app.use('/api', globalLimiter);
   app.use('/api/auth', authRoutes);
   app.use('/api/admin', adminRoutes);
   app.use('/api/owner', ownerRoutes);
+  app.use('/api/owner/leads', leadsRoutes);
   app.use('/api/delivery', deliveryRoutes);
   app.use('/api', publicRoutes);
 

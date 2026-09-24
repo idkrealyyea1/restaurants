@@ -57,7 +57,7 @@ function requireOwnerOrStaff(req, res, next) {
   next();
 }
 
-function requireRestaurantAdmin(req, res, next) {
+async function requireRestaurantAdmin(req, res, next) {
   if (!req.user) return next(unauthorized());
   if (req.user.role !== 'owner' && req.user.role !== 'admin' && req.user.role !== 'staff') return next(forbidden());
   if (req.user.role === 'admin') {
@@ -65,6 +65,15 @@ function requireRestaurantAdmin(req, res, next) {
     if (req.user.restaurant_is_active === false) {
       return next(forbidden('RESTAURANT_DISABLED', 'This restaurant has been deactivated by the platform owner'));
     }
+    // ponytail: re-validate 7-day trial on every admin request — blocks expired sessions without logout
+    try {
+      const { query } = require('../db/pool');
+      const { rows } = await query('SELECT subscription_ends_at FROM restaurants WHERE id = $1', [req.user.restaurant_id]);
+      const endsAt = rows[0] ? rows[0].subscription_ends_at : null;
+      if (endsAt && new Date(endsAt).getTime() <= Date.now()) {
+        return next(forbidden('SUBSCRIPTION_EXPIRED', 'انتهت فترة التجربة 7 أيام — تواصل +972567439846 ($8.99/شهر) | 7-day trial finished — contact +972567439846'));
+      }
+    } catch (e) { return next(e); }
   }
   next();
 }

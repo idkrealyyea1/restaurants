@@ -26,7 +26,7 @@ async function create({ restaurantId, payload }) {
   {
     const endsAt = rRows[0].subscription_ends_at;
     const active = !endsAt || new Date(endsAt).getTime() > Date.now();
-    if (!active) throw conflict('SUBSCRIPTION_EXPIRED', 'Subscription expired — please renew ($20/month)');
+    if (!active) throw require('../utils/errors').forbidden('SUBSCRIPTION_EXPIRED', 'Subscription expired — please renew ($8.99/month) | انتهت التجربة — تواصل +972567439846');
   }
 
   let code = null;
@@ -90,8 +90,7 @@ async function archive(bookingId, restaurantId) {
   const cur = await query('SELECT status FROM bookings WHERE id = $1 AND restaurant_id = $2', [bookingId, restaurantId]);
   if (!cur.rows[0]) throw notFound('Booking not found');
   if (!['cancelled', 'completed', 'noshow'].includes(cur.rows[0].status)) throw conflict('INVALID_STATUS_TRANSITION', 'Only cancelled/completed/noshow bookings can be archived');
-  await query('UPDATE bookings SET status = $3, updated_at = now() WHERE id = $1 AND restaurant_id = $2', [bookingId, restaurantId, 'cancelled']);
-  // soft archive by deleting? keep row but mark - simple delete for now
+  // ponytail: keep original status, just delete — don't clobber completed/noshow to cancelled
   const { rowCount } = await query('DELETE FROM bookings WHERE id = $1 AND restaurant_id = $2', [bookingId, restaurantId]);
   if (!rowCount) throw notFound('Booking not found');
 }
