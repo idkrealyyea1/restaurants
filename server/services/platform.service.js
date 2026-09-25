@@ -4,7 +4,7 @@ const { query } = require('../db/pool');
 async function getPricing() {
   try {
     const { rows } = await query('SELECT pricing_cents, pricing_currency, pricing_period, trial_days, brand_name FROM platform_settings WHERE id=1');
-    if (!rows[0]) return { pricing_cents: 899, pricing_currency: 'USD', pricing_period: 'month', trial_days: 7, brand_name: 'Restivo' };
+    if (!rows[0]) return { pricing_cents: 1999, pricing_currency: 'USD', pricing_period: 'month', trial_days: 7, brand_name: 'Restivo' };
     return {
       pricing_cents: rows[0].pricing_cents,
       pricing_currency: rows[0].pricing_currency,
@@ -13,7 +13,7 @@ async function getPricing() {
       brand_name: rows[0].brand_name,
     };
   } catch (_) {
-    return { pricing_cents: 899, pricing_currency: 'USD', pricing_period: 'month', trial_days: 7, brand_name: 'Restivo' };
+    return { pricing_cents: 1999, pricing_currency: 'USD', pricing_period: 'month', trial_days: 7, brand_name: 'Restivo' };
   }
 }
 

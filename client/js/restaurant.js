@@ -1,13 +1,13 @@
 'use strict';
 
 /**
- * Public storefront: menu browsing, search, cart and checkout.
- * The SERVER computes all totals — the cart here is only for UX.
+ * Real storefront in the Restivo design language (same look as the landing
+ * live-demo, backed by live API data). SERVER computes all totals.
  */
 
 (function () {
-  const { api, esc, fmtMoney, qsParam, toast } = window.App;
-  const I = window.I18N;
+  const { api, esc, fmtMoney, qsParam, toast, theme } = window.App;
+  const FOOD = '/images/restivo-food-table.jpg';
 
   /* ------------------------- resolve slug -------------------------- */
   let slug = qsParam('r');
@@ -16,18 +16,78 @@
   }
   slug = (slug || '').toLowerCase();
 
-  if (!slug) {
-    document.getElementById('hero').innerHTML =
-      '<div class="container mt-3"><div class="notice notice-error">' + esc(I.t('missingRestaurant')) + '</div></div>';
-    return;
+  /* --------------------------- language ---------------------------- */
+  const T = {
+    ar: {
+      open: 'مفتوح الآن', closed: 'مغلق حاليًا', share: 'شارك القائمة', book: 'احجز طاولة',
+      menuEye: 'قائمتنا', menuTitle: 'تصفّح أطباقنا واختر ما تشتهي',
+      search: 'ابحث عن طبقك المفضل...', all: 'كل القائمة', popular: 'الأكثر طلبًا',
+      featured: 'أطباق نوصي بها', full: 'القائمة كاملة', add: 'أضف للطلب',
+      cart: 'طلبك', items: 'أصناف', total: 'الإجمالي', subtotal: 'المجموع الفرعي',
+      deliveryFee: 'رسوم التوصيل', pickup: 'استلام', delivery: 'توصيل',
+      deliveryBy: 'التوصيل بواسطة', sendWA: 'أكمل طلبك عبر واتساب', sendSite: 'تأكيد الطلب',
+      ready: 'طلبك جاهز للإرسال', sentHint: 'يفتح واتساب لتختار جهة الاتصال وترسل طلبك.',
+      yourName: 'الاسم', waNumber: 'رقم الواتساب', phoneOpt: 'رقم الهاتف (اختياري)',
+      addrDelivery: 'عنوان التوصيل', addrOpt: 'العنوان (اختياري)', notesOpt: 'ملاحظات (اختياري)',
+      keepBrowsing: 'مواصلة التصفح', cartEmpty: 'سلتك فارغة', cartEmptyHint: 'تصفح القائمة وأضف ما يعجبك.',
+      placedHead: 'تم استلام طلبك', showCode: 'أظهر هذا الرمز عند الاستلام أو تتبع طلبك به:',
+      trackMyOrder: 'تتبع طلبي', done: 'حسنًا', linkCopied: 'تم نسخ رابط المنيو',
+      enterNameAndWa: 'الرجاء إدخال الاسم ورقم الواتساب', addrRequired: 'الرجاء إدخال عنوان التوصيل',
+      noWA: 'الواتساب غير متوفر لهذا المطعم', closedNotice: 'المطعم مغلق حاليًا — يمكنك التصفح وإتمام الطلب عند الافتتاح.',
+      noMatch: 'لا توجد أصناف مطابقة.', menuEmpty: 'لا توجد أصناف متاحة حاليًا.',
+      soldOut: 'نفد', top: '★ مميز', bookTitle: 'احجز طاولة', bookDesc: 'أخبرنا بتفاصيل زيارتك وسنؤكد حجزك.',
+      bkName: 'الاسم', bkWA: 'واتساب', bkPhone: 'هاتف (اختياري)', bkTables: 'عدد الطاولات',
+      bkDate: 'التاريخ', bkTime: 'الوقت', bkNotes: 'ملاحظات', bookNow: 'تأكيد الحجز',
+      bookingCreated: 'تم إرسال طلب الحجز', close: 'إغلاق', currencies: 'ر.س',
+    },
+    en: {
+      open: 'Open now', closed: 'Currently closed', share: 'Share menu', book: 'Book a table',
+      menuEye: 'THE MENU', menuTitle: 'Explore the menu and find your favorite',
+      search: 'Search for a dish...', all: 'Full menu', popular: 'Most ordered',
+      featured: 'Guest favorites', full: 'The full menu', add: 'Add to order',
+      cart: 'Your order', items: 'items', total: 'Total', subtotal: 'Subtotal',
+      deliveryFee: 'Delivery fee', pickup: 'Pickup', delivery: 'Delivery',
+      deliveryBy: 'Delivered by', sendWA: 'Continue in WhatsApp', sendSite: 'Place order',
+      ready: 'Your order is ready to send', sentHint: 'WhatsApp will open so you can choose where to send it.',
+      yourName: 'Name', waNumber: 'WhatsApp number', phoneOpt: 'Phone (optional)',
+      addrDelivery: 'Delivery address', addrOpt: 'Address (optional)', notesOpt: 'Notes (optional)',
+      keepBrowsing: 'Keep browsing', cartEmpty: 'Your cart is empty', cartEmptyHint: 'Browse the menu and add what you like.',
+      placedHead: 'Order received', showCode: 'Show this code at pickup or use it to track your order:',
+      trackMyOrder: 'Track my order', done: 'Done', linkCopied: 'Menu link copied',
+      enterNameAndWa: 'Please enter your name and WhatsApp number', addrRequired: 'Please enter the delivery address',
+      noWA: 'WhatsApp is not available for this restaurant', closedNotice: 'The restaurant is currently closed — feel free to browse.',
+      noMatch: 'No dishes match your search.', menuEmpty: 'No items available right now.',
+      soldOut: 'Sold out', top: '★ Top', bookTitle: 'Book a table', bookDesc: 'Tell us about your visit and we will confirm.',
+      bkName: 'Name', bkWA: 'WhatsApp', bkPhone: 'Phone (optional)', bkTables: 'Tables',
+      bkDate: 'Date', bkTime: 'Time', bkNotes: 'Notes', bookNow: 'Confirm booking',
+      bookingCreated: 'Booking request sent', close: 'Close', currencies: '',
+    },
+  };
+  let lang = 'ar';
+  try { lang = localStorage.getItem('restivo-lang') || 'ar'; } catch (_) { /* ignore */ }
+  if (lang !== 'ar' && lang !== 'en') lang = 'ar';
+  const t = () => T[lang];
+
+  function setLang(next) {
+    lang = next;
+    try { localStorage.setItem('restivo-lang', lang); } catch (_) { /* ignore */ }
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    renderAll();
+    if (view) document.title = (lang === 'en' && view.settings.nameEn) ? view.settings.nameEn : view.name;
   }
 
-  /* --------------------------- state ------------------------------- */
+  /* ----------------------------- state ----------------------------- */
   const CART_KEY = 'cart_' + slug;
-
-  let view = null;          // public menu payload
-  let cart = loadCart();    // { itemId: qty }
-  let orderType = (()=>{ try{ return localStorage.getItem('ordertype_' + slug) || 'pickup'; }catch(_){ return 'pickup'; } })();
+  let view = null;
+  let cart = loadCart();
+  let orderType = loadOrderType();
+  let activeCategory = 'all';
+  let searchTerm = '';
+  let cartOpen = false;
+  let sent = false;
+  let bookingOpen = false;
+  let co = { name: '', wa: '', phone: '', address: '', notes: '' };
 
   function loadCart() {
     try {
@@ -37,614 +97,416 @@
         if (Number.isInteger(v) && v > 0 && v <= 99) clean[k] = v;
       }
       return clean;
-    } catch (_) {
-      return {};
-    }
+    } catch (_) { return {}; }
+  }
+  function saveCart() { try { localStorage.setItem(CART_KEY, JSON.stringify(cart)); } catch (_) {} }
+  function loadOrderType() {
+    try { return localStorage.getItem('ordertype_' + slug) || 'pickup'; } catch (_) { return 'pickup'; }
   }
 
-  function saveCart() {
-    try{ localStorage.setItem(CART_KEY, JSON.stringify(cart)); }catch(_){}
+  if (!slug) {
+    document.getElementById('live-content').innerHTML =
+      '<div class="live-alert error">Restaurant not found</div>';
+    return;
   }
 
-  /* ------------------------ theme + hero ---------------------------- */
-
-  function applyTheme() {
-    const s = view.settings || {};
-    const tokens = window.App.theme.buildTokens(s.primaryColor, s.secondaryColor);
-    const rootStyle = document.documentElement.style;
-    for (const [name, value] of Object.entries(tokens)) rootStyle.setProperty(name, value);
+  /* --------------------------- derived ----------------------------- */
+  const money = (cents) => fmtMoney(cents, (view && view.settings && view.settings.currency) || 'USD');
+  function cartEntries() {
+    if (!view) return [];
+    return Object.entries(cart)
+      .map(([id, qty]) => ({ item: view.items.find((i) => i.id === id), qty }))
+      .filter((e) => e.item && e.item.is_available);
   }
-
-  function renderHero() {
-    const s = view.settings || {};
-    const statusBadge = '<span class="sf-pill ' + (view.openNow ? '' : 'closed') + '"><span class="dot"></span>' +
-      esc(view.openNow ? I.t('openNow') : I.t('closed')) + '</span>';
-
-    const waBtn = s.whatsapp
-      ? '<a class="sf-hero-action" target="_blank" rel="noopener" href="https://wa.me/' +
-        encodeURIComponent(s.whatsapp.replace(/[^0-9]/g, '')) + '">WhatsApp</a>'
-      : '';
-
-    const addr = s.address ? '<span>' + esc(s.address) + '</span>' : '';
-
-    document.getElementById('hero').innerHTML =
-      '<section class="sf-hero">' +
-        (s.coverPath ? '<img class="sf-hero-cover" src="' + esc(s.coverPath) + '" alt="">' : '') +
-        '<div class="sf-hero-body">' +
-          '<div class="sf-hero-top">' +
-            statusBadge +
-            '<button id="share-btn" type="button" class="sf-hero-action">' + esc(I.t('share')) + '</button>' +
-          '</div>' +
-          '<div class="sf-hero-brand">' +
-            '<h1 class="sf-hero-name">' + esc(view.name) + '</h1>' +
-            (s.description ? '<p class="sf-hero-desc">' + esc(s.description) + '</p>' : '') +
-            '<div class="sf-hero-meta">' + addr + waBtn +
-              '<button id="book-btn" type="button" class="sf-hero-action">' + esc(I.t('bookTable')) + '</button>' +
-            '</div>' +
-          '</div>' +
-        '</div>' +
-      '</section>';
-  }
-
-  /* ---------------------- categories & menu ------------------------- */
-
-  let activeCategory = 'all';
-  let searchTerm = '';
-
-  function renderChips() {
-    const chipsEl = document.getElementById('chips');
-    const cats = [{ id: 'all', name: I.t('all') }, { id: 'popular', name: I.t('popular') }].concat(view.categories);
-
-    chipsEl.innerHTML = cats.map((c) =>
-      '<button type="button" class="sf-chip' + (c.id === activeCategory ? ' active' : '') +
-      '" data-cat="' + esc(c.id) + '">' +
-      esc(c.name) + '</button>'
-    ).join('');
-
-    chipsEl.querySelectorAll('.sf-chip').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        activeCategory = btn.dataset.cat;
-        renderChips();
-        renderMenu();
-      });
-    });
-  }
-
-  function itemVisible(item) {
+  const subtotalCents = () => cartEntries().reduce((s, e) => s + e.item.price_cents * e.qty, 0);
+  const feeCents = () => (orderType === 'delivery' ? Number((view && view.settings && view.settings.deliveryFeeCents) || 0) : 0);
+  const totalUnits = () => cartEntries().reduce((s, e) => s + e.qty, 0);
+  const hasDelivery = () => Array.isArray(view && view.deliveryGroups) && view.deliveryGroups.length > 0;
+  const itemVisible = (item) => {
     if (searchTerm && !item.name.toLowerCase().includes(searchTerm) &&
         !(item.description || '').toLowerCase().includes(searchTerm)) return false;
     if (activeCategory === 'all') return true;
     if (activeCategory === 'popular') return !!item.is_popular;
     return item.category_id === activeCategory;
+  };
+
+  /* ---------------------------- render ----------------------------- */
+  const $head = () => document.getElementById('live-head');
+  const $content = () => document.getElementById('live-content');
+  const $bar = () => document.getElementById('live-cart-btn');
+  const $overlay = () => document.getElementById('cart-root');
+
+  function renderAll() {
+    if (!view) return;
+    if (!hasDelivery()) orderType = 'pickup';
+    renderHead();
+    renderContent();
+    renderBar();
+    renderOverlay();
   }
 
-  function sectionLabel() {
-    if (activeCategory === 'all') return I.t('all');
-    if (activeCategory === 'popular') return I.t('popular');
-    const c = view.categories.find((x) => x.id === activeCategory);
-    return c ? c.name : I.t('all');
+  function renderHead() {
+    const s = view.settings || {};
+    const nm = (lang === 'en' && s.nameEn) ? s.nameEn : view.name;
+    const letter = (nm || '?').trim().charAt(0);
+    const b = brand();
+    const logoStyle = b.logoBg ? ' style="background:' + esc(b.logoBg) + ';color:' + esc(b.logoFg) + '"' : '';
+    const logo = s.logoPath
+      ? '<img class="live-logo-img" src="' + esc(s.logoPath) + '" alt="">'
+      : '<span class="live-logo"' + logoStyle + '>' + esc(letter) + '</span>';
+    $head().innerHTML =
+      '<div class="live-brand">' + logo +
+      '<div><strong>' + esc(nm) + '</strong><small>' + esc(view.slug.toUpperCase()) + '</small></div></div>' +
+      '<div class="live-actions"><button class="outline-btn" id="lang-btn">' + (lang === 'ar' ? 'English' : 'العربية') + '</button></div>';
+    document.getElementById('lang-btn').addEventListener('click', () => setLang(lang === 'ar' ? 'en' : 'ar'));
   }
 
-  function renderMenu() {
-    const zone = document.getElementById('menu-zone');
-
-    if (view.items.length === 0) {
-      zone.innerHTML = '<div class="empty-state card">' + esc(I.t('menuEmpty')) + '</div>';
-      return;
+  /* Restaurant brand colors: logo tile (primary) + cover tint (secondary).
+     Design chrome stays fixed — these are identity slots only. */
+  function brand() {
+    const s = (view && view.settings) || {};
+    const out = { logoBg: null, logoFg: '#fff9ed', tint: null };
+    if (/^#[0-9a-f]{6}$/i.test(s.primaryColor || '')) {
+      out.logoBg = s.primaryColor;
+      try { out.logoFg = theme.buildTokens(s.primaryColor, '#000000')['--on-primary']; } catch (_) { /* keep default */ }
     }
+    if (/^#[0-9a-f]{6}$/i.test(s.secondaryColor || '')) {
+      const rgb = theme.hexToRgb(s.secondaryColor);
+      if (rgb) out.tint = 'rgba(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ',.28)';
+    }
+    return out;
+  }
 
-    zone.innerHTML =
-      '<p class="sf-menu-eyebrow">' + esc(I.t('menuEye')) + '</p>' +
-      '<h2 class="sf-menu-title">' + esc(I.t('menuTitle')) + '</h2>' +
-      '<div class="sf-search"><span class="sf-search-icon"></span>' +
-        '<input id="menu-search" type="text" placeholder="' + esc(I.t('searchMenu')) + '" maxlength="60" value="' + esc(searchTerm) + '">' +
-      '</div>' +
-      '<div id="menu-featured"></div>' +
-      '<div class="sf-section-h"><h2 id="menu-list-title"></h2><span class="count" id="menu-list-count"></span></div>' +
-      '<div id="menu-grid" class="sf-menu-grid mt-1"></div>';
+  function renderContent() {
+    const s = view.settings || {};
+    const cover = s.coverPath || FOOD;
+    const addr = s.address ? '<span>' + esc(s.address) + '</span>' : '';
+    const del = hasDelivery() ? '<span>' + esc(t().deliveryBy + ': ' + view.deliveryGroups.join('، ')) + '</span>' : '';
+    const cats = [{ id: 'all', name: t().all }, { id: 'popular', name: t().popular }]
+      .concat(view.categories.map((c) => ({ id: c.id, name: c.name })));
 
-    updateGrids();
+    $content().innerHTML =
+      '<section class="live-hero"><img src="' + esc(cover) + '" alt="">' +
+        (brand().tint ? '<div class="live-hero-tint" style="background:' + esc(brand().tint) + '"></div>' : '') +
+        '<div class="live-hero-content"><div class="live-hero-top">' +
+          '<span class="status"><i></i>' + esc(view.openNow ? t().open : t().closed) + '</span>' +
+          '<span style="display:flex;gap:8px"><button class="outline-btn" style="color:var(--paper);border-color:rgba(255,255,255,.25)" id="share-btn">' + esc(t().share) + '</button>' +
+          '<button class="outline-btn" style="color:var(--paper);border-color:rgba(255,255,255,.25)" id="book-btn">' + esc(t().book) + '</button></span>' +
+        '</div><div><h1>' + esc((lang === 'en' && s.nameEn) ? s.nameEn : view.name) + '</h1>' +
+        (s.description ? '<p>' + esc(s.description) + '</p>' : '') +
+        '<div class="live-meta">' + addr + del + '</div></div></div></section>' +
+      (!view.openNow ? '<div class="live-alert warn">' + esc(t().closedNotice) + '</div>' : '') +
+      '<section class="live-section-head"><div><small>' + esc(t().menuEye) + '</small><h2>' + esc(t().menuTitle) + '</h2></div></section>' +
+      '<label class="search"><input id="menu-search" maxlength="60" value="' + esc(searchTerm) + '" placeholder="' + esc(t().search) + '"></label>' +
+      '<nav class="category-nav">' + cats.map((c) =>
+        '<button class="' + (c.id === activeCategory ? 'active' : '') + '" data-cat="' + esc(c.id) + '">' + esc(c.name) + '</button>'
+      ).join('') + '</nav>' +
+      '<div id="dish-zone"></div>';
 
-    const search = document.getElementById('menu-search');
-    search.addEventListener('input', () => {
-      searchTerm = search.value.trim().toLowerCase();
+    document.getElementById('share-btn').addEventListener('click', sharePage);
+    document.getElementById('book-btn').addEventListener('click', () => { bookingOpen = true; cartOpen = false; renderOverlay(); });
+    document.querySelectorAll('[data-cat]').forEach((b) => b.addEventListener('click', () => {
+      activeCategory = b.dataset.cat;
+      document.querySelectorAll('[data-cat]').forEach((x) => x.classList.toggle('active', x === b));
+      updateGrids();
+    }));
+    document.getElementById('menu-search').addEventListener('input', (e) => {
+      searchTerm = e.target.value.trim().toLowerCase();
       updateGrids();
     });
+    updateGrids();
   }
 
   function updateGrids() {
+    const zone = document.getElementById('dish-zone');
+    if (!zone || !view) return;
+    if (view.items.length === 0) {
+      zone.innerHTML = '<div class="live-alert warn">' + esc(t().menuEmpty) + '</div>';
+      return;
+    }
     const items = view.items.filter(itemVisible);
-    const featuredBox = document.getElementById('menu-featured');
-    const grid = document.getElementById('menu-grid');
-    if (!grid) return;
-
     const showFeatured = activeCategory === 'all' && !searchTerm;
     const featured = showFeatured ? items.filter((i) => i.is_popular) : [];
     const rest = showFeatured ? items.filter((i) => !i.is_popular) : items;
+    const label = activeCategory === 'all' ? (showFeatured ? t().full : t().all)
+      : activeCategory === 'popular' ? t().popular
+      : (view.categories.find((x) => x.id === activeCategory) || {}).name || t().all;
 
-    featuredBox.innerHTML = featured.length
-      ? '<div class="sf-section-h"><h2>' + esc(I.t('popular')) + '</h2><span class="count">' +
-        String(featured.length).padStart(2, '0') + '</span></div>' +
-        '<div class="sf-menu-grid">' + featured.map((item) => renderItemCard(item)).join('') + '</div>'
-      : '';
-
-    document.getElementById('menu-list-title').textContent =
-      showFeatured ? I.t('all') : sectionLabel();
-    document.getElementById('menu-list-count').textContent =
-      String(rest.length).padStart(2, '0');
-    grid.innerHTML = rest.length
-      ? rest.map(renderItemCard).join('')
-      : '<div class="empty-state" role="status">' + esc(I.t('noMatch')) + '</div>';
-
-    // Staggered entrance for the cards.
-    document.querySelectorAll('#menu-zone .sf-item').forEach((el, i) => {
-      el.style.animation = 'rise .4s ease backwards';
-      el.style.animationDelay = Math.min(i * 35, 420) + 'ms';
-    });
-
-    bindAddButtons();
-  }
-
-  function renderItemCard(item) {
-    const soldOut = !item.is_available;
-    const imgTag = item.image_path
-      ? '<img class="sf-item-img" loading="lazy" src="' + esc(item.image_path) + '" alt="">'
-      : '<div class="sf-item-img" aria-hidden="true">🍽</div>';
-    const photo =
-      '<div class="sf-item-photo">' + imgTag +
-        (item.is_popular ? '<span class="sf-feat">★ ' + esc(I.t('featured')) + '</span>' : '') +
-      '</div>';
-
-    // Coral price + red add pill (matches the reference customer menu).
-    const action = soldOut
-      ? ''
-      : '<button type="button" class="sf-add" data-item="' + esc(item.id) + '" aria-label="' + esc(I.t('add')) + '">+ ' + esc(I.t('add')) + '</button>';
-
-    return (
-      '<article class="sf-item' + (soldOut ? ' unavailable' : '') + '" data-item="' + esc(item.id) + '">' +
-        photo +
-        '<div class="sf-item-info">' +
-          '<div>' +
-            '<h3 class="sf-item-name">' + esc(item.name) + '</h3>' +
-            (item.description ? '<p class="sf-item-desc">' + esc(item.description) + '</p>' : '') +
-            (soldOut ? '<div class="sf-badges"><span class="sf-tag soldout">' + esc(I.t('soldOut')) + '</span></div>' : '') +
-          '</div>' +
-          '<div class="sf-item-foot">' +
-            '<span class="sf-price"><span class="sf-price-amt">' + fmtMoney(item.price_cents, view.settings.currency) + '</span></span>' +
-            action +
-          '</div>' +
-        '</div>' +
-      '</article>'
-    );
-  }
-
-  function bindAddButtons() {
-    document.querySelectorAll('.sf-add').forEach((btn) => {
-      btn.addEventListener('click', () => addToCart(btn.dataset.item));
-    });
-  }
-
-  /* ----------------------------- cart -------------------------------- */
-
-  function cartEntries() {
-    return Object.entries(cart)
-      .map(([id, qty]) => ({ item: view.items.find((i) => i.id === id), qty }))
-      .filter((e) => e.item && e.item.is_available);
-  }
-
-  function subtotalCents() {
-    return cartEntries().reduce((sum, e) => sum + e.item.price_cents * e.qty, 0);
-  }
-
-  function deliveryFeeCents() {
-    return orderType === 'delivery' ? Number(view.settings.deliveryFeeCents || 0) : 0;
-  }
-
-  function totalUnits() {
-    return cartEntries().reduce((sum, e) => sum + e.qty, 0);
-  }
-
-  function updateCartBar() {
-    const bar = document.getElementById('cart-bar');
-    const units = totalUnits();
-    if (units === 0) {
-      bar.classList.add('hidden');
-      return;
-    }
-    bar.classList.remove('hidden');
-    document.getElementById('cart-summary').innerHTML =
-      esc(I.t('itemsCount', { n: units })) +
-      '<span class="sub">' + fmtMoney(subtotalCents(), view.settings.currency) + '</span>';
-  }
-
-  function addToCart(itemId) {
-    cart[itemId] = Math.min((cart[itemId] || 0) + 1, 99);
-    saveCart();
-    updateCartBar();
-    flyToCart(itemId);
-  }
-
-  /* Ghost image flies from the menu card into the cart bar. */
-  function flyToCart(itemId) {
-    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const card = document.querySelector('.sf-item[data-item="' + itemId + '"]');
-    const bar = document.getElementById('cart-bar');
-    if (!card || !bar || typeof card.animate !== 'function') return;
-
-    const item = view.items.find((i) => i.id === itemId);
-    if (!item) return;
-
-    // Source point: the card's photo, or the card centre as a fallback.
-    const img = card.querySelector('.sf-item-img');
-    const s = (img || card).getBoundingClientRect();
-
-    // Target point: cart bar centre (it is visible now — updateCartBar ran).
-    const b = bar.getBoundingClientRect();
-    const targetX = b.left + Math.min(b.width * 0.25, 180);
-    const targetY = b.top + b.height / 2;
-
-    const ghost = document.createElement('div');
-    ghost.className = 'fly-ghost';
-    if (item.image_path && /^\/uploads\//.test(item.image_path)) {
-      ghost.style.backgroundImage = 'url("' + encodeURI(item.image_path).replace(/"/g, '%22') + '")';
-    } else {
-      ghost.textContent = (item.name || '?').trim().charAt(0);
-    }
-    ghost.style.left = (s.left + s.width / 2 - 27) + 'px';
-    ghost.style.top = (s.top + s.height / 2 - 27) + 'px';
-    document.body.appendChild(ghost);
-
-    const dx = targetX - (s.left + s.width / 2);
-    const dy = targetY - (s.top + s.height / 2);
-
-    const anim = ghost.animate(
-      [
-        { transform: 'translate(0,0) scale(1)', opacity: 1 },
-        { transform: 'translate(' + dx * 0.55 + 'px,' + (dy - 90) + 'px) scale(.72)', opacity: 1, offset: 0.6 },
-        { transform: 'translate(' + dx + 'px,' + dy + 'px) scale(.3)', opacity: 0.15 },
-      ],
-      { duration: 620, easing: 'cubic-bezier(.5,-0.1,.6,.9)' }
-    );
-    anim.onfinish = () => {
-      ghost.remove();
-      bar.classList.remove('pulse');
-      void bar.offsetWidth; /* restart the pulse animation */
-      bar.classList.add('pulse');
-    };
-  }
-
-  function setQty(itemId, qty) {
-    if (qty <= 0) delete cart[itemId];
-    else cart[itemId] = Math.min(qty, 99);
-    saveCart();
-    updateCartBar();
-    renderCartSheet();
-  }
-
-  /* --------------------------- sheet UI ------------------------------ */
-
-  function openSheet() {
-    document.getElementById('sheet-backdrop').classList.add('open');
-    const sheet = document.getElementById('sheet');
-    sheet.classList.add('open');
-    document.body.style.overflow = 'hidden';
-  }
-
-  function closeSheet() {
-    document.getElementById('sheet-backdrop').classList.remove('open');
-    document.getElementById('sheet').classList.remove('open');
-    document.body.style.overflow = '';
-  }
-
-  function renderCartSheet() {
-    const content = document.getElementById('sheet-content');
-    const entries = cartEntries();
-
-    if (entries.length === 0) {
-      content.innerHTML = '<h2>' + esc(I.t('cartEmpty')) + '</h2><p class="muted small">' + esc(I.t('cartEmptyHint')) + '</p>' +
-        '<button type="button" id="close-sheet-btn" class="btn btn-block btn-outline">' + esc(I.t('close')) + '</button>';
-      document.getElementById('close-sheet-btn').addEventListener('click', closeSheet);
-      return;
-    }
-
-    const hasDelivery = Array.isArray(view.deliveryGroups) && view.deliveryGroups.length > 0;
-    if (!hasDelivery) orderType = 'pickup';
-    const fee = deliveryFeeCents();
-    const sub = subtotalCents();
-
-    content.innerHTML =
-      '<h2 class="sf-sheet-title">' + esc(I.t('yourOrder')) + '</h2>' +
-      entries.map((e) =>
-        '<div class="sf-cart-line">' +
-          (e.item.image_path
-            ? '<img class="sf-cart-thumb" src="' + esc(e.item.image_path) + '" alt="">'
-            : '') +
-          '<div class="sf-qty">' +
-            '<button type="button" data-dec="' + esc(e.item.id) + '" aria-label="-">&minus;</button>' +
-            '<span>' + e.qty + '</span>' +
-            '<button type="button" data-inc="' + esc(e.item.id) + '" aria-label="+">+</button>' +
-          '</div>' +
-          '<span class="sf-cart-name">' + esc(e.item.name) + '</span>' +
-          '<strong class="sf-cart-price">' + fmtMoney(e.item.price_cents * e.qty, view.settings.currency) + '</strong>' +
-        '</div>'
-      ).join('') +
-      (hasDelivery
-        ? '<div class="sf-type-toggle">' +
-          '<button type="button" data-type="pickup"' + (orderType === 'pickup' ? ' class="active"' : '') + '>' + esc(I.t('pickup')) + '</button>' +
-          '<button type="button" data-type="delivery"' + (orderType === 'delivery' ? ' class="active"' : '') + '>' + esc(I.t('delivery')) + '</button>' +
-        '</div>'
+    zone.innerHTML =
+      (featured.length
+        ? '<section class="dish-section"><div class="dish-section-head"><h2>' + esc(t().featured) + '</h2><span>' + String(featured.length).padStart(2, '0') + '</span></div>' +
+          '<div class="dish-grid">' + featured.map(dishCard).join('') + '</div></section>'
         : '') +
-      '<div class="sf-total-box">' +
-        '<div class="sf-total-row"><span>' + esc(I.t('subtotal')) + '</span><span>' + fmtMoney(sub, view.settings.currency) + '</span></div>' +
-        (orderType === 'delivery'
-          ? '<div class="sf-total-row"><span>' + esc(I.t('deliveryFee')) + '</span><span>' + fmtMoney(fee, view.settings.currency) + '</span></div>'
-          : '') +
-        '<div class="sf-total-row grand"><span>' + esc(I.t('total')) + '</span><span>' + fmtMoney(sub + fee, view.settings.currency) + '</span></div>' +
-      '</div>' +
-      checkoutFormHtml() +
-      '<div id="checkout-error" class="notice notice-error hidden mt-1"></div>' +
-      '<button type="submit" form="checkout-form" class="sf-checkout-cta mt-1" id="place-order-btn"' + (view.openNow ? '' : ' disabled') + '>' + esc(I.t('orderViaWebsite')) + '</button>' +
-      '<button type="button" class="sf-checkout-cta mt-1" id="order-wa-btn"' + (view.openNow ? '' : ' disabled') + ' style="background:var(--surface);color:var(--ink);border:1px solid var(--border-strong)">' + esc(I.t('orderViaWhatsapp')) + '</button>' +
-      '<button type="button" id="close-sheet-btn" class="btn btn-outline btn-block mt-1">' + esc(I.t('keepBrowsing')) + '</button>';
+      '<section class="dish-section"><div class="dish-section-head"><h2>' + esc(label) + '</h2><span>' + String(rest.length).padStart(2, '0') + '</span></div>' +
+        '<div class="dish-grid">' + (rest.map(dishCard).join('') || '<div class="empty-results">' + esc(t().noMatch) + '</div>') + '</div></section>';
 
-    // Wire quantity controls.
-    content.querySelectorAll('[data-inc]').forEach((b) => b.addEventListener('click', () => setQty(b.dataset.inc, (cart[b.dataset.inc] || 0) + 1)));
-    content.querySelectorAll('[data-dec]').forEach((b) => b.addEventListener('click', () => setQty(b.dataset.dec, (cart[b.dataset.dec] || 0) - 1)));
-
-    content.querySelectorAll('.sf-type-toggle button').forEach((b) => {
-      b.addEventListener('click', () => {
-        orderType = b.dataset.type;
-        try{ localStorage.setItem('ordertype_' + slug, orderType); }catch(_){}
-        renderCartSheet();
-      });
-    });
-
-    document.getElementById('close-sheet-btn').addEventListener('click', closeSheet);
-    document.getElementById('checkout-form').addEventListener('submit', submitOrder);
-    const waBtn2 = document.getElementById('order-wa-btn');
-    if (waBtn2) waBtn2.addEventListener('click', orderViaWhatsapp);
+    zone.querySelectorAll('[data-add]').forEach((b) => b.addEventListener('click', () => changeCart(b.dataset.add, 1)));
+    zone.querySelectorAll('[data-plus]').forEach((b) => b.addEventListener('click', () => changeCart(b.dataset.plus, 1)));
+    zone.querySelectorAll('[data-minus]').forEach((b) => b.addEventListener('click', () => changeCart(b.dataset.minus, -1)));
   }
 
-  function checkoutFormHtml() {
-    const needsAddress = orderType === 'delivery';
-    return (
-      '<form id="checkout-form" novalidate class="mt-2">' +
-        '<div class="field"><label for="co-name">' + esc(I.t('yourName')) + '</label>' +
-          '<input id="co-name" name="customerName" type="text" maxlength="80" required autocomplete="name"></div>' +
-        '<div class="field"><label for="co-wa">' + esc(I.t('whatsappNumber')) + '</label>' +
-          '<input id="co-wa" name="customerWhatsapp" type="tel" maxlength="20" required placeholder="+15551234567" autocomplete="tel"></div>' +
-        '<div class="field"><label for="co-phone">' + esc(I.t('phoneOptional')) + '</label>' +
-          '<input id="co-phone" name="customerPhone" type="tel" maxlength="20" autocomplete="tel"></div>' +
-        '<div class="field"><label for="co-address">' + esc(needsAddress ? I.t('deliveryAddress') : I.t('addressOptional')) + '</label>' +
-          '<textarea id="co-address" name="customerAddress" maxlength="250">' + '</textarea></div>' +
-        '<div class="field"><label for="co-notes">' + esc(I.t('notesOptional')) + '</label>' +
-          '<input id="co-notes" name="notes" type="text" maxlength="400"></div>' +
-      '</form>'
-    );
+  function dishCard(item) {
+    const q = cart[item.id] || 0;
+    const img = '<div class="dish-img"><img loading="lazy" src="' + esc(item.image_path || FOOD) + '" alt="' + esc(item.name) + '">' +
+      (item.is_popular ? '<b>' + esc(t().top) + '</b>' : '') + '</div>';
+    const action = !item.is_available
+      ? '<span class="soldout-tag">' + esc(t().soldOut) + '</span>'
+      : (q ? qtyCtl(item.id, q, item.name)
+        : '<button class="add-btn" data-add="' + esc(item.id) + '">＋ ' + esc(t().add) + '</button>');
+    return '<article class="dish">' + img +
+      '<div class="dish-main"><div><h3>' + esc(item.name) + '</h3>' +
+      (item.description ? '<p>' + esc(item.description) + '</p>' : '') + '</div>' +
+      '<div class="dish-foot"><span class="price-red">' + esc(money(item.price_cents)) + '</span>' + action + '</div>' +
+      '</div></article>';
   }
 
-  function orderViaWhatsapp() {
-    const name = (document.getElementById('co-name') && document.getElementById('co-name').value.trim()) || '';
-    const wa = (document.getElementById('co-wa') && document.getElementById('co-wa').value.trim()) || '';
-    const address = (document.getElementById('co-address') && document.getElementById('co-address').value.trim()) || '';
-    const notes = (document.getElementById('co-notes') && document.getElementById('co-notes').value.trim()) || '';
+  const qtyCtl = (id, q, label) =>
+    '<div class="qty" aria-label="' + esc(label) + '"><button data-minus="' + esc(id) + '">−</button><span>' + q + '</span><button data-plus="' + esc(id) + '">＋</button></div>';
+
+  function renderBar() {
+    const units = totalUnits();
+    const bar = $bar();
+    if (units === 0) { bar.classList.add('hidden'); return; }
+    bar.classList.remove('hidden');
+    bar.innerHTML = '<span>' + esc(t().cart + ' (' + units + ')') + '</span><span>' + esc(money(subtotalCents())) + ' ‹</span>';
+  }
+
+  /* ---------------------------- overlay ---------------------------- */
+  function stashCo() {
+    const g = (id) => { const el = document.getElementById(id); return el ? el.value : ''; };
+    if (document.getElementById('checkout-form')) {
+      co = { name: g('co-name'), wa: g('co-wa'), phone: g('co-phone'), address: g('co-address'), notes: g('co-notes') };
+    }
+  }
+
+  function renderOverlay() {
+    const root = $overlay();
+    if (bookingOpen) { root.innerHTML = bookingHtml(); wireBooking(); return; }
+    if (!cartOpen) { root.innerHTML = ''; return; }
     const entries = cartEntries();
-    if (!entries.length) return;
-    if (!name || !wa) {
-      const errBox = document.getElementById('checkout-error');
-      errBox.textContent = I.t('enterNameAndWa');
-      errBox.classList.remove('hidden');
+    if (!entries.length) {
+      root.innerHTML = '<div class="cart-overlay"><section class="cart-modal"><div class="cart-title"><div><h2>' +
+        esc(t().cartEmpty) + '</h2></div><button class="cart-close" data-close>×</button></div>' +
+        '<p style="color:rgba(32,61,58,.6);font-size:13px">' + esc(t().cartEmptyHint) + '</p>' +
+        '<button class="co-ghost" data-close>' + esc(t().keepBrowsing) + '</button></section></div>';
+      root.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', closeOverlay));
       return;
     }
-    if (orderType === 'delivery' && !address) {
-      const errBox = document.getElementById('checkout-error');
-      errBox.textContent = I.t('deliveryAddress');
-      errBox.classList.remove('hidden');
-      document.getElementById('co-address').focus();
-      return;
-    }
-    const restaurantWa = (view.settings && view.settings.whatsapp || '').replace(/[^0-9]/g, '');
-    if (!restaurantWa) {
-      const errBox = document.getElementById('checkout-error');
-      errBox.textContent = 'WhatsApp not available for this restaurant';
-      errBox.classList.remove('hidden');
-      return;
-    }
-    const lines = entries.map((e) => e.qty + '× ' + e.item.name).join('\n');
-    const total = fmtMoney(subtotalCents() + deliveryFeeCents(), view.settings.currency);
-    let msg = 'السلام عليكم ' + view.name + '، أريد طلب:\n' + lines + '\nالمجموع: ' + total + '\nالاسم: ' + name + '\nواتساب: ' + wa;
-    if (address) msg += '\nالعنوان: ' + address;
-    if (notes) msg += '\nملاحظات: ' + notes;
-    msg += '\nنوع الطلب: ' + (orderType === 'delivery' ? I.t('delivery') : I.t('pickup'));
-    window.open('https://wa.me/' + encodeURIComponent(restaurantWa) + '?text=' + encodeURIComponent(msg), '_blank');
+    const sub = subtotalCents(), fee = feeCents();
+    root.innerHTML = '<div class="cart-overlay"><section class="cart-modal">' +
+      '<div class="cart-title"><div><small>' + totalUnits() + ' ' + esc(t().items) + '</small><h2>' + esc(t().cart) + '</h2></div>' +
+      '<button class="cart-close" data-close>×</button></div>' +
+      entries.map((e) => '<div class="cart-row"><img src="' + esc(e.item.image_path || FOOD) + '" alt="">' +
+        '<div class="cart-row-main"><strong>' + esc(e.item.name) + '</strong><small>' + esc(money(e.item.price_cents * e.qty)) + '</small></div>' +
+        qtyCtl(e.item.id, e.qty, e.item.name) + '</div>').join('') +
+      (hasDelivery()
+        ? '<div class="co-type"><button data-type="pickup"' + (orderType === 'pickup' ? ' class="active"' : '') + '>' + esc(t().pickup) + '</button>' +
+          '<button data-type="delivery"' + (orderType === 'delivery' ? ' class="active"' : '') + '>' + esc(t().delivery) + '</button></div>'
+        : '') +
+      '<div class="cart-total" style="display:grid;gap:6px"><div style="display:flex;justify-content:space-between;font-size:13px"><span>' + esc(t().subtotal) + '</span><span>' + esc(money(sub)) + '</span></div>' +
+      (orderType === 'delivery' ? '<div style="display:flex;justify-content:space-between;font-size:13px"><span>' + esc(t().deliveryFee) + '</span><span>' + esc(money(fee)) + '</span></div>' : '') +
+      '<div style="display:flex;justify-content:space-between"><span>' + esc(t().total) + '</span><span>' + esc(money(sub + fee)) + '</span></div></div>' +
+      '<form id="checkout-form" class="co-form" novalidate>' +
+        '<label>' + esc(t().yourName) + '<input id="co-name" maxlength="80" autocomplete="name" value="' + esc(co.name) + '"></label>' +
+        '<label>' + esc(t().waNumber) + '<input id="co-wa" type="tel" maxlength="20" dir="ltr" autocomplete="tel" value="' + esc(co.wa) + '"></label>' +
+        '<label>' + esc(t().phoneOpt) + '<input id="co-phone" type="tel" maxlength="20" dir="ltr" value="' + esc(co.phone) + '"></label>' +
+        '<label>' + esc(orderType === 'delivery' ? t().addrDelivery : t().addrOpt) + '<textarea id="co-address" maxlength="250">' + esc(co.address) + '</textarea></label>' +
+        '<label>' + esc(t().notesOpt) + '<input id="co-notes" maxlength="400" value="' + esc(co.notes) + '"></label>' +
+      '</form>' +
+      '<p class="co-error hidden" id="checkout-error"></p>' +
+      (sent ? '<p class="live-alert ok">' + esc(t().ready) + ' ' + esc(t().sentHint) + '</p>' : '') +
+      '<button class="co-submit" id="place-order-btn"' + (view.openNow ? '' : ' disabled') + '>' + esc(t().sendSite) + '</button>' +
+      '<button class="whatsapp" id="order-wa-btn"' + (view.openNow ? '' : ' disabled') + '>◌　' + esc(t().sendWA) + '</button>' +
+      '<button class="co-ghost" data-close>' + esc(t().keepBrowsing) + '</button>' +
+      '</section></div>';
+
+    root.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', closeOverlay));
+    root.querySelectorAll('[data-plus]').forEach((b) => b.addEventListener('click', () => changeCart(b.dataset.plus, 1)));
+    root.querySelectorAll('[data-minus]').forEach((b) => b.addEventListener('click', () => changeCart(b.dataset.minus, -1)));
+    root.querySelectorAll('.co-type button').forEach((b) => b.addEventListener('click', () => {
+      stashCo();
+      orderType = b.dataset.type;
+      try { localStorage.setItem('ordertype_' + slug, orderType); } catch (_) {}
+      renderOverlay();
+    }));
+    document.getElementById('place-order-btn').addEventListener('click', submitOrder);
+    document.getElementById('order-wa-btn').addEventListener('click', orderViaWhatsapp);
   }
 
-  function bookingFormHtml(defaultDate) {
-    return (
-      '<form id="booking-form" novalidate class="mt-2">' +
-        '<div class="field"><label for="bk-name">' + esc(I.t('bookingName')) + '</label><input id="bk-name" type="text" maxlength="80" required></div>' +
-        '<div class="field"><label for="bk-wa">' + esc(I.t('bookingWhatsapp')) + '</label><input id="bk-wa" type="tel" maxlength="20" required placeholder="+970..."></div>' +
-        '<div class="field"><label for="bk-phone">' + esc(I.t('bookingPhone')) + '</label><input id="bk-phone" type="tel" maxlength="20"></div>' +
-        '<div class="field"><label for="bk-tables">' + esc(I.t('tablesCount')) + '</label><input id="bk-tables" type="number" min="1" max="20" value="2" required></div>' +
-        '<div class="field"><label for="bk-date">' + esc(I.t('bookingDate')) + '</label><input id="bk-date" type="date" value="' + esc(defaultDate) + '" required></div>' +
-        '<div class="field"><label for="bk-time">' + esc(I.t('bookingTime')) + '</label><input id="bk-time" type="time" value="19:00" required></div>' +
-        '<div class="field"><label for="bk-notes">' + esc(I.t('bookingNotes')) + '</label><input id="bk-notes" type="text" maxlength="400"></div>' +
-      '</form>'
-    );
+  function closeOverlay() { cartOpen = false; bookingOpen = false; renderOverlay(); }
+
+  function changeCart(id, delta) {
+    stashCo();
+    const next = Math.max(0, (cart[id] || 0) + delta);
+    if (next) cart[id] = next; else delete cart[id];
+    saveCart();
+    renderBar();
+    updateGrids();
+    if (cartOpen || bookingOpen) renderOverlay();
   }
 
-  function openBookingSheet() {
-    const content = document.getElementById('sheet-content');
-    const defaultDate = new Date().toISOString().slice(0, 10);
-    content.innerHTML =
-      '<h2 class="sf-sheet-title">' + esc(I.t('bookTableTitle')) + '</h2>' +
-      '<p class="muted small">' + esc(I.t('bookTableDesc')) + '</p>' +
-      bookingFormHtml(defaultDate) +
-      '<div id="booking-error" class="notice notice-error hidden mt-1"></div>' +
-      '<button type="submit" form="booking-form" class="sf-checkout-cta mt-1" id="book-submit-btn">' + esc(I.t('bookNow')) + '</button>' +
-      '<button type="button" id="close-sheet-btn-booking" class="btn btn-outline btn-block mt-1">' + esc(I.t('close')) + '</button>';
-    document.getElementById('close-sheet-btn-booking').addEventListener('click', closeSheet);
-    document.getElementById('booking-form').addEventListener('submit', submitBooking);
-    openSheet();
-  }
-
-  async function submitBooking(e) {
-    e.preventDefault();
-    const errBox = document.getElementById('booking-error');
-    errBox.classList.add('hidden');
-    const payload = {
-      customerName: document.getElementById('bk-name').value,
-      customerWhatsapp: document.getElementById('bk-wa').value,
-      customerPhone: document.getElementById('bk-phone').value,
-      tablesCount: Number(document.getElementById('bk-tables').value),
-      bookedAt: document.getElementById('bk-date').value + 'T' + document.getElementById('bk-time').value,
-      notes: document.getElementById('bk-notes').value,
+  /* ---------------------------- checkout --------------------------- */
+  function readCo() {
+    return {
+      customerName: document.getElementById('co-name').value.trim(),
+      customerWhatsapp: document.getElementById('co-wa').value.trim(),
+      customerPhone: document.getElementById('co-phone').value.trim(),
+      customerAddress: document.getElementById('co-address').value.trim(),
+      notes: document.getElementById('co-notes').value.trim(),
     };
-    const btn = document.getElementById('book-submit-btn');
-    btn.disabled = true;
-    try {
-      const data = await api.post('/api/restaurants/' + encodeURIComponent(slug) + '/bookings', payload);
-      toast(I.t('bookingCreated'), 'success');
-      closeSheet();
-    } catch (err) {
-      errBox.textContent = err.code === 'SUBSCRIPTION_EXPIRED' ? I.t('subExpired') : err.message;
-      errBox.classList.remove('hidden');
-      btn.disabled = false;
-    }
+  }
+  function coError(msg) {
+    const box = document.getElementById('checkout-error');
+    if (!box) return;
+    if (!msg) { box.classList.add('hidden'); return; }
+    box.textContent = msg;
+    box.classList.remove('hidden');
   }
 
-  async function submitOrder(e) {
-    e.preventDefault();
-    const errBox = document.getElementById('checkout-error');
-    errBox.classList.add('hidden');
-
-    const payload = {
-      customerName: document.getElementById('co-name').value,
-      customerWhatsapp: document.getElementById('co-wa').value,
-      customerPhone: document.getElementById('co-phone').value,
-      customerAddress: document.getElementById('co-address').value,
-      notes: document.getElementById('co-notes').value,
-      orderType,
-      items: cartEntries().map((e2) => ({ itemId: e2.item.id, quantity: e2.qty })),
-    };
-
+  async function submitOrder() {
+    coError(null);
+    const f = readCo();
+    if (!f.customerName || !f.customerWhatsapp) { coError(t().enterNameAndWa); return; }
+    if (orderType === 'delivery' && !f.customerAddress) { coError(t().addrRequired); return; }
     const btn = document.getElementById('place-order-btn');
     btn.disabled = true;
     try {
-      const data = await api.post('/api/restaurants/' + encodeURIComponent(slug) + '/orders', payload);
-      cart = {};
-      saveCart();
-      updateCartBar();
+      const data = await api.post('/api/restaurants/' + encodeURIComponent(slug) + '/orders', {
+        customerName: f.customerName, customerWhatsapp: f.customerWhatsapp,
+        customerPhone: f.customerPhone, customerAddress: f.customerAddress,
+        notes: f.notes, orderType,
+        items: cartEntries().map((e) => ({ itemId: e.item.id, quantity: e.qty })),
+      });
+      cart = {}; co = { name: '', wa: '', phone: '', address: '', notes: '' };
+      saveCart(); renderBar(); updateGrids();
       renderSuccess(data.order);
     } catch (err) {
-      errBox.textContent = err.code === 'SUBSCRIPTION_EXPIRED' ? I.t('subExpired') : err.message;
-      errBox.classList.remove('hidden');
+      coError(err.message);
     } finally {
       btn.disabled = false;
     }
   }
 
-  function renderSuccess(order) {
-    const content = document.getElementById('sheet-content');
-    content.innerHTML =
-      '<h2 class="sf-sheet-title">' + esc(I.t('placedHead')) + '</h2>' +
-      '<div class="notice notice-ok">' + esc(I.t('showCode')) + '</div>' +
-      '<div class="sf-success-code">' + esc(order.code) + '</div>' +
-      '<p class="muted small sf-success-total">' + esc(I.t('totalLabel')) + ' <strong>' + fmtMoney(order.total_cents ?? order.totalCents ?? 0, view.settings.currency) + '</strong></p>' +
-      '<a class="sf-link-cta" href="/track?code=' + encodeURIComponent(order.code) + '">' + esc(I.t('trackMyOrder')) + '</a>' +
-      '<button type="button" id="close-sheet-btn" class="btn btn-outline btn-block mt-1">' + esc(I.t('done')) + '</button>';
-    document.getElementById('close-sheet-btn').addEventListener('click', closeSheet);
+  function orderViaWhatsapp() {
+    const f = readCo();
+    coError(null);
+    if (!f.customerName || !f.customerWhatsapp) { coError(t().enterNameAndWa); return; }
+    if (orderType === 'delivery' && !f.customerAddress) { coError(t().addrRequired); return; }
+    const restaurantWa = ((view.settings && view.settings.whatsapp) || '').replace(/[^0-9]/g, '');
+    if (!restaurantWa) { coError(t().noWA); return; }
+    const entries = cartEntries();
+    const lines = entries.map((e) => e.qty + '× ' + e.item.name).join('\n');
+    let msg = 'السلام عليكم ' + view.name + '، أريد طلب:\n' + lines +
+      '\n' + t().total + ': ' + money(subtotalCents() + feeCents()) +
+      '\n' + t().yourName + ': ' + f.customerName + '\n' + t().waNumber + ': ' + f.customerWhatsapp;
+    if (f.customerAddress) msg += '\n' + t().addrDelivery + ': ' + f.customerAddress;
+    if (f.notes) msg += '\n' + t().notesOpt + ': ' + f.notes;
+    msg += '\n' + (orderType === 'delivery' ? t().delivery : t().pickup);
+    sent = true;
+    window.open('https://wa.me/' + encodeURIComponent(restaurantWa) + '?text=' + encodeURIComponent(msg), '_blank');
+    renderOverlay();
   }
 
-  /* ---------------------------- share -------------------------------- */
+  function renderSuccess(order) {
+    const code = order.code || '';
+    const total = order.total_cents ?? order.totalCents ?? 0;
+    $overlay().innerHTML = '<div class="cart-overlay"><section class="cart-modal">' +
+      '<div class="cart-title"><div><h2>' + esc(t().placedHead) + '</h2></div>' +
+      '<button class="cart-close" data-close>×</button></div>' +
+      '<p style="color:rgba(32,61,58,.65);font-size:13px">' + esc(t().showCode) + '</p>' +
+      '<div class="success-code">' + esc(code) + '</div>' +
+      '<p class="success-total">' + esc(t().total) + ' <strong>' + esc(money(total)) + '</strong></p>' +
+      '<a class="co-submit" style="text-decoration:none" href="/track.html?code=' + encodeURIComponent(code) + '">' + esc(t().trackMyOrder) + '</a>' +
+      '<button class="co-ghost" data-close>' + esc(t().done) + '</button></section></div>';
+    $overlay().querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', () => { sent = false; closeOverlay(); }));
+  }
 
+  /* ---------------------------- booking ---------------------------- */
+  function bookingHtml() {
+    const today = new Date().toISOString().slice(0, 10);
+    return '<div class="cart-overlay"><section class="cart-modal">' +
+      '<div class="cart-title"><div><h2>' + esc(t().bookTitle) + '</h2></div>' +
+      '<button class="cart-close" data-close>×</button></div>' +
+      '<p style="color:rgba(32,61,58,.65);font-size:13px">' + esc(t().bookDesc) + '</p>' +
+      '<form id="booking-form" class="co-form" novalidate>' +
+        '<label>' + esc(t().bkName) + '<input id="bk-name" maxlength="80"></label>' +
+        '<label>' + esc(t().bkWA) + '<input id="bk-wa" type="tel" maxlength="20" dir="ltr"></label>' +
+        '<label>' + esc(t().bkPhone) + '<input id="bk-phone" type="tel" maxlength="20" dir="ltr"></label>' +
+        '<label>' + esc(t().bkTables) + '<input id="bk-tables" type="number" min="1" max="20" value="2"></label>' +
+        '<label>' + esc(t().bkDate) + '<input id="bk-date" type="date" value="' + esc(today) + '"></label>' +
+        '<label>' + esc(t().bkTime) + '<input id="bk-time" type="time" value="19:00"></label>' +
+        '<label>' + esc(t().bkNotes) + '<input id="bk-notes" maxlength="400"></label>' +
+      '</form><p class="co-error hidden" id="booking-error"></p>' +
+      '<button class="co-submit" id="book-submit-btn">' + esc(t().bookNow) + '</button>' +
+      '<button class="co-ghost" data-close>' + esc(t().close) + '</button></section></div>';
+  }
+  function wireBooking() {
+    $overlay().querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', closeOverlay));
+    document.getElementById('book-submit-btn').addEventListener('click', async () => {
+      const errBox = document.getElementById('booking-error');
+      errBox.classList.add('hidden');
+      const btn = document.getElementById('book-submit-btn');
+      btn.disabled = true;
+      try {
+        await api.post('/api/restaurants/' + encodeURIComponent(slug) + '/bookings', {
+          customerName: document.getElementById('bk-name').value,
+          customerWhatsapp: document.getElementById('bk-wa').value,
+          customerPhone: document.getElementById('bk-phone').value,
+          tablesCount: Number(document.getElementById('bk-tables').value),
+          bookedAt: document.getElementById('bk-date').value + 'T' + document.getElementById('bk-time').value,
+          notes: document.getElementById('bk-notes').value,
+        });
+        toast(t().bookingCreated, 'success');
+        closeOverlay();
+      } catch (err) {
+        errBox.textContent = err.message;
+        errBox.classList.remove('hidden');
+        btn.disabled = false;
+      }
+    });
+  }
+
+  /* ----------------------------- share ----------------------------- */
   function sharePage() {
     const url = location.href;
-    const data = { title: view.name, text: I.t('checkOut', { name: view.name }), url };
-    if (navigator.share) {
-      navigator.share(data).catch(() => {});
-    } else if (navigator.clipboard) {
-      navigator.clipboard.writeText(url).then(() => window.App.toast(I.t('linkCopied')));
-    }
+    if (navigator.share) { navigator.share({ title: view.name, text: view.name, url }).catch(() => {}); }
+    else if (navigator.clipboard) { navigator.clipboard.writeText(url).then(() => toast(t().linkCopied)); }
   }
 
-  /* ----------------------------- boot -------------------------------- */
-
+  /* ------------------------------ boot ----------------------------- */
   async function boot() {
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
     try {
       view = await api.get('/api/restaurants/' + encodeURIComponent(slug) + '/menu');
     } catch (err) {
-      document.getElementById('notice-zone').innerHTML =
-        '<div class="notice notice-error mt-3">' + esc(err.message) + '</div>';
-      document.getElementById('chips').remove();
-      document.getElementById('cart-bar').remove();
+      $content().innerHTML = '<div class="live-alert error">' + esc(err.message) + '</div>';
+      $bar().classList.add('hidden');
       return;
     }
+    try {
+      const tokens = theme.buildTokens(view.settings.primaryColor, view.settings.secondaryColor);
+      const rs = document.documentElement.style;
+      for (const [name, value] of Object.entries(tokens)) rs.setProperty(name, value);
+    } catch (_) { /* brand tokens optional */ }
+    document.title = (lang === 'en' && view.settings.nameEn) ? view.settings.nameEn : view.name;
 
-    applyTheme();
-    document.title = view.name;
-    renderHero();
-    renderChips();
-    renderMenu();
-    updateCartBar();
-
-    // Reorder from a previous order (navigated here with ?reorder=itemId:qty,...)
     const reorderRaw = qsParam('reorder');
     if (reorderRaw) {
       try {
-        const entries = reorderRaw.split(',').map((p) => {
+        reorderRaw.split(',').forEach((p) => {
           const [id, q] = p.split(':');
-          return { id: String(id).trim(), qty: Math.max(1, Math.min(Number(q), 99) || 1) };
-        });
-        entries.forEach((e) => {
-          if (view.items.some((i) => i.id === e.id)) cart[e.id] = e.qty;
+          const qty = Math.max(1, Math.min(Number(q), 99) || 1);
+          if (view.items.some((i) => i.id === String(id).trim())) cart[String(id).trim()] = qty;
         });
         saveCart();
-        updateCartBar();
       } catch (_) { /* ignore malformed reorder param */ }
     }
 
-    const notices = [];
-    if (!view.openNow) {
-      notices.push('<div class="notice notice-warn mt-2">' + esc(I.t('closedNotice')) + '</div>');
-    }
-    document.getElementById('notice-zone').innerHTML = notices.join('');
-
-    document.getElementById('open-cart-btn').addEventListener('click', () => {
-      if (totalUnits() === 0) return;
-      renderCartSheet();
-      openSheet();
-    });
-
-    const shareBtn = document.getElementById('share-btn');
-    if (shareBtn) shareBtn.addEventListener('click', sharePage);
-    const bookBtn = document.getElementById('book-btn');
-    if (bookBtn) bookBtn.addEventListener('click', openBookingSheet);
-
-    document.getElementById('sheet-backdrop').addEventListener('click', closeSheet);
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeSheet();
-    });
-
-    // Re-render everything when the user switches language.
-    I.onChange(() => {
-      renderHero();
-      renderChips();
-      renderMenu();
-      updateCartBar();
-      const notices2 = [];
-      if (!view.openNow) {
-        notices2.push('<div class="notice notice-warn mt-2">' + esc(I.t('closedNotice')) + '</div>');
-      }
-      document.getElementById('notice-zone').innerHTML = notices2.join('');
-      const sb = document.getElementById('share-btn');
-      if (sb) sb.addEventListener('click', sharePage);
-      const bb = document.getElementById('book-btn');
-      if (bb) bb.addEventListener('click', openBookingSheet);
-      if (document.getElementById('sheet').classList.contains('open') && totalUnits() > 0) {
-        renderCartSheet();
-      }
-    });
+    renderAll();
+    $bar().addEventListener('click', () => { if (totalUnits() === 0) return; bookingOpen = false; cartOpen = true; renderOverlay(); });
+    $overlay().addEventListener('click', (e) => { if (e.target.classList.contains('cart-overlay')) closeOverlay(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeOverlay(); });
   }
 
   boot();

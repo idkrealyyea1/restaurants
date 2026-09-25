@@ -29,7 +29,7 @@ async function login(req, res) {
     const sub = await restaurants.getSubscription(user.restaurant_id);
     if (!sub.active) {
       const { forbidden } = require('../utils/errors');
-      throw forbidden('SUBSCRIPTION_EXPIRED', 'انتهت فترة التجربة 7 أيام — تواصل مع الإدارة للتجديد عبر واتساب +972567439846 ($8.99/شهر) | 7-day trial finished — contact +972567439846 to renew ($8.99/mo)');
+      throw forbidden('SUBSCRIPTION_EXPIRED', 'انتهت فترة التجربة 7 أيام — تواصل مع الإدارة للتجديد عبر واتساب +972567439846 ($19.99/شهر) | 7-day trial finished — contact +972567439846 to renew ($19.99/mo)');
     }
   }
   if (user.role === 'delivery') {

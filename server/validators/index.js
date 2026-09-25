@@ -152,6 +152,7 @@ function validateSettingsUpdate(body = {}) {
   }
   if (body.logoPath !== undefined) patch.logoPath = body.logoPath ? assertUploadPath(body.logoPath) : null;
   if (body.coverPath !== undefined) patch.coverPath = body.coverPath ? assertUploadPath(body.coverPath) : null;
+  if (body.nameEn !== undefined) patch.nameEn = cleanText(body.nameEn, { field: 'nameEn', max: 80 }) || null;
   if (body.primaryColor !== undefined) patch.primaryColor = normalizeHexColor(body.primaryColor, 'primaryColor');
   if (body.secondaryColor !== undefined) patch.secondaryColor = normalizeHexColor(body.secondaryColor, 'secondaryColor');
   if (body.currency !== undefined) {

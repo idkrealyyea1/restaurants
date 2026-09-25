@@ -10,14 +10,15 @@
   let searchTerm = '';
 
   function restCard(r) {
+    const nm = (I.lang === 'en' && r.nameEn) ? r.nameEn : r.name;
     const badge = r.openNow
       ? '<span class="badge badge-open">' + esc(I.t('openNow')) + '</span>'
       : '<span class="badge badge-closed">' + esc(I.t('closed')) + '</span>';
 
     const cover = r.coverPath
-      ? '<img class="rest-cover-img" loading="lazy" src="' + esc(r.coverPath) + '" alt="" data-fallback="' + esc((r.name || '?').trim().charAt(0)) + '">'
+      ? '<img class="rest-cover-img" loading="lazy" src="' + esc(r.coverPath) + '" alt="" data-fallback="' + esc((nm || '?').trim().charAt(0)) + '">'
       : '<div class="rest-cover-img rest-cover-fallback">' +
-          '<span>' + esc((r.name || '?').trim().charAt(0)) + '</span></div>';
+          '<span>' + esc((nm || '?').trim().charAt(0)) + '</span></div>';
 
     return (
       '<a class="rest-card" href="/restaurant/' + encodeURIComponent(r.slug) + '">' +
@@ -26,7 +27,7 @@
           (r.logoPath
             ? '<img class="rest-logo" src="' + esc(r.logoPath) + '" alt="" loading="lazy">'
             : '') +
-          '<h3 class="rest-name">' + esc(r.name) + '</h3>' +
+          '<h3 class="rest-name">' + esc(nm) + '</h3>' +
           (r.description ? '<p class="muted small rest-desc">' + esc(r.description) + '</p>' : '') +
           '<div class="flex-between mt-1">' +
             '<span class="muted small">' + esc(I.t('itemsCount', { n: r.itemCount })) + '</span>' +
@@ -42,6 +43,7 @@
     return restaurants.filter(
       (r) =>
         r.name.toLowerCase().includes(searchTerm) ||
+        (r.nameEn || '').toLowerCase().includes(searchTerm) ||
         (r.description || '').toLowerCase().includes(searchTerm)
     );
   }

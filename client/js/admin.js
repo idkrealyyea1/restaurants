@@ -846,6 +846,7 @@
 
         '<section class="card"><h2>' + esc(I.t('profileS')) + '</h2>' +
           '<div class="field"><label for="st-desc">' + esc(I.t('descL2')) + '</label><textarea id="st-desc" maxlength="500">' + esc(s.description) + '</textarea></div>' +
+          '<div class="field"><label for="st-name-en">' + esc(I.t('nameEnL')) + '</label><input id="st-name-en" type="text" maxlength="80" dir="ltr" value="' + esc(s.nameEn || '') + '"></div>' +
           '<div class="form-row form-row-2">' +
             '<div class="field"><label for="st-phone">' + esc(I.t('phoneL')) + '</label><input id="st-phone" type="tel" value="' + esc(s.phone) + '"></div>' +
             '<div class="field"><label for="st-wa">' + esc(I.t('whatsappL2')) + '</label><input id="st-wa" type="tel" value="' + esc(s.whatsapp) + '"></div>' +
@@ -869,11 +870,16 @@
             '<div class="field"><label for="st-color1">' + esc(I.t('colorPrimary')) + '</label><input id="st-color1" type="color" value="' + esc(s.primaryColor) + '"></div>' +
             '<div class="field"><label for="st-color2">' + esc(I.t('colorSecondary')) + '</label><input id="st-color2" type="color" value="' + esc(s.secondaryColor) + '"></div>' +
           '</div>' +
+          '<div class="form-row form-row-2">' +
+            '<div class="field"><label for="st-hex1">HEX</label><input id="st-hex1" dir="ltr" maxlength="7" spellcheck="false" autocomplete="off" placeholder="#e11d48" value="' + esc(s.primaryColor) + '"></div>' +
+            '<div class="field"><label for="st-hex2">HEX</label><input id="st-hex2" dir="ltr" maxlength="7" spellcheck="false" autocomplete="off" placeholder="#1f3439" value="' + esc(s.secondaryColor) + '"></div>' +
+          '</div>' +
+          '<p class="hint muted small">' + esc(I.t('presetHint')) + '</p>' +
+          '<div class="preset-row" id="preset1"></div>' +
+          '<div class="preset-row" id="preset2"></div>' +
           '<div id="theme-preview" class="theme-preview">' +
-            '<div class="tp-block"><span class="tp-label">' + esc(I.t('tpButton')) + '</span><span class="tp-btn" id="tp-btn">' + esc(I.t('add')) + '</span></div>' +
-            '<div class="tp-block"><span class="tp-label">' + esc(I.t('tpCategory')) + '</span><span class="tp-chip" id="tp-chip">' + esc(I.t('tpCategoryLabel')) + '</span></div>' +
-            '<div class="tp-block"><span class="tp-label">' + esc(I.t('tpPopular')) + '</span><span class="tp-tag" id="tp-tag">' + esc(I.t('popular')) + '</span></div>' +
-            '<div class="tp-block"><span class="tp-label">' + esc(I.t('tpPrice')) + '</span><span class="tp-price" id="tp-price">' + esc(I.t('tpPriceLabel')) + '</span></div>' +
+            '<div class="tp-block"><span class="tp-label">' + esc(I.t('tpLogo')) + '</span><span class="tp-logo" id="tp-logo">' + esc((info.restaurant.name || '?').trim().charAt(0)) + '</span></div>' +
+            '<div class="tp-block"><span class="tp-label">' + esc(I.t('tpCover')) + '</span><span class="tp-cover"><i id="tp-tint"></i></span></div>' +
           '</div>' +
           '<div class="form-row form-row-2">' +
             '<div class="field"><label for="st-logo">' + esc(I.t('logoUpload')) + '</label><input id="st-logo" type="file" accept="image/jpeg,image/png,image/webp">' +
@@ -927,28 +933,69 @@
       renderThemePreview(c1.value, c2.value);
       c1.addEventListener('input', () => renderThemePreview(c1.value, c2.value));
       c2.addEventListener('input', () => renderThemePreview(c1.value, c2.value));
+      wireColorField(c1, document.getElementById('st-hex1'), document.getElementById('preset1'));
+      wireColorField(c2, document.getElementById('st-hex2'), document.getElementById('preset2'));
     } catch (err) {
       zone.innerHTML = errorHtml(err);
     }
   }
 
+  const COLOR_PRESETS = ['#d84632', '#ed6b4c', '#f5c84b', '#27615f', '#1f3439', '#e11d48',
+    '#7c3aed', '#2563eb', '#059669', '#ea580c', '#0e7490', '#be123c'];
+
+  function wireColorField(colorInput, hexInput, presetBox) {
+    const valid = (v) => /^#[0-9a-f]{6}$/i.test((v || '').trim());
+    const refresh = () => renderThemePreview(
+      document.getElementById('st-color1').value,
+      document.getElementById('st-color2').value
+    );
+    if (hexInput) {
+      hexInput.value = colorInput.value;
+      hexInput.addEventListener('change', () => {
+        let v = hexInput.value.trim();
+        if (/^[0-9a-f]{6}$/i.test(v)) v = '#' + v;
+        if (valid(v)) {
+          colorInput.value = v.toLowerCase();
+          hexInput.value = colorInput.value;
+          refresh();
+        } else {
+          hexInput.value = colorInput.value;
+          toast(I.t('hexInvalid'), 'error');
+        }
+      });
+    }
+    colorInput.addEventListener('input', () => { if (hexInput) hexInput.value = colorInput.value; });
+    if (presetBox) {
+      presetBox.innerHTML = COLOR_PRESETS.map((c) =>
+        '<button type="button" class="preset-dot" data-color="' + c + '" style="background:' + c + '" aria-label="' + c + '"></button>'
+      ).join('');
+      presetBox.querySelectorAll('.preset-dot').forEach((b) => b.addEventListener('click', () => {
+        colorInput.value = b.dataset.color;
+        if (hexInput) hexInput.value = b.dataset.color;
+        refresh();
+      }));
+    }
+  }
+
   function renderThemePreview(primaryColor, secondaryColor) {
-    const t = window.App.theme.buildTokens(primaryColor, secondaryColor);
+    const ok = (c) => /^#[0-9a-f]{6}$/i.test(c || '');
     const set = (id, prop, val) => { const el = document.getElementById(id); if (el) el.style.setProperty(prop, val); };
-    set('tp-btn', 'background-color', t['--primary']);
-    set('tp-btn', 'color', t['--on-primary']);
-    set('tp-chip', 'background-color', t['--primary']);
-    set('tp-chip', 'color', t['--on-primary']);
-    set('tp-chip', 'border-color', t['--primary']);
-    set('tp-tag', 'background-color', t['--secondary-soft']);
-    set('tp-tag', 'color', t['--secondary']);
-    set('tp-price', 'color', t['--primary']);
+    if (ok(primaryColor)) {
+      set('tp-logo', 'background-color', primaryColor);
+      try { set('tp-logo', 'color', window.App.theme.buildTokens(primaryColor, '#000000')['--on-primary']); } catch (_) { /* keep default */ }
+    } else {
+      set('tp-logo', 'background-color', '#d84632');
+      set('tp-logo', 'color', '#fff9ed');
+    }
+    const rgb = window.App.theme.hexToRgb(secondaryColor);
+    set('tp-tint', 'background-color', rgb ? 'rgba(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ',.32)' : 'transparent');
   }
 
   async function saveSettings() {
     const feeVal = parseFloat(document.getElementById('st-fee').value);
     const settingsBody = {
       description: document.getElementById('st-desc').value,
+      nameEn: document.getElementById('st-name-en').value.trim(),
       phone: document.getElementById('st-phone').value,
       whatsapp: document.getElementById('st-wa').value,
       address: document.getElementById('st-address').value,

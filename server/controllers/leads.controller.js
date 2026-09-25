@@ -346,17 +346,17 @@ function buildMessages(lead, demo){
     problem = `لكن عبر وسيط بياخذ 18-25% من كل طلب — من 100 طلب بـ 5000 شيكل، بتخسروا 1000`;
   }
   const solution = `عشان هيك جهزت لكم **ديمو حي باسم مطعمكم** — نفس منيوكم، بألوانكم، جاهز للطلب:`;
-  const benefits = `✓ رابط خاص فيكم (مثلاً ${demoUrl}) + QR للطاولات\n✓ الزبون بطلب من موقعكم — الطلب بوصلك واتساب + لوحة تحكم مع كود تتبع\n✓ حجز طاولات بنفس الموقع\n✓ **0% عمولة** — $8.99/شهر ثابت، لو بعت بـ 10,000 بتوفر 2000 مقارنة بـ Talabat`;
+  const benefits = `✓ رابط خاص فيكم (مثلاً ${demoUrl}) + QR للطاولات\n✓ الزبون بطلب من موقعكم — الطلب بوصلك واتساب + لوحة تحكم مع كود تتبع\n✓ حجز طاولات بنفس الموقع\n✓ **0% عمولة** — $19.99/شهر ثابت، لو بعت بـ 10,000 بتوفر 2000 مقارنة بـ Talabat`;
   const cta = `جربوه الآن 7 أيام مجاناً — بدون بطاقة، أنا جهزت كل شيء:`;
   // WhatsApp — short, punchy, proof + demo + CTA
   const whatsapp = `مرحبا ${lead.restaurant_name} 👋\n${hook} ${problem}.\n\n${solution}\n${benefits}\n\n${cta}\n🔗 ${demoUrl}\n🔐 دخول: ${loginUrl}\n👤 ${user}\n🔑 ${pass}\n\nلو عجبكم بتخلوه، لو لا بحذفه — شو رأيكم أبعتلكم فيديو 30 ثانية كيف الزبون بطلب؟\n— Restivo | واتساب: +972567439846`;
   // Instagram — even shorter (people skim)
-  const instagram = `مرحبا ${lead.restaurant_name} 👋 ${hook.split('—')[0]} — جهزت لكم ديمو حي: ${demoUrl} (طلب مباشر + واتساب + حجز طاولات، 0% عمولة $8.99/شهر).\nتجربة 7 أيام: ${loginUrl} | ${user} / ${pass}\nتحبوا تشوفوه؟`;
+  const instagram = `مرحبا ${lead.restaurant_name} 👋 ${hook.split('—')[0]} — جهزت لكم ديمو حي: ${demoUrl} (طلب مباشر + واتساب + حجز طاولات، 0% عمولة $19.99/شهر).\nتجربة 7 أيام: ${loginUrl} | ${user} / ${pass}\nتحبوا تشوفوه؟`;
   // Email — full story with subject that gets opened
   const email_subject = `لـ ${lead.restaurant_name}: وفر 20% من كل طلب — ديمو جاهز باسمكم`;
-  const email_body = `مرحبا فريق ${lead.restaurant_name}،\n\n${hook}.\n${problem}.\n\n${solution}\n${demoUrl}\n\n${benefits}\n\n${cta}\n• رابط الديمو: ${demoUrl}\n• لوحة الإدارة: ${loginUrl}\n• المستخدم: ${user}\n• الباسورد: ${pass}\n• المدة: 7 أيام مجاناً\n\nمثال: مطعم في ${lead.city||'عمان'} كان يدفع 900 شيكل عمولة شهرياً، الآن يدفع $8.99 ثابت ويحتفظ ببيانات زبائنه.\n\nلو حابين أعدل الأصناف/الأسعار حسب منيوكم الحقيقي، ابعتولي منيو وصور وأنا أحدثه خلال ساعة.\n\nبانتظار رأيكم،\nRestivo — +972567439846\nhttps://restaurants-platform.wasmer.app\n\nP.S. الديمو فيه 6 أصناف مؤقتة للعرض — بنبدلها بمنيوكم الحقيقي مجاناً.`;
+  const email_body = `مرحبا فريق ${lead.restaurant_name}،\n\n${hook}.\n${problem}.\n\n${solution}\n${demoUrl}\n\n${benefits}\n\n${cta}\n• رابط الديمو: ${demoUrl}\n• لوحة الإدارة: ${loginUrl}\n• المستخدم: ${user}\n• الباسورد: ${pass}\n• المدة: 7 أيام مجاناً\n\nمثال: مطعم في ${lead.city||'عمان'} كان يدفع 900 شيكل عمولة شهرياً، الآن يدفع $19.99 ثابت ويحتفظ ببيانات زبائنه.\n\nلو حابين أعدل الأصناف/الأسعار حسب منيوكم الحقيقي، ابعتولي منيو وصور وأنا أحدثه خلال ساعة.\n\nبانتظار رأيكم،\nRestivo — +972567439846\nhttps://restaurants-platform.wasmer.app\n\nP.S. الديمو فيه 6 أصناف مؤقتة للعرض — بنبدلها بمنيوكم الحقيقي مجاناً.`;
   // Short version for offer card
-  const short_whatsapp = `مرحبا ${lead.restaurant_name} — جهزت لكم موقع طلب خاص ${demoUrl} (0% عمولة $8.99/شهر) — تجربة 7 أيام: ${user}/${pass}`;
+  const short_whatsapp = `مرحبا ${lead.restaurant_name} — جهزت لكم موقع طلب خاص ${demoUrl} (0% عمولة $19.99/شهر) — تجربة 7 أيام: ${user}/${pass}`;
   return {
     whatsapp, short_whatsapp,
     instagram,

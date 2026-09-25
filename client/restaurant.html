@@ -3,16 +3,18 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#22211d">
+  <meta name="theme-color" content="#f5eddd">
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="icon" type="image/svg+xml" href="/icons/icon.svg">
   <title>المطعم</title>
   <link rel="stylesheet" href="/fonts/fonts.css">
-  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/restivo.css">
   <link rel="stylesheet" href="/css/skeleton.css">
-  <link rel="stylesheet" href="/css/storefront.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body class="storefront">
+<body>
   <!-- Skeleton loader: visible until page fully loads / offline handling -->
   <div id="app-skeleton" aria-hidden="false" aria-label="Loading">
     <div class="sk-skeleton-topbar">
@@ -35,45 +37,16 @@
   <div id="sk-offline" class="sk-offline" role="status" aria-live="polite">You appear offline — check your connection <button id="sk-offline-retry" type="button">Retry</button></div>
   <div id="sk-retry" class="sk-retry" role="alert"><p style="margin:0 0 8px; font-weight:700">Connection is slow or offline</p><p class="muted small" style="margin:0 0 12px">The page is taking longer than usual. Check your internet or try again.</p><button id="sk-retry-btn" class="btn btn-sm" type="button">Retry</button></div>
 
-  <div class="page-glow" aria-hidden="true"></div>
-
-  <header class="topbar">
-    <div class="topbar-inner container">
-      <span class="spacer"></span>
-    </div>
-  </header>
-
-  <!-- Hero is rendered by JS -->
-  <div id="hero"></div>
-
-  <main class="container">
-    <div id="notice-zone"></div>
-    <div class="sf-chips" id="chips"></div>
-
-    <div id="menu-zone" class="mt-1"></div>
-    <p class="footer-note" data-i18n="poweredBy">مدعوم من Restivo</p>
-  </main>
-
-  <!-- Floating cart bar -->
-  <div id="cart-bar" class="sf-cartbar hidden">
-    <div class="sf-cartbar-inner">
-      <span id="cart-summary" class="sf-cart-summary"></span>
-      <button id="open-cart-btn" type="button" class="sf-cart-go" data-i18n="viewCart">عرض السلة</button>
-    </div>
+  <div class="live-page">
+    <header class="live-head" id="live-head"></header>
+    <main class="live-content" id="live-content" dir="rtl"></main>
   </div>
+  <button class="live-cart hidden" id="live-cart-btn" type="button"></button>
+  <div id="cart-root"></div>
 
-  <!-- Cart / checkout / success sheet -->
-  <div id="sheet-backdrop" class="sheet-backdrop"></div>
-  <div id="sheet" class="sheet">
-    <div class="sheet-handle"></div>
-    <div id="sheet-content"></div>
-  </div>
-
-  <script src="/js/i18n.js"></script>
   <script src="/js/api.js"></script>
   <script src="/js/restaurant.js"></script>
   <script src="/js/pwa.js"></script>
   <script src="/js/skeleton.js"></script>
 </body>
 </html>
-

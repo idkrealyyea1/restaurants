@@ -295,7 +295,7 @@ async function listPublicDirectory() {
     await query(
       `SELECT r.id, r.slug, r.name, r.status,
               s.description, s.logo_path, s.cover_path, s.currency,
-              s.timezone, s.ignore_opening_hours,
+              s.timezone, s.ignore_opening_hours, s.name_en,
               (SELECT COUNT(*)::int FROM menu_items m
                  WHERE m.restaurant_id = r.id AND m.is_available) AS item_count
        FROM restaurants r
@@ -326,6 +326,7 @@ async function listPublicDirectory() {
     return {
       slug: r.slug,
       name: r.name,
+      nameEn: r.name_en || '',
       description: r.description || '',
       logoPath: r.logo_path,
       coverPath: r.cover_path,
