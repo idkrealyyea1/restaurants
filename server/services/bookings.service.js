@@ -20,43 +20,63 @@ function assertTransition(current, next) {
 }
 
 // ponytail: fixed 120-min overlap window — no duration exists in payload/validator/schema.
-// Confirm the house slot length with the business before changing; the exclusion constraint
-// in 019_booking_overlap.sql backfills with the same value, so change both together.
+// Confirm the house slot length with the business before changing; the 019 migration
+// backfills ends_at with the same value, so change both together.
 const BOOKING_SLOT_MINUTES = 120;
 
 async function create({ restaurantId, payload }) {
-  const { rows: rRows } = await query('SELECT id, is_active, subscription_ends_at FROM restaurants WHERE id = $1', [restaurantId]);
-  if (!rRows[0]) throw notFound('Restaurant not found');
-  if (!rRows[0].is_active) throw conflict('RESTAURANT_UNAVAILABLE', 'Restaurant is not active');
-  {
-    const endsAt = rRows[0].subscription_ends_at;
-    const active = !endsAt || new Date(endsAt).getTime() > Date.now();
-    if (!active) throw require('../utils/errors').forbidden('SUBSCRIPTION_EXPIRED', 'Subscription expired — please renew ($19.99/month) | انتهت التجربة — تواصل +972567439846');
-  }
-
-  let code = null;
-  let booking = null;
-  const endsAt = new Date(new Date(payload.bookedAt).getTime() + BOOKING_SLOT_MINUTES * 60 * 1000).toISOString();
-  for (let attempt = 0; attempt < 5 && !booking; attempt++) {
-    code = orderCode();
-    try {
-      const { rows } = await query(
-        `INSERT INTO bookings (code, restaurant_id, customer_name, customer_whatsapp, customer_phone, tables_count, booked_at, ends_at, notes)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
-         RETURNING id, code, restaurant_id, customer_name, customer_whatsapp, customer_phone, tables_count, booked_at, status, notes, created_at`,
-        [code, restaurantId, payload.customerName, payload.customerWhatsapp, payload.customerPhone, payload.tablesCount, payload.bookedAt, endsAt, payload.notes]
-      );
-      booking = rows[0];
-    } catch (err) {
-      if (err.code === '23505') continue;
-      if (err.code === '23P01') {
-        throw conflict('BOOKING_CONFLICT', 'That time slot was just taken. Please choose another time.');
-      }
-      throw err;
+  return withTx(async (client) => {
+    const rRows = (
+      await client.query('SELECT id, is_active, subscription_ends_at FROM restaurants WHERE id = $1 FOR UPDATE', [
+        restaurantId,
+      ])
+    ).rows;
+    if (!rRows[0]) throw notFound('Restaurant not found');
+    if (!rRows[0].is_active) throw conflict('RESTAURANT_UNAVAILABLE', 'Restaurant is not active');
+    {
+      const subEndsAt = rRows[0].subscription_ends_at;
+      const active = !subEndsAt || new Date(subEndsAt).getTime() > Date.now();
+      if (!active) throw require('../utils/errors').forbidden('SUBSCRIPTION_EXPIRED', 'Subscription expired — please renew ($19.99/month) | انتهت التجربة — تواصل +972567439846');
     }
-  }
-  if (!booking) throw conflict('BOOKING_CODE_COLLISION', 'Could not generate booking code, please retry');
-  return booking;
+
+    const bookedAt = new Date(payload.bookedAt).toISOString();
+    const endsAt = new Date(new Date(payload.bookedAt).getTime() + BOOKING_SLOT_MINUTES * 60 * 1000).toISOString();
+
+    // Serialize per restaurant (FOR UPDATE above): the overlap check and the
+    // insert run in one transaction, so two conflicting attempts cannot both
+    // commit. Range overlap needs no extension (only gist *indexes* do).
+    const clash = await client.query(
+      `SELECT 1 FROM bookings
+       WHERE restaurant_id = $1
+         AND status NOT IN ('cancelled', 'completed', 'noshow')
+         AND tstzrange(booked_at, ends_at) && tstzrange($2::timestamptz, $3::timestamptz)
+       LIMIT 1`,
+      [restaurantId, bookedAt, endsAt]
+    );
+    if (clash.rowCount > 0) {
+      throw conflict('BOOKING_CONFLICT', 'That time slot was just taken. Please choose another time.');
+    }
+
+    let code = null;
+    let booking = null;
+    for (let attempt = 0; attempt < 5 && !booking; attempt++) {
+      code = orderCode();
+      try {
+        const { rows } = await client.query(
+          `INSERT INTO bookings (code, restaurant_id, customer_name, customer_whatsapp, customer_phone, tables_count, booked_at, ends_at, notes)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+           RETURNING id, code, restaurant_id, customer_name, customer_whatsapp, customer_phone, tables_count, booked_at, status, notes, created_at`,
+          [code, restaurantId, payload.customerName, payload.customerWhatsapp, payload.customerPhone, payload.tablesCount, bookedAt, endsAt, payload.notes]
+        );
+        booking = rows[0];
+      } catch (err) {
+        if (err.code === '23505') continue;
+        throw err;
+      }
+    }
+    if (!booking) throw conflict('BOOKING_CODE_COLLISION', 'Could not generate booking code, please retry');
+    return booking;
+  });
 }
 
 async function listForRestaurant(restaurantId, { status, limit, offset }) {
