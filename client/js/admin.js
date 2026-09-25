@@ -860,6 +860,8 @@
           '</div>' +
           '<div class="form-row form-row-2">' +
             '<div class="field"><label for="st-fee">' + esc(I.t('deliveryFeeL')) + '</label><input id="st-fee" type="number" min="0" step="0.01" value="' + (s.deliveryFeeCents / 100).toFixed(2) + '"></div>' +
+            '<div class="field"><label>&nbsp;</label><div class="checkbox-line"><input id="st-delivery" type="checkbox"' + (s.deliveryEnabled !== false ? ' checked' : '') + '>' +
+              '<label for="st-delivery">' + esc(I.t('deliveryL')) + '</label></div></div>' +
             '<div class="field"><label>&nbsp;</label><div class="checkbox-line"><input id="st-ignore-hours" type="checkbox"' + (s.ignoreOpeningHours ? ' checked' : '') + '>' +
               '<label for="st-ignore-hours">' + esc(I.t('ignoreHours')) + '</label></div></div>' +
           '</div>' +
@@ -1004,6 +1006,7 @@
       primaryColor: document.getElementById('st-color1').value,
       secondaryColor: document.getElementById('st-color2').value,
       ignoreOpeningHours: document.getElementById('st-ignore-hours').checked,
+      deliveryEnabled: document.getElementById('st-delivery').checked,
       ...(Number.isFinite(feeVal) ? { deliveryFeeCents: Math.max(0, Math.round(feeVal * 100)) } : {}),
     };
 

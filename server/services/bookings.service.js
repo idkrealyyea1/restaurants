@@ -19,6 +19,11 @@ function assertTransition(current, next) {
   if (!allowed.includes(next)) throw conflict('INVALID_STATUS_TRANSITION', `Cannot move booking from "${current}" to "${next}"`);
 }
 
+// ponytail: fixed 120-min overlap window — no duration exists in payload/validator/schema.
+// Confirm the house slot length with the business before changing; the exclusion constraint
+// in 019_booking_overlap.sql backfills with the same value, so change both together.
+const BOOKING_SLOT_MINUTES = 120;
+
 async function create({ restaurantId, payload }) {
   const { rows: rRows } = await query('SELECT id, is_active, subscription_ends_at FROM restaurants WHERE id = $1', [restaurantId]);
   if (!rRows[0]) throw notFound('Restaurant not found');
@@ -26,23 +31,27 @@ async function create({ restaurantId, payload }) {
   {
     const endsAt = rRows[0].subscription_ends_at;
     const active = !endsAt || new Date(endsAt).getTime() > Date.now();
-    if (!active) throw require('../utils/errors').forbidden('SUBSCRIPTION_EXPIRED', 'Subscription expired — please renew ($8.99/month) | انتهت التجربة — تواصل +972567439846');
+    if (!active) throw require('../utils/errors').forbidden('SUBSCRIPTION_EXPIRED', 'Subscription expired — please renew ($19.99/month) | انتهت التجربة — تواصل +972567439846');
   }
 
   let code = null;
   let booking = null;
+  const endsAt = new Date(new Date(payload.bookedAt).getTime() + BOOKING_SLOT_MINUTES * 60 * 1000).toISOString();
   for (let attempt = 0; attempt < 5 && !booking; attempt++) {
     code = orderCode();
     try {
       const { rows } = await query(
-        `INSERT INTO bookings (code, restaurant_id, customer_name, customer_whatsapp, customer_phone, tables_count, booked_at, notes)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+        `INSERT INTO bookings (code, restaurant_id, customer_name, customer_whatsapp, customer_phone, tables_count, booked_at, ends_at, notes)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
          RETURNING id, code, restaurant_id, customer_name, customer_whatsapp, customer_phone, tables_count, booked_at, status, notes, created_at`,
-        [code, restaurantId, payload.customerName, payload.customerWhatsapp, payload.customerPhone, payload.tablesCount, payload.bookedAt, payload.notes]
+        [code, restaurantId, payload.customerName, payload.customerWhatsapp, payload.customerPhone, payload.tablesCount, payload.bookedAt, endsAt, payload.notes]
       );
       booking = rows[0];
     } catch (err) {
       if (err.code === '23505') continue;
+      if (err.code === '23P01') {
+        throw conflict('BOOKING_CONFLICT', 'That time slot was just taken. Please choose another time.');
+      }
       throw err;
     }
   }

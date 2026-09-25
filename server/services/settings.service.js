@@ -23,6 +23,7 @@ function toPublicSettings(row) {
     secondaryColor: row.secondary_color,
     currency: row.currency.toUpperCase(),
     deliveryFeeCents: row.delivery_fee_cents,
+    deliveryEnabled: row.delivery_enabled !== false,
     ignoreOpeningHours: row.ignore_opening_hours,
   };
 }
@@ -49,6 +50,7 @@ const FIELD_COLUMNS = {
   secondaryColor: 'secondary_color',
   currency: 'currency',
   deliveryFeeCents: 'delivery_fee_cents',
+  deliveryEnabled: 'delivery_enabled',
   ignoreOpeningHours: 'ignore_opening_hours',
 };
 

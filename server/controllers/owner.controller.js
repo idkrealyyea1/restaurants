@@ -71,17 +71,7 @@ async function createRestaurant(req, res) {
     throw conflict('SLUG_TAKEN', 'A restaurant with this URL slug already exists');
   }
   // 7-day trial support — ponytail: single field, owner sets trialDays=7 to auto-expire
-  let subscriptionEndsAt = null;
-  if (req.body.trialDays !== undefined) {
-    const days = Number(req.body.trialDays);
-    if (Number.isInteger(days) && days >= 1 && days <= 365) {
-      subscriptionEndsAt = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();
-    }
-  } else if (req.body.subscriptionEndsAt) {
-    const d = new Date(req.body.subscriptionEndsAt);
-    if (!Number.isNaN(d.getTime())) subscriptionEndsAt = d.toISOString();
-  }
-  data.subscriptionEndsAt = subscriptionEndsAt;
+  data.subscriptionEndsAt = v.validateTrialWindow(req.body);
   const restaurant = await restaurants.createRestaurant(data);
 
   // Optionally create the first admin account in the same request.

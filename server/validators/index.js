@@ -42,6 +42,26 @@ function validateRestaurantCreate(body = {}) {
   };
 }
 
+/**
+ * Trial/subscription window for restaurant creation. Preserves the historical
+ * semantics exactly: out-of-range or unparsable values are silently ignored
+ * (null), never rejected.
+ */
+function validateTrialWindow(body = {}) {
+  if (body.trialDays !== undefined) {
+    const days = Number(body.trialDays);
+    if (Number.isInteger(days) && days >= 1 && days <= 365) {
+      return new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();
+    }
+    return null;
+  }
+  if (body.subscriptionEndsAt) {
+    const d = new Date(body.subscriptionEndsAt);
+    if (!Number.isNaN(d.getTime())) return d.toISOString();
+  }
+  return null;
+}
+
 function validateRestaurantUpdate(body = {}) {
   const patch = {};
   if (body.name !== undefined) patch.name = requireText(body.name, NAME_OPTS);
@@ -164,6 +184,7 @@ function validateSettingsUpdate(body = {}) {
     patch.deliveryFeeCents = toIntInRange(body.deliveryFeeCents, 'deliveryFeeCents', { min: 0, max: 1000000 });
   }
   if (body.ignoreOpeningHours !== undefined) patch.ignoreOpeningHours = toBool(body.ignoreOpeningHours, 'ignoreOpeningHours');
+  if (body.deliveryEnabled !== undefined) patch.deliveryEnabled = toBool(body.deliveryEnabled, 'deliveryEnabled');
   if (Object.keys(patch).length === 0) throw badRequest('No updatable fields provided');
   return patch;
 }
@@ -221,7 +242,14 @@ function validateCheckout(body = {}) {
     quantity: toIntInRange(line && line.quantity, 'items[].quantity', { min: 1, max: 99 }),
   }));
 
-  return { customerName, customerWhatsapp, customerPhone, customerAddress, orderType: orderTypeRaw, notes, items };
+  // Optional idempotency key: client-generated UUID per order attempt. Repeat
+  // submissions with the same key return the original order (FR-008b).
+  const submissionKey =
+    body.submissionKey === undefined || body.submissionKey === null || body.submissionKey === ''
+      ? null
+      : assertUuid(body.submissionKey, 'submissionKey');
+
+  return { customerName, customerWhatsapp, customerPhone, customerAddress, orderType: orderTypeRaw, notes, items, submissionKey };
 }
 
 /* ---------------------- delivery groups ------------------------ */
@@ -321,6 +349,7 @@ function validatePagination(query) {
 module.exports = {
   validateLogin,
   validateRestaurantCreate,
+  validateTrialWindow,
   validateRestaurantUpdate,
   validateUsername,
   validateEmailOptional,
@@ -342,4 +371,5 @@ module.exports = {
   validatePlatformPricing,
   validateRestaurantRequest,
   validatePagination,
+  assertUuid,
 };

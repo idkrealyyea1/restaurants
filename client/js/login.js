@@ -43,7 +43,7 @@
     } catch (err) {
       // ponytail: 7-day trial shows friendly message, not generic 403
       const isTrial = err.code === 'SUBSCRIPTION_EXPIRED' || (err.message && err.message.includes('Trial finished'));
-      errorBox.textContent = isTrial ? 'انتهت فترة التجربة 7 أيام — تواصل مع الإدارة للتجديد عبر واتساب +972567439846 ($8.99/شهر)' : err.message;
+      errorBox.textContent = isTrial ? 'انتهت فترة التجربة 7 أيام — تواصل مع الإدارة للتجديد عبر واتساب +972567439846 ($19.99/شهر)' : err.message;
       errorBox.classList.remove('hidden');
       submitBtn.disabled = false;
     }

@@ -121,7 +121,8 @@
   const subtotalCents = () => cartEntries().reduce((s, e) => s + e.item.price_cents * e.qty, 0);
   const feeCents = () => (orderType === 'delivery' ? Number((view && view.settings && view.settings.deliveryFeeCents) || 0) : 0);
   const totalUnits = () => cartEntries().reduce((s, e) => s + e.qty, 0);
-  const hasDelivery = () => Array.isArray(view && view.deliveryGroups) && view.deliveryGroups.length > 0;
+  // D4: delivery availability is the restaurant's own setting toggle, not company linkage.
+  const hasDelivery = () => !view || !view.settings || view.settings.deliveryEnabled !== false;
   const itemVisible = (item) => {
     if (searchTerm && !item.name.toLowerCase().includes(searchTerm) &&
         !(item.description || '').toLowerCase().includes(searchTerm)) return false;
@@ -363,6 +364,11 @@
     box.classList.remove('hidden');
   }
 
+  // One idempotency key per checkout attempt: retries after a failure reuse it,
+  // so a double-click or slow-network retry returns the original order (FR-008b).
+  // A fresh key is minted for every new attempt (a new success clears it).
+  let submitKey = null;
+
   async function submitOrder() {
     coError(null);
     const f = readCo();
@@ -370,14 +376,18 @@
     if (orderType === 'delivery' && !f.customerAddress) { coError(t().addrRequired); return; }
     const btn = document.getElementById('place-order-btn');
     btn.disabled = true;
+    if (!submitKey && window.crypto && typeof window.crypto.randomUUID === 'function') {
+      submitKey = window.crypto.randomUUID();
+    }
     try {
       const data = await api.post('/api/restaurants/' + encodeURIComponent(slug) + '/orders', {
         customerName: f.customerName, customerWhatsapp: f.customerWhatsapp,
         customerPhone: f.customerPhone, customerAddress: f.customerAddress,
-        notes: f.notes, orderType,
+        notes: f.notes, orderType, submissionKey: submitKey,
         items: cartEntries().map((e) => ({ itemId: e.item.id, quantity: e.qty })),
       });
       cart = {}; co = { name: '', wa: '', phone: '', address: '', notes: '' };
+      submitKey = null;
       saveCart(); renderBar(); updateGrids();
       renderSuccess(data.order);
     } catch (err) {

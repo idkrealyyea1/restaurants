@@ -66,12 +66,14 @@ async function requireRestaurantAdmin(req, res, next) {
       return next(forbidden('RESTAURANT_DISABLED', 'This restaurant has been deactivated by the platform owner'));
     }
     // ponytail: re-validate 7-day trial on every admin request — blocks expired sessions without logout
+    // Expired restaurants keep READ access (dashboards stay readable, FR-004);
+    // mutations stay blocked and new orders are refused in the services.
     try {
       const { query } = require('../db/pool');
       const { rows } = await query('SELECT subscription_ends_at FROM restaurants WHERE id = $1', [req.user.restaurant_id]);
       const endsAt = rows[0] ? rows[0].subscription_ends_at : null;
-      if (endsAt && new Date(endsAt).getTime() <= Date.now()) {
-        return next(forbidden('SUBSCRIPTION_EXPIRED', 'انتهت فترة التجربة 7 أيام — تواصل +972567439846 ($8.99/شهر) | 7-day trial finished — contact +972567439846'));
+      if (endsAt && new Date(endsAt).getTime() <= Date.now() && req.method !== 'GET') {
+        return next(forbidden('SUBSCRIPTION_EXPIRED', 'انتهت فترة التجربة 7 أيام — تواصل +972567439846 ($19.99/شهر) | 7-day trial finished — contact +972567439846'));
       }
     } catch (e) { return next(e); }
   }

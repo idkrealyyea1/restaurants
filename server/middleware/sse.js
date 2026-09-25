@@ -4,6 +4,8 @@
  * Lightweight in-process Server-Sent Events hub used to push
  * "new order" notifications to restaurant dashboards.
  * Single-instance only by design (no external broker needed).
+ * ponytail: in-process Map; events don't cross nodes and vanish on restart —
+ * external broker/retained mailbox if multi-node or guaranteed delivery matters.
  */
 
 const clients = new Map(); // restaurantId -> Set<res>

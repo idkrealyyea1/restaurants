@@ -80,7 +80,7 @@ async function createCheckout({ restaurantId, payload }) {
     // concurrent checkouts for this restaurant.
     const restRes = await client.query(
       `SELECT r.id, r.is_active, r.status,
-              s.timezone, s.delivery_fee_cents, s.ignore_opening_hours
+              s.timezone, s.delivery_fee_cents, s.delivery_enabled, s.ignore_opening_hours
        FROM restaurants r
        JOIN restaurant_settings s ON s.restaurant_id = r.id
        WHERE r.id = $1
@@ -90,16 +90,20 @@ async function createCheckout({ restaurantId, payload }) {
      const rest = restRes.rows[0];
     if (!rest || !rest.is_active) throw conflict('RESTAURANT_UNAVAILABLE', 'This restaurant is not accepting orders');
 
-    // $8.99/month subscription gate — NULL or future = active
+    // $19.99/month subscription gate — NULL or future = active
     {
       const sub = await client.query('SELECT subscription_ends_at FROM restaurants WHERE id = $1', [restaurantId]);
       const endsAt = sub.rows[0] ? sub.rows[0].subscription_ends_at : null;
       const active = !endsAt || new Date(endsAt).getTime() > Date.now();
-      if (!active) throw require('../utils/errors').forbidden('SUBSCRIPTION_EXPIRED', 'Subscription expired — please renew ($8.99/month) | انتهت التجربة — تواصل +972567439846');
+      if (!active) throw require('../utils/errors').forbidden('SUBSCRIPTION_EXPIRED', 'Subscription expired — please renew ($19.99/month) | انتهت التجربة — تواصل +972567439846');
     }
 
     if (rest.status !== 'open') {
       throw conflict('RESTAURANT_CLOSED', 'This restaurant is currently closed and not accepting new orders');
+    }
+
+    if (payload.orderType === 'delivery' && rest.delivery_enabled === false) {
+      throw conflict('DELIVERY_UNAVAILABLE', 'This restaurant is not offering delivery right now.');
     }
 
     if (!rest.ignore_opening_hours) {
@@ -159,6 +163,19 @@ async function createCheckout({ restaurantId, payload }) {
       payload.orderType === 'delivery' ? Number(rest.delivery_fee_cents || 0) : 0;
     const total = subtotal + deliveryFee;
 
+    // Idempotent retry: a repeated submission of the same customer intent
+    // (double-click, slow network, browser retry) returns the original order
+    // instead of inserting a duplicate. key is client-generated per attempt.
+    const submissionKey = payload.submissionKey || null;
+    if (submissionKey) {
+      const existing = await client.query(
+        `SELECT id, code, status, subtotal_cents, delivery_fee_cents, total_cents, created_at
+         FROM orders WHERE restaurant_id = $1 AND submission_key = $2`,
+        [restaurantId, submissionKey]
+      );
+      if (existing.rows[0]) return existing.rows[0];
+    }
+
     // Insert with collision-resistant public code (retry on rare clash).
     let orderRow = null;
     for (let attempt = 0; attempt < 5 && !orderRow; attempt++) {
@@ -166,9 +183,10 @@ async function createCheckout({ restaurantId, payload }) {
         const res = await client.query(
           `INSERT INTO orders
              (code, restaurant_id, customer_name, customer_whatsapp, customer_phone,
-              customer_address, order_type, notes, subtotal_cents, delivery_fee_cents, total_cents)
-           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
-           RETURNING id, code, status, total_cents, created_at`,
+              customer_address, order_type, notes, subtotal_cents, delivery_fee_cents, total_cents,
+              submission_key)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
+           RETURNING id, code, status, subtotal_cents, delivery_fee_cents, total_cents, created_at`,
           [
             orderCode(),
             restaurantId,
@@ -181,11 +199,21 @@ async function createCheckout({ restaurantId, payload }) {
             subtotal,
             deliveryFee,
             total,
+            submissionKey,
           ]
         );
         orderRow = res.rows[0];
       } catch (err) {
-        if (err.code === '23505') continue; // code collision — retry
+        if (err.code === '23505' && err.constraint !== 'orders_submission_key_uniq') continue; // code collision — retry
+        if (err.code === '23505') {
+          // Lost the race with our own retry: return the winner.
+          const winner = await client.query(
+            `SELECT id, code, status, subtotal_cents, delivery_fee_cents, total_cents, created_at
+             FROM orders WHERE restaurant_id = $1 AND submission_key = $2`,
+            [restaurantId, submissionKey]
+          );
+          if (winner.rows[0]) return winner.rows[0];
+        }
         throw err;
       }
     }
@@ -250,6 +278,7 @@ async function getForRestaurant(orderId, restaurantId) {
 }
 
 async function updateStatus(orderId, restaurantId, nextStatus) {
+  if (!STATUSES.includes(nextStatus)) throw badRequest('Unknown order status');
   return withTx(async (client) => {
     const { rows } = await client.query(
       `UPDATE orders SET status = $3

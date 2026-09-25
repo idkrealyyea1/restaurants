@@ -122,6 +122,51 @@ test('admin cannot spoof another restaurant via query parameter', async () => {
   assert.strictEqual(res.data.total, 0, 'query param ignored — still scoped to own restaurant');
 });
 
+test('staff cannot read tenant data via swapped restaurantId (create-only remit)', async () => {
+  const staffCookie = await env.createStaffUser('probe-staff', 'staff-password-123');
+  const res = await env.req('/api/admin/orders?limit=10&restaurantId=' + A.restaurantId, {
+    cookie: staffCookie,
+  });
+  assert.strictEqual(res.status, 403, 'staff denied tenant reads, got ' + res.status);
+});
+
+test('staff cannot read an order by direct ID', async () => {
+  const staffCookie = await env.login('probe-staff', 'staff-password-123');
+  const res = await env.req('/api/admin/orders/' + bOrderId, { cookie: staffCookie });
+  assert.strictEqual(res.status, 403, 'staff denied direct-ID read, got ' + res.status);
+});
+
+test('staff without restaurant scope gets no tenant data', async () => {
+  const staffCookie = await env.login('probe-staff', 'staff-password-123');
+  const res = await env.req('/api/admin/dashboard', { cookie: staffCookie });
+  assert.strictEqual(res.status, 403);
+});
+
+test('visitor cannot reach tenant data even with restaurantId param', async () => {
+  assert.strictEqual(
+    (await env.req('/api/admin/orders?restaurantId=' + A.restaurantId)).status,
+    401
+  );
+  assert.strictEqual((await env.req('/api/owner/restaurants')).status, 401);
+});
+
+test('delivery API is retired: credential reaches nothing (D4)', async () => {
+  const { cookie } = await env.createDeliveryFixture({
+    groupName: 'Probe Couriers',
+    username: 'probe-courier',
+    password: 'delivery-password-123',
+  });
+  // Legacy rows may still exist, but the delivery API surface is gone.
+  const res = await env.req('/api/delivery/orders', { cookie });
+  assert.strictEqual(res.status, 404, 'delivery API removed, got ' + res.status);
+});
+
+test('delivery credential cannot touch platform or admin endpoints', async () => {
+  const ck = await env.login('probe-courier', 'delivery-password-123');
+  assert.strictEqual((await env.req('/api/owner/restaurants', { cookie: ck })).status, 403);
+  assert.strictEqual((await env.req('/api/admin/dashboard', { cookie: ck })).status, 403);
+});
+
 test('owner password reset revokes the target session immediately', async () => {
   const fresh = await env.login(B.adminUsername, B.adminPassword);
   assert.strictEqual((await env.req('/api/admin/dashboard', { cookie: fresh })).status, 200);

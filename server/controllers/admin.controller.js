@@ -23,9 +23,11 @@ const { asyncHandler } = require('../utils/errors');
 const v = require('../validators');
 
 function tenantId(req) {
-  if (req.user.role === 'owner' || req.user.role === 'staff') {
-    // Platform roles may inspect a specific restaurant via ?restaurantId=
-    // Staff without a restaurant_id must provide it; owner/staff with a fixed restaurant_id fall back to it
+  // Staff hold no tenant scope: their only platform power (restaurant creation)
+  // lives on owner routes, never here.
+  if (req.user.role === 'staff') throw forbidden('FORBIDDEN', 'Staff cannot access restaurant data');
+  if (req.user.role === 'owner') {
+    // Platform owners may inspect a specific restaurant via ?restaurantId=
     const id = req.query.restaurantId || req.user.restaurant_id;
     if (!id) throw forbidden('RESTAURANT_REQUIRED', 'Specify ?restaurantId=');
     return id;
@@ -234,8 +236,7 @@ const uploadImage = [
         if (old) await deleteUpload(old);
       } else {
         // items: attach to an owned menu item
-        const itemId = req.query.itemId;
-        if (!itemId) throw notFound('itemId query parameter is required');
+        const itemId = v.assertUuid(req.query.itemId, 'itemId');
         const old = (await menu.getOwned(id, itemId)).image_path;
         await menu.updateOwned(id, itemId, { imagePath: req.savedImagePublicPath });
         if (old) await deleteUpload(old);

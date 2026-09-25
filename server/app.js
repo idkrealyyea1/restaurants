@@ -22,11 +22,10 @@ const authRoutes = require('./routes/auth.routes');
 const publicRoutes = require('./routes/public.routes');
 const adminRoutes = require('./routes/admin.routes');
 const ownerRoutes = require('./routes/owner.routes');
-const deliveryRoutes = require('./routes/delivery.routes');
 const leadsRoutes = require('./routes/leads.routes');
 const siteRoutes = require('./routes/site.routes');
 
-const CLIENT_DIR = path.join(__dirname, '..', 'frontend', 'dist');
+const CLIENT_DIR = path.join(__dirname, '..', 'client');
 
 function buildApp() {
   const app = express();
@@ -118,36 +117,15 @@ function buildApp() {
   /* --------------------- authenticated request context ------------------ */
   app.use(attachUser);
 
-  /* --------------------- SPA fallback (React Router) -------------------- */
-  // The React app owns all page routes (/app, /restaurant/:slug, /track,
-  // /login, /owner, /admin, ...). Anything not matched above falls through
-  // here. API + uploads are never swallowed (JSON 404s preserved).
-  app.get('/app', (req, res) => {
-    res.sendFile(path.join(CLIENT_DIR, 'index.html'));
-  });
-  app.get('/app/', (req, res) => {
-    res.sendFile(path.join(CLIENT_DIR, 'index.html'));
-  });
-  app.get('/resources', (req, res) => {
-    res.sendFile(path.join(CLIENT_DIR, 'index.html'));
-  });
-  app.get('/resources/', (req, res) => {
-    res.sendFile(path.join(CLIENT_DIR, 'index.html'));
-  });
+  /* ----------------- page routes (vanilla, D1) ----------------- */
+  // express.static (extensions:['html']) already resolves /app, /track, /leads,
+  // /resources, /login, /owner, /admin and friends. Only parameterized pages
+  // need explicit routes. /delivery was removed with delivery accounts (D4).
   app.get('/restaurant/:slug', (req, res) => {
-    res.sendFile(path.join(CLIENT_DIR, 'index.html'));
-  });
-  app.get('/track', (req, res) => {
-    res.sendFile(path.join(CLIENT_DIR, 'index.html'));
-  });
-  app.get('/delivery', (req, res) => {
-    res.sendFile(path.join(CLIENT_DIR, 'index.html'));
-  });
-  app.get('/leads', (req, res) => {
-    res.sendFile(path.join(CLIENT_DIR, 'index.html'));
+    res.sendFile(path.join(CLIENT_DIR, 'restaurant.html'));
   });
   app.get('/offer/:code', (req, res) => {
-    res.sendFile(path.join(CLIENT_DIR, 'index.html'));
+    res.sendFile(path.join(CLIENT_DIR, 'offer.html'));
   });
 
   /* ------------------------- PWA (manifest/SW) ------------------------- */
@@ -171,18 +149,16 @@ function buildApp() {
   app.use('/api/admin', adminRoutes);
   app.use('/api/owner', ownerRoutes);
   app.use('/api/owner/leads', leadsRoutes);
-  app.use('/api/delivery', deliveryRoutes);
   app.use('/api', publicRoutes);
 
-  /* ------------------------- SPA catch-all ---------------------------- */
-  // React Router owns the remaining page routes (/login, /owner, /admin,
-  // /features, /pricing, ...). Serve the app shell with 200; the router
-  // renders the right page (or the in-app 404). API/uploads untouched.
+  /* ------------------------- page catch-all ---------------------------- */
+  // Vanilla pages are individual files: unknown HTML paths are a real 404
+  // (client/404.html), not an app shell. API/uploads untouched.
   app.use((req, res, next) => {
     if (req.method !== 'GET') return next();
     if (req.path.startsWith('/api/') || req.path.startsWith('/uploads/')) return next();
     if (!req.accepts('html')) return next();
-    res.sendFile(path.join(CLIENT_DIR, 'index.html'));
+    res.status(404).sendFile(path.join(CLIENT_DIR, '404.html'));
   });
 
   /* -------------------------- error handling ---------------------------- */

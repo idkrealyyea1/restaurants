@@ -46,7 +46,9 @@ async function orderToStatus(code, status) {
 
 test('admin analytics returns AOV + day-of-week + hour breakdowns', async () => {
   const order = await checkout();
-  await orderToStatus(order.data.order.code, 'completed');
+  for (const s of ['confirmed', 'preparing', 'ready', 'out_for_delivery', 'completed']) {
+    await orderToStatus(order.data.order.code, s);
+  }
 
   const res = await env.req('/api/admin/analytics?days=30', { cookie: fx.adminCookie });
   assert.strictEqual(res.status, 200);
@@ -107,83 +109,24 @@ test('cancelling an already-prepared or unknown order is rejected', async () => 
 
 /* --------------------------- delivery flow --------------------------- */
 
-test('owner creates a delivery group + account; delivery user sees only its orders', async () => {
-  // Group A + account
+test('delivery accounts retired: provisioning and delivery API are gone (D4)', async () => {
+  // Groups table stays for history; account provisioning is removed.
   const gA = await env.req('/api/owner/delivery-groups', {
     method: 'POST', cookie: ownerCookie, body: { name: 'Couriers A' },
   });
   assert.strictEqual(gA.status, 201);
   const aId = gA.data.group.id;
-  await env.req('/api/owner/delivery-groups/' + aId + '/account', {
+
+  const acct = await env.req('/api/owner/delivery-groups/' + aId + '/account', {
     method: 'POST', cookie: ownerCookie, body: { username: 'dlvA', password: 'delivery-pass-123' },
   });
+  assert.strictEqual(acct.status, 404, 'account provisioning removed, got ' + acct.status);
 
-  // Group B + account
-  const gB = await env.req('/api/owner/delivery-groups', {
-    method: 'POST', cookie: ownerCookie, body: { name: 'Couriers B' },
-  });
-  const bId = gB.data.group.id;
-  await env.req('/api/owner/delivery-groups/' + bId + '/account', {
-    method: 'POST', cookie: ownerCookie, body: { username: 'dlvB', password: 'delivery-pass-123' },
-  });
-
-  // Restaurant selects group A only.
-  const sel = await env.req('/api/admin/delivery-groups', {
-    method: 'PUT', cookie: fx.adminCookie, body: { groups: [aId] },
-  });
-  assert.strictEqual(sel.status, 200);
-  assert.strictEqual(sel.data.groups.filter((g) => g.selected).length, 1);
-
-  // Place a delivery order at this restaurant.
-  const order = await checkout();
-  const orderCode = order.data.order.code;
-  await orderToStatus(orderCode, 'ready');
-
-  const dlvACookie = await env.login('dlvA', 'delivery-pass-123');
-  const dlvBCookie = await env.login('dlvB', 'delivery-pass-123');
-
-  // Group A (selected) sees the order.
-  const listA = await env.req('/api/delivery/orders?page=1&limit=20', { cookie: dlvACookie });
-  assert.strictEqual(listA.status, 200);
-  const codesA = listA.data.orders.map((o) => o.code);
-  assert.ok(codesA.includes(orderCode), 'group A sees the selected restaurant order');
-
-  // Group B (not selected) must NOT see it (tenant isolation for delivery).
-  const listB = await env.req('/api/delivery/orders', { cookie: dlvBCookie });
-  const codesB = listB.data.orders.map((o) => o.code);
-  assert.ok(!codesB.includes(orderCode), 'group B is isolated from the order');
-
-  // Advance ready -> out_for_delivery -> completed as group A.
-  const idRow = await env.query('SELECT id FROM orders WHERE code = $1', [orderCode]);
-  const oid = idRow.rows[0].id;
-
-  const out = await env.req('/api/delivery/orders/' + oid + '/status', {
-    method: 'PATCH', cookie: dlvACookie, body: { status: 'out_for_delivery' },
-  });
-  assert.strictEqual(out.status, 200);
-  assert.strictEqual(out.data.order.status, 'out_for_delivery');
-
-  const done = await env.req('/api/delivery/orders/' + oid + '/status', {
-    method: 'PATCH', cookie: dlvACookie, body: { status: 'completed' },
-  });
-  assert.strictEqual(done.status, 200);
-  assert.strictEqual(done.data.order.status, 'completed');
-
-  // Group A cannot act on an order outside its scope.
-  const otherOrder = await checkout();
-  await orderToStatus(otherOrder.data.order.code, 'ready');
-  const otherRow = await env.query('SELECT id FROM orders WHERE code = $1', [otherOrder.data.order.code]);
-  const otherId = otherRow.rows[0].id;
-
-  // Remove group A selection; now group A must be denied.
-  await env.req('/api/admin/delivery-groups', { method: 'PUT', cookie: fx.adminCookie, body: { groups: [] } });
-  const denied = await env.req('/api/delivery/orders/' + otherId + '/status', {
-    method: 'PATCH', cookie: dlvACookie, body: { status: 'out_for_delivery' },
-  });
-  assert.strictEqual(denied.status, 404);
+  const api = await env.req('/api/delivery/orders', { cookie: ownerCookie });
+  assert.strictEqual(api.status, 404, 'delivery API removed, got ' + api.status);
 });
 
-test('delivery account of a disabled group cannot log in', async () => {
+test('retired delivery credentials cannot log in or reach the API (D4)', async () => {
   const g = await env.req('/api/owner/delivery-groups', {
     method: 'POST', cookie: ownerCookie, body: { name: 'Couriers C' },
   });
@@ -191,19 +134,10 @@ test('delivery account of a disabled group cannot log in', async () => {
   const acct = await env.req('/api/owner/delivery-groups/' + gid + '/account', {
     method: 'POST', cookie: ownerCookie, body: { username: 'dlvC', password: 'delivery-pass-123' },
   });
-  const acctId = acct.data.account.id;
+  assert.strictEqual(acct.status, 404, 'no accounts provisioned, got ' + acct.status);
 
-  // Disable the delivery user.
-  await env.req('/api/owner/delivery-groups/' + gid + '/account', {
-    method: 'PATCH', cookie: ownerCookie, body: { isActive: false },
+  const login = await env.req('/api/auth/login', {
+    method: 'POST', body: { identifier: 'dlvC', password: 'delivery-pass-123' },
   });
-  const login = await env.req('/api/auth/login', { method: 'POST', body: { identifier: 'dlvC', password: 'delivery-pass-123' } });
-  assert.strictEqual(login.status, 401);
-
-  // Re-enable and login works.
-  await env.req('/api/owner/delivery-groups/' + gid + '/account', {
-    method: 'PATCH', cookie: ownerCookie, body: { isActive: true },
-  });
-  const back = await env.login('dlvC', 'delivery-pass-123');
-  assert.ok(back);
+  assert.strictEqual(login.status, 401, 'unknown delivery login refused, got ' + login.status);
 });

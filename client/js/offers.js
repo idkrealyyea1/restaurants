@@ -19,7 +19,7 @@
   ];
 
   function buildMessage(lead, plan, creds){
-    const price = plan === 'growth' ? '$8.99' : '$8.99';
+    const price = plan === 'growth' ? '$19.99' : '$19.99';
     // ponytail: no fake slug before trial exists — caller must create trial first
     const hasCreds = creds && creds.slug;
     const restUrl = hasCreds ? APP_URL + '/restaurant/' + creds.slug : '— سيُنشأ بعد إنشاء التجربة (اضغط "إنشاء تجربة 7 أيام" أولاً) —';
@@ -217,7 +217,7 @@ ${trialBlock}
     document.querySelectorAll('.offer-cta').forEach(b=>{
       b.addEventListener('click', async ()=>{
         const plan = b.getAttribute('data-plan');
-        const price = '$8.99';
+        const price = '$19.99';
         const msg = `نعطيكم موقع طلب + واتساب + حجز طاولات بـ ${price}/شهر ثابت 0% عمولة — تجربة 7 أيام مجانية. رابط تجريبي: ${APP_URL}/restaurant/demo — دخول: ${LOGIN_URL} — للتجديد واتساب ${OWNER_WA}`;
         try{ await navigator.clipboard.writeText(msg); toast('تم نسخ رسالة ' + plan, 'success'); }catch(_){ toast(msg); }
       });

@@ -2,20 +2,20 @@
 
 const express = require('express');
 const owner = require('../controllers/owner.controller');
-const { requireAuth, requireOwner, requireOwnerOrStaff, forbidStaffDelete } = require('../middleware/auth');
+const { requireAuth, requireOwner, requireOwnerOrStaff } = require('../middleware/auth');
 
 const router = express.Router();
 
 router.use(requireAuth);
 
-// Staff can read and create, but not delete — owner can do everything
-router.get('/overview', requireOwnerOrStaff, owner.overview);
-router.get('/reports/restaurants.csv', requireOwnerOrStaff, owner.restaurantsReportCsv);
+// Staff can only add restaurants — every other platform operation is owner-only.
+router.get('/overview', requireOwner, owner.overview);
+router.get('/reports/restaurants.csv', requireOwner, owner.restaurantsReportCsv);
 
-router.get('/restaurants', requireOwnerOrStaff, owner.listRestaurants);
-router.post('/restaurants', requireOwnerOrStaff, forbidStaffDelete, owner.createRestaurant);
-router.get('/restaurants/:id', requireOwnerOrStaff, owner.getRestaurant);
-router.patch('/restaurants/:id', requireOwnerOrStaff, forbidStaffDelete, owner.updateRestaurant);
+router.get('/restaurants', requireOwner, owner.listRestaurants);
+router.post('/restaurants', requireOwnerOrStaff, owner.createRestaurant);
+router.get('/restaurants/:id', requireOwner, owner.getRestaurant);
+router.patch('/restaurants/:id', requireOwner, owner.updateRestaurant);
 router.delete('/restaurants/:id', requireOwner, owner.deleteRestaurant);
 
 // Staff management — owner only (see all users/passwords)
@@ -25,19 +25,19 @@ router.patch('/staff/:id', requireOwner, owner.toggleStaffActive);
 router.delete('/staff/:id', requireOwner, owner.deleteStaff);
 router.post('/staff/:id/reset-password', requireOwner, owner.resetStaffPassword);
 
-router.post('/restaurants/:id/admins', requireOwnerOrStaff, forbidStaffDelete, owner.createAdminUser);
+router.post('/restaurants/:id/admins', requireOwner, owner.createAdminUser);
 router.post('/restaurants/:id/admins/:userId/reset-password', requireOwner, owner.resetAdminPassword);
-router.patch('/restaurants/:id/admins/:userId', requireOwnerOrStaff, forbidStaffDelete, owner.toggleAdminActive);
+router.patch('/restaurants/:id/admins/:userId', requireOwner, owner.toggleAdminActive);
 router.delete('/restaurants/:id/admins/:userId', requireOwner, owner.deleteAdminUser);
 
-router.get('/restaurants/:id/orders', requireOwnerOrStaff, owner.listOrdersForRestaurant);
+router.get('/restaurants/:id/orders', requireOwner, owner.listOrdersForRestaurant);
 
-router.get('/delivery-groups', requireOwnerOrStaff, owner.listDeliveryGroups);
-router.post('/delivery-groups', requireOwnerOrStaff, forbidStaffDelete, owner.createDeliveryGroup);
-router.patch('/delivery-groups/:id', requireOwnerOrStaff, forbidStaffDelete, owner.updateDeliveryGroup);
+router.get('/delivery-groups', requireOwner, owner.listDeliveryGroups);
+router.post('/delivery-groups', requireOwner, owner.createDeliveryGroup);
+router.patch('/delivery-groups/:id', requireOwner, owner.updateDeliveryGroup);
 router.delete('/delivery-groups/:id', requireOwner, owner.deleteDeliveryGroup);
 
-// Platform pricing — Restivo $8.99 editable.
+// Platform pricing — Restivo $19.99 editable.
 router.get('/platform-pricing', requireOwner, owner.getPlatformPricing);
 router.patch('/platform-pricing', requireOwner, owner.updatePlatformPricing);
 
@@ -45,11 +45,5 @@ router.patch('/platform-pricing', requireOwner, owner.updatePlatformPricing);
 router.get('/restaurant-requests', requireOwner, owner.listRestaurantRequests);
 router.patch('/restaurant-requests/:id', requireOwner, owner.updateRestaurantRequestStatus);
 router.delete('/restaurant-requests/:id', requireOwner, owner.deleteRestaurantRequest);
-
-// Delivery company login accounts (one per company).
-router.post('/delivery-groups/:id/account', requireOwnerOrStaff, forbidStaffDelete, owner.createDeliveryAccount);
-router.post('/delivery-groups/:id/account/reset-password', requireOwner, owner.resetDeliveryAccountPassword);
-router.patch('/delivery-groups/:id/account', requireOwnerOrStaff, forbidStaffDelete, owner.toggleDeliveryAccountActive);
-router.delete('/delivery-groups/:id/account', requireOwner, owner.deleteDeliveryAccount);
 
 module.exports = router;

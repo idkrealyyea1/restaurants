@@ -22,7 +22,7 @@ Facts below were verified by inspecting the repo. They bound the scope; they are
   Session stores only `userId`; `attachUser` reloads user + restaurant on each request.
 - Tenant identity: restaurant admins scoped by `req.user.restaurant_id`; `owner`/`staff` pass
   `?restaurantId=` which is accepted without a membership check (`admin.controller.js:tenantId`).
-- Orders: `createCheckout` runs in a transaction with `SELECT ... FOR UPDATE`, re-validates active status,
+- Order submission (`createCheckout`) runs in a transaction with `SELECT ... FOR UPDATE`, re-validates active status,
   subscription, open-hours, and availability; prices come only from the DB; codes are 8-char with retry
   on collision. Status machine `pending → confirmed → preparing → ready → out_for_delivery → completed`
   (+ `cancelled`), enforced in `changeStatus`. Customer cancel allowed only for `pending|confirmed`
@@ -42,6 +42,13 @@ Facts below were verified by inspecting the repo. They bound the scope; they are
 - WhatsApp is a data field plus a `wa.me` deep link and lead-message templates; there is no outbound
   WhatsApp sender in `server/`. Public tracking (`/api/orders/track/:code`) and offer
   (`/api/offer/:code`) endpoints are unauthenticated short-code lookups.
+- Duplicate-submission finding (F-DUP, inspected 2026-09-25): `createCheckout` inserts a new order
+  on every call with no idempotency or dedupe mechanism; the only guard is the client disabling the
+  submit button in flight (`client/js/restaurant.js:submitOrder`). A double-flight before disable, a
+  browser retry after commit, or a slow-network double-click therefore persists two orders for one
+  intent. The IP-based `orderLimiter` (20/hour) does not stop a double-click pair. No online payment
+  exists anywhere in this flow — "order submission" here means creating a restaurant order for
+  fulfillment, not paying.
 - Canonical frontend decision (user, 2026-09-25): the vanilla HTML/CSS/JS `client/` tree is the
   canonical application. The React migration was abandoned; `frontend/` (scaffold, sources, and the
   committed `dist/` bundle) is legacy. Note the tension this creates: the repo's `server/app.js`
@@ -90,28 +97,39 @@ denial with zero data in responses. Deliverable: probe script + passing run.
 
 ---
 
-### User Story 2 - Orders stay correct under concurrent traffic (Priority: P1)
+### User Story 2 - Orders stay correct under concurrent submission (Priority: P1)
 
-During a dinner rush, many customers check out at the same time: items sell out, an item is deactivated
-mid-checkout, two customers grab the last table slot, and a customer cancels at the edge of the grace
-window. Every checkout yields exactly one correct order (server-priced), unavailable items are rejected
-cleanly, and no duplicate orders or double bookings occur.
+During a dinner rush, many customers submit orders at the same time: items sell out, an item is
+deactivated after a customer starts ordering, two customers grab the last table slot, and a customer
+cancels at the edge of the grace window. Every successful submission creates exactly one correct
+order (server-priced); legitimately rejected submissions fail cleanly with no order and no partial
+writes. Separately, when one customer accidentally submits the same order twice (double-click, slow
+network, browser retry), the system MUST NOT persist two orders for that single intent.
+
 
 **Why this priority**: Money and availability correctness under concurrency is the core promise of an
 ordering system; race bugs here lose revenue and trust.
 
-**Independent Test**: Fire concurrent checkouts (same items, same slot bookings, cancel-at-deadline)
-against a disposable database and assert exactly-once orders, correct totals, and clean rejections.
-Deliverable: concurrency test run + passing result.
+**Independent Test (burst — concern A)**: Fire 50 simultaneous order submissions from different
+customers (same items, overlapping slot bookings, cancel-at-deadline) against a disposable database
+and assert each successful submission creates exactly one correct order, legitimate rejections create
+nothing, and totals are correct.
+
+**Independent Test (duplicate — concern B, separate test)**: Replay the same customer's submission
+twice (double-click, retry) and assert a single persisted order for that intent.
+
+Deliverable: burst test run + duplicate test run, both passing.
 
 **Acceptance Scenarios**:
 
-1. **Given** an item deactivated mid-checkout, **When** the order is submitted, **Then** it is rejected
-   with a clear message and no order is created.
+1. **Given** an item deactivated after ordering starts, **When** the order is submitted, **Then** it is
+   rejected with a clear message and no order is created.
 2. **Given** two customers booking overlapping time windows at the same restaurant simultaneously,
    **When** both submit, **Then** at most one booking is confirmed and the other gets a clear rejection.
 3. **Given** a customer cancelling at the grace-window edge, **When** cancel is submitted, **Then** the
    outcome is deterministic (cancelled xor kept) with no partial state.
+4. **Given** a customer whose order submission is sent twice (double-click, retry), **When** both
+   requests reach the server, **Then** exactly one order is persisted for that intent.
 
 ---
 
@@ -125,12 +143,12 @@ the only line of defense.
 **Why this priority**: Every trust boundary that relies on the browser is an open door; closing them is
 cheap and prevents whole classes of bugs.
 
-**Independent Test**: Submit a hostile-input battery against checkout, bookings, menu, settings, and
+**Independent Test**: Submit a hostile-input battery against order submission, bookings, menu, settings, and
 upload operations; assert rejection + safe messages + clean database state.
 
 **Acceptance Scenarios**:
 
-1. **Given** a checkout with forged totals or prices, **When** submitted, **Then** server prices win and
+1. **Given** an order submission with forged totals or prices, **When** submitted, **Then** server prices win and
    the order total matches the database, not the request.
 2. **Given** an upload with mismatched content type or over the size cap, **When** submitted, **Then**
    it is rejected and nothing is stored.
@@ -197,7 +215,7 @@ React file is deleted.
 
 ### User Story 6 - Failures are diagnosable without leaking secrets (Priority: P3)
 
-When something breaks (database error, failed checkout, expired session, migration hiccup), operators
+When something breaks (database error, failed order submission, expired session, migration hiccup), operators
 can find the cause in logs with enough context to act, while customers see only safe, useful messages
 and never internals, tokens, or stack traces.
 
@@ -209,7 +227,7 @@ and a safe client message (verified no secret/token/stack leakage in responses).
 
 **Acceptance Scenarios**:
 
-1. **Given** a failed checkout due to a backend error, **When** the customer retries, **Then** they see
+1. **Given** a failed order submission due to a backend error, **When** the customer retries, **Then** they see
    a clear safe message and the failure is traceable in logs.
 2. **Given** any 4xx/5xx response, **When** inspected, **Then** it contains no secrets, tokens, or
    stack traces.
@@ -218,21 +236,21 @@ and a safe client message (verified no secret/token/stack leakage in responses).
 
 ### User Story 7 - Key flows stay fast under load (Priority: P3)
 
-Menu browsing, checkout, order tracking, and dashboards remain responsive while many customers and
+Menu browsing, order submission, order tracking, and dashboards remain responsive while many customers and
 restaurants use the system concurrently, with no unbounded queries, runaway payloads, or obvious N+1
 patterns on hot paths.
 
 **Why this priority**: Performance work is wasted without a target, but hot-path query discipline is
 prerequisite to any scale claim.
 
-**Independent Test**: Load the hot paths at 10× development traffic (bursts of 50 simultaneous
-checkouts, sustained 10 checkouts/minute) and assert 95% of interactions complete within 2 seconds
+**Independent Test**: Load the hot paths at 10× development traffic (bursts of 50 simultaneous order
+submissions, sustained 10 order submissions/minute) and assert 95% of interactions complete within 2 seconds
 with zero lost orders; profile and fix N+1/unbounded queries found.
 
 **Acceptance Scenarios**:
 
-1. **Given** target concurrent browsing and checkout load (10× development traffic: bursts of 50
-   simultaneous checkouts, sustained 10 checkouts/minute), **When** measuring hot-path responses,
+1. **Given** target concurrent browsing and order-submission load (10× development traffic: bursts of 50
+   simultaneous order submissions, sustained 10 order submissions/minute), **When** measuring hot-path responses,
    **Then** 95% of interactions complete within 2 seconds with zero lost or duplicated orders.
 2. **Given** a restaurant with a large menu and order history, **When** opening menu/orders/analytics,
    **Then** pages load within thresholds (paginated, bounded payloads).
@@ -241,7 +259,7 @@ with zero lost orders; profile and fix N+1/unbounded queries found.
 
 ### Edge Cases
 
-- Checkout for an item deactivated between menu load and submit → clean rejection, no order.
+- Order submission for an item deactivated between menu load and submit → clean rejection, no order.
 - Two bookings with overlapping time windows at the same restaurant in the same second → exactly
   one confirmation.
 - Cancel submitted exactly at the grace-window boundary → deterministic single outcome.
@@ -250,7 +268,8 @@ with zero lost orders; profile and fix N+1/unbounded queries found.
 - SSE/live-event disconnect during an order rush → admin sees consistent state on reconnect.
 - Migration re-run on an already-migrated database → no-op, no data change.
 - Staff session presenting another tenant's `restaurantId` → denied, logged.
-- Delivery checkout for a restaurant with delivery disabled → clean rejection, pickup unaffected.
+- Delivery order submission for a restaurant with delivery disabled → clean rejection, pickup unaffected.
+- Same order submission delivered twice (double-click, retry) → single persisted order, no duplicate.
 - Retired delivery credentials presented anywhere → denied; no delivery login or dashboard remains.
 - Upload of a file with a forged extension/MIME → rejected before storage.
 - In-memory rate limits and SSE under multi-node operation → limitation documented; behavior stays
@@ -264,14 +283,14 @@ with zero lost orders; profile and fix N+1/unbounded queries found.
   swapped identifiers, direct object IDs, and query parameters.
 - **FR-001b**: The `staff` role MUST be authorized for restaurant creation only; every other operation
   MUST be denied for staff sessions.
-- **FR-002**: Checkout and booking totals, fees, and availability MUST be computed server-side from
+- **FR-002**: Order-submission and booking totals, fees, and availability MUST be computed server-side from
   database prices; client-supplied money MUST be ignored.
 - **FR-003**: Order and booking status changes MUST follow the defined lifecycle; invalid transitions
   MUST be rejected with a clear message on every remaining path (restaurant admin, customer cancel).
   The separate delivery login/status path is retired (see D4).
 - **FR-003b**: Whether a restaurant offers delivery MUST be a per-restaurant setting controlled by the
   restaurant admin; customers MUST see the delivery option only when it is enabled, and delivery
-  checkouts for delivery-disabled restaurants MUST be rejected.
+  order submissions for delivery-disabled restaurants MUST be rejected.
 - **FR-004**: Restaurants with expired subscriptions MUST refuse new orders/bookings while preserving
   read access to their data.
 - **FR-005**: Login MUST be throttled, failure messages MUST stay generic, and sessions MUST be
@@ -280,8 +299,13 @@ with zero lost orders; profile and fix N+1/unbounded queries found.
   headers; orphaned files MUST NOT accumulate on failure paths.
 - **FR-007**: Unauthenticated code-based lookups (tracking, offers) MUST resist enumeration and expose
   only the minimum fields needed for their purpose.
-- **FR-008**: Concurrent checkouts MUST each produce exactly one correct order; unavailable items MUST
-  fail cleanly with no partial writes.
+- **FR-008**: Concurrent order submissions from different customers MUST each be processed
+  correctly; each successful submission MUST create exactly one correct order, and legitimately
+  rejected submissions MUST fail cleanly with no partial writes.
+- **FR-008b**: A repeated submission of the same customer's order (double-click, slow-network retry,
+  browser retry) MUST NOT persist a duplicate order. The investigation found a real risk (finding
+  F-DUP below); tasks MUST implement the smallest safe fix compatible with the existing order flow —
+  no idempotency framework, no architecture redesign.
 - **FR-009**: Concurrent bookings for the same restaurant whose time windows overlap MUST NOT both
   confirm; losers get a clear rejection.
 - **FR-010**: Customer cancellation MUST enforce the grace window atomically (status and time checked
@@ -308,7 +332,7 @@ with zero lost orders; profile and fix N+1/unbounded queries found.
   by automated tests runnable on a disposable database.
 - **FR-017**: `npm run check` MUST pass and the key-route smoke suite MUST be green before any deploy;
   production-readiness MUST never be claimed from a diff alone.
-- **FR-018**: Hot paths (menu, checkout, tracking, dashboards, analytics, reports) MUST use bounded,
+- **FR-018**: Hot paths (menu, order submission, tracking, dashboards, analytics, reports) MUST use bounded,
   paginated queries with no N+1 patterns, and meet response thresholds at target load.
 - **FR-019**: Anything that breaks if the app ever runs on more than one node (rate limits, live
   events) MUST be documented with its ceiling and hardening path.
@@ -339,16 +363,19 @@ with zero lost orders; profile and fix N+1/unbounded queries found.
 
 - **SC-001**: Cross-tenant probe matrix (all roles × all tenant-scoped operations) passes with zero
   leaked records and zero unauthorized writes.
-- **SC-002**: A burst of 50 simultaneous checkouts produces exactly 50 correct orders (totals match
-  database prices to the cent) with zero duplicates and zero partial writes.
+- **SC-002**: A burst of 50 simultaneous customer order submissions is processed correctly: every
+  successful submission creates exactly one correct order (totals match database prices to the
+  cent); submissions legitimately rejected by business rules (unavailable item, closed restaurant,
+  expired subscription) create nothing and fail cleanly with zero partial writes. The count of
+  created orders equals the count of successful submissions — never assumed to be 50.
 - **SC-003**: 100% of invalid lifecycle transitions attempted across admin and customer paths
   are rejected with a clear message; valid flows complete end to end.
 - **SC-004**: Expired-subscription restaurants accept zero new orders while retaining dashboard read
   access; reactivation restores ordering without data repair.
 - **SC-005**: Full automated suite plus syntax check plus key-route smoke (ordering, dashboards, tracking,
-  robots, sitemap, 404 behavior) pass consecutively from a clean checkout.
-- **SC-006**: At 10× development traffic (bursts of 50 simultaneous checkouts, sustained 10
-  checkouts/minute), 95% of hot-path interactions complete within 2 seconds with zero lost or
+  robots, sitemap, 404 behavior) pass consecutively from a clean tree.
+- **SC-006**: At 10× development traffic (bursts of 50 simultaneous order submissions, sustained 10
+  order submissions/minute), 95% of hot-path interactions complete within 2 seconds with zero lost or
   duplicated orders.
 - **SC-007**: Served pages come from the vanilla app; no React bundle is served or referenced;
   user-facing strings (plan, price) are consistent everywhere and match server platform pricing.
@@ -367,7 +394,7 @@ with zero lost orders; profile and fix N+1/unbounded queries found.
 - Sales/CRM tooling (leads, search runs, offers, outreach templates) is deferred to a follow-up
   spec; this spec hardens the ordering core first (tenants, auth, money, concurrency).
 - Load target is 10× current development traffic on the existing single-node Wasmer deployment
-  (bursts of 50 simultaneous checkouts, sustained 10 checkouts/minute).
+  (bursts of 50 simultaneous order submissions, sustained 10 order submissions/minute).
 
 ## Out of Scope
 
@@ -383,9 +410,14 @@ with zero lost orders; profile and fix N+1/unbounded queries found.
 
 - **D1 — Canonical frontend is vanilla**: React migration abandoned; `frontend/` is legacy, removed
   only after proven dependency-free. Vanilla is preserved, never edited to match React.
-- **D2 — Target scale is 10× dev traffic**: bursts of 50 simultaneous checkouts, sustained 10
-  checkouts/minute; 95% of hot-path interactions within 2 seconds.
+- **D2 — Target scale is 10× dev traffic**: bursts of 50 simultaneous order submissions, sustained 10
+  order submissions/minute; 95% of hot-path interactions within 2 seconds.
 - **D3 — Ordering core first**: sales/CRM hardening deferred to a follow-up spec.
+- **D5 — Order-submission terminology, no payment flow**: "checkout" is banned from requirements —
+  the flow is customer order submission for fulfillment, and this SaaS processes no online payments
+  (no gateway, no cards). Concurrency (many customers at once) and duplicate submission (one
+  customer, same intent twice) are separate concerns with separate acceptance (US2 scenarios 1–3 vs
+  scenario 4; FR-008 vs FR-008b).
 - **D4 — Delivery accounts retired**: the platform no longer provisions delivery accounts or logins.
   Whether a restaurant offers delivery is a per-restaurant setting controlled by the restaurant admin
   on the settings page; customers see the delivery order option only when it is enabled. Delivery

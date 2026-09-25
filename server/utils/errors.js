@@ -44,7 +44,7 @@ function asyncHandler(fn) {
 
 function notFoundHandler(req, res) {
   if (req.accepts('html') && !req.path.startsWith('/api/')) {
-    res.status(404).sendFile(require('path').join(__dirname, '..', '..', 'frontend', 'dist', 'index.html'));
+    res.status(404).sendFile(require('path').join(__dirname, '..', '..', 'client', '404.html'));
     return;
   }
   res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Resource not found' } });
@@ -99,10 +99,18 @@ function errorHandler(err, req, res, next) {
       break;
   }
 
+  // Correlation hint: tracking/order codes are non-sensitive and let operators
+  // trace a failure to the affected order/booking. Never log request bodies
+  // (they carry customer PII like phone numbers).
+  const corr =
+    req.body && typeof req.body.code === 'string' && /^[A-Za-z0-9-]{1,16}$/.test(req.body.code)
+      ? ` code=${req.body.code}`
+      : '';
+
   if (status >= 500 || !err.expose) {
-    console.error(`[error] ${req.method} ${req.originalUrl} -> ${status}`, err);
+    console.error(`[error] ${req.method} ${req.originalUrl}${corr} -> ${status}`, err);
   } else {
-    console.warn(`[warn] ${req.method} ${req.originalUrl} -> ${status} ${code}`);
+    console.warn(`[warn] ${req.method} ${req.originalUrl}${corr} -> ${status} ${code}`);
   }
 
   res.status(status).json({

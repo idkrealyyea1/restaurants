@@ -35,9 +35,10 @@ async function startApp({ orderRateMax, authRateMax } = {}) {
 
   await migrate();
 
-  // Wipe everything between suites (schema_migrations preserved).
+  // Wipe everything between suites (schema_migrations + platform_settings preserved).
   await query(`TRUNCATE restaurants, users, orders, order_items, menu_items,
-    categories, restaurant_hours, restaurant_settings, "session" RESTART IDENTITY CASCADE`);
+    categories, restaurant_hours, restaurant_settings, delivery_groups,
+    restaurant_delivery_groups, bookings, "session" RESTART IDENTITY CASCADE`);
 
   const { buildApp } = require('../server/app');
   const app = buildApp();
@@ -90,6 +91,28 @@ async function startApp({ orderRateMax, authRateMax } = {}) {
     return res.rows[0].id;
   }
 
+  /** Platform staff session (for remit/isolation probes). */
+  async function createStaffUser(username, password) {
+    const hash = await bcrypt.hash(password, 4);
+    await query(`INSERT INTO users (role, username, password_hash) VALUES ('staff', $1, $2)`, [
+      username,
+      hash,
+    ]);
+    return login(username, password);
+  }
+
+  /** Delivery credential (for retired-credential denial probes). */
+  async function createDeliveryFixture({ groupName, username, password }) {
+    const g = await query(`INSERT INTO delivery_groups (name) VALUES ($1) RETURNING id`, [groupName]);
+    const hash = await bcrypt.hash(password, 4);
+    await query(
+      `INSERT INTO users (role, username, password_hash, delivery_group_id)
+       VALUES ('delivery', $1, $2, $3)`,
+      [username, hash, g.rows[0].id]
+    );
+    return { groupId: g.rows[0].id, cookie: await login(username, password) };
+  }
+
   /**
    * Full tenant fixture through the PUBLIC API paths where possible:
    * returns { slug, adminCookie, categoryId, itemId }.
@@ -133,6 +156,8 @@ async function startApp({ orderRateMax, authRateMax } = {}) {
     req,
     login,
     createPlatformOwner,
+    createStaffUser,
+    createDeliveryFixture,
     createRestaurantFixture,
     async close() {
       await new Promise((resolve) => server.close(resolve));

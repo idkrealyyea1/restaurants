@@ -173,6 +173,7 @@ async function getPublicView(slug) {
       secondaryColor: settings.secondary_color,
       currency: settings.currency.toUpperCase(),
       deliveryFeeCents: settings.delivery_fee_cents,
+      deliveryEnabled: settings.delivery_enabled !== false,
     },
     hours: hours.map((h) => ({
       day: h.day_of_week,

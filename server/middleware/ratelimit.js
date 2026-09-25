@@ -4,6 +4,8 @@
  * Rate limiters (per client IP; TRUST_PROXY controls proxy awareness).
  * In-memory store: adequate for a single node. For horizontal scaling,
  * swap in a shared store — do not rely on these across replicas.
+ * ponytail: in-process counters; per-IP limits reset on restart and diverge
+ * across nodes — shared store (e.g. rate-limit-redis) if multi-node matters.
  */
 
 const rateLimit = require('express-rate-limit');
