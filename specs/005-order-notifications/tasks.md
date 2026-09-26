@@ -13,9 +13,9 @@ story and MUST FAIL before implementation.
 
 **Purpose**: Baseline verification before any change.
 
-- [ ] T001 Confirm disposable test DB works: `TEST_DATABASE_URL` set, one existing suite green in
+- [X] T001 Confirm disposable test DB works: `TEST_DATABASE_URL` set, one existing suite green in
   isolation in tests/helpers.js harness
-- [ ] T002 Record `npm run check` 0 failures on clean tree
+- [X] T002 Record `npm run check` 0 failures on clean tree
 
 ---
 
@@ -25,12 +25,12 @@ story and MUST FAIL before implementation.
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T003 Create database/migrations/021_notifications.sql (new file): `notifications` table per
+- [X] T003 Create database/migrations/021_notifications.sql (new file): `notifications` table per
   data-model.md (`id`, `recipient_user_id → users CASCADE`, `restaurant_id NULL → restaurants
   CASCADE`, `order_id → orders CASCADE`, `type='new_order'` CHECK, `title`, `body`,
   `is_read DEFAULT FALSE`, `created_at`) + indexes (`recipient_user_id, created_at DESC`;
   partial unread; `order_id`)
-- [ ] T004 Create server/services/notifications.service.js (new file): recipient queries (active
+- [X] T004 Create server/services/notifications.service.js (new file): recipient queries (active
   admins by `restaurant_id`; active owners), list/unread-count for a user, mark-read by
   `(id, recipient_user_id)` returning 404 on mismatch
 
@@ -50,24 +50,24 @@ appears without refresh; reload shows exactly once.
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation.**
 
-- [ ] T005 [P] [US1] Offline-inbox test in tests/notifications.test.js (new file): order with no
+- [X] T005 [P] [US1] Offline-inbox test in tests/notifications.test.js (new file): order with no
   session → login → unread notification present with order code
-- [ ] T006 [P] [US1] Online-appearance test in tests/notifications.test.js: live dashboard session
+- [X] T006 [P] [US1] Online-appearance test in tests/notifications.test.js: live dashboard session
   sees notification without refresh; reload shows it exactly once
 
 ### Implementation for User Story 1
 
-- [ ] T007 [US1] Fan-out inside `createCheckout` in server/services/orders.service.js: insert one
+- [X] T007 [US1] Fan-out inside `createCheckout` in server/services/orders.service.js: insert one
   row per active admin of the restaurant (+ active owners per R1) in the same transaction (T003
   migration must be applied first)
-- [ ] T008 [US1] Broadcast `notification:new` after commit in server/routes/public.routes.js
+- [X] T008 [US1] Broadcast `notification:new` after commit in server/routes/public.routes.js
   (restaurant channel, alongside existing `order:new`; payload is a hint only)
-- [ ] T009 [US1] Restaurant feed endpoints in server/routes/admin.routes.js +
+- [X] T009 [US1] Restaurant feed endpoints in server/routes/admin.routes.js +
   server/controllers/admin.controller.js: `GET /api/admin/notifications` (own rows, own tenant,
   paginated) per contracts/notifications-api.md
-- [ ] T010 [US1] Bell + unread count + list in client/js/admin.js reusing toast/api/esc; click
+- [X] T010 [US1] Bell + unread count + list in client/js/admin.js reusing toast/api/esc; click
   navigates to the existing order view; bilingual keys in client/js/i18n.js (ar/en)
-- [ ] T011 [US1] Run T005–T006 green + full suite in tests/ (no regressions)
+- [X] T011 [US1] Run T005–T006 green + full suite in tests/ (no regressions)
 
 **Checkpoint**: US1 fully functional and independently testable.
 
@@ -82,17 +82,17 @@ direct cross-tenant access denied.
 
 ### Tests for User Story 2
 
-- [ ] T012 [P] [US2] Platform-feed isolation test in tests/notifications.test.js (extend): A/B
+- [X] T012 [P] [US2] Platform-feed isolation test in tests/notifications.test.js (extend): A/B
   sessions see only own rows; owner sees both with `restaurantSlug`; B-admin direct-ID read of
   A's row → 404 with no leak
 
 ### Implementation for User Story 2
 
-- [ ] T013 [US2] Platform endpoints in server/routes/owner.routes.js +
+- [X] T013 [US2] Platform endpoints in server/routes/owner.routes.js +
   server/controllers/owner.controller.js: `GET /api/owner/notifications` (role `owner`, no
   tenant scope) + `GET /api/owner/events` subscribed to the `__platform__` SSE key per R2
-- [ ] T014 [US2] Owner bell + list in client/js/owner.js (same patterns as T010)
-- [ ] T015 [US2] Run T012 green + full suite in tests/ (no regressions)
+- [X] T014 [US2] Owner bell + list in client/js/owner.js (same patterns as T010)
+- [X] T015 [US2] Run T012 green + full suite in tests/ (no regressions)
 
 **Checkpoint**: US1 and US2 both work independently.
 
@@ -107,19 +107,19 @@ untouched; state persists across logout/login; foreign mark-read denied.
 
 ### Tests for User Story 3
 
-- [ ] T016 [P] [US3] Read-state test in tests/notifications.test.js (extend): mark read → count
+- [X] T016 [P] [US3] Read-state test in tests/notifications.test.js (extend): mark read → count
   drops for that user only; persists after re-login; other user's row untouched; cross-user and
   cross-tenant mark-read → 404, nothing changed
 
 ### Implementation for User Story 3
 
-- [ ] T017 [US3] Read endpoints: `PATCH /api/admin/notifications/:id/read` (row ownership +
+- [X] T017 [US3] Read endpoints: `PATCH /api/admin/notifications/:id/read` (row ownership +
   tenant predicate) and `PATCH /api/owner/notifications/:id/read` (role + row ownership) in
   server/routes/admin.routes.js, server/routes/owner.routes.js,
   server/controllers/admin.controller.js, server/controllers/owner.controller.js
-- [ ] T018 [US3] Wire read actions into client/js/admin.js + client/js/owner.js lists (click marks
+- [X] T018 [US3] Wire read actions into client/js/admin.js + client/js/owner.js lists (click marks
   read where authorized)
-- [ ] T019 [US3] Run T016 green + full suite in tests/ (no regressions)
+- [X] T019 [US3] Run T016 green + full suite in tests/ (no regressions)
 
 **Checkpoint**: US1–US3 independently functional.
 
@@ -135,13 +135,13 @@ counts equal persisted order counts.
 
 ### Tests for User Story 4
 
-- [ ] T020 [P] [US4] Silence test in tests/notifications.test.js (extend): failed submission →
+- [X] T020 [P] [US4] Silence test in tests/notifications.test.js (extend): failed submission →
   zero rows; replayed submission → rows equal persisted orders for that intent (no assumption
   about order deduplication — assert against actual order count)
 
 ### Implementation for User Story 4
 
-- [ ] T021 [US4] Verify-only: T020 passes on correct fan-out placement (inside commit); fix only
+- [X] T021 [US4] Verify-only: T020 passes on correct fan-out placement (inside commit); fix only
   gaps T020 proves in server/services/orders.service.js (no new mechanism per spec)
 
 **Checkpoint**: All user stories independently functional.
@@ -152,11 +152,11 @@ counts equal persisted order counts.
 
 **Purpose**: Burst proof, validation, and review gates.
 
-- [ ] T022 Burst proof in tests/notifications.test.js (extend): 50 concurrent orders → exact
+- [X] T022 Burst proof in tests/notifications.test.js (extend): 50 concurrent orders → exact
   notification sets per recipient (none lost/duplicated/misassigned)
-- [ ] T023 [P] Full validation: `npm run check`, each suite in tests/ in isolation,
+- [X] T023 [P] Full validation: `npm run check`, each suite in tests/ in isolation,
   specs/005-order-notifications/quickstart.md end-to-end; record results
-- [ ] T024 [P] Re-validate specs/005-order-notifications/checklists/requirements.md against
+- [X] T024 [P] Re-validate specs/005-order-notifications/checklists/requirements.md against
   delivered work (read-only; do not modify markers)
 
 ---

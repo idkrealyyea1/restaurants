@@ -305,6 +305,8 @@
       somethingWrong: 'حدث خطأ ما',
       failedLoad: 'فشل التحميل',
       live: 'مباشر',
+      notifBell: 'الإشعارات',
+      notifEmpty: 'لا إشعارات جديدة',
       /* dashboard */
       openBadge: 'مفتوح',
       tempClosedBadge: 'مغلق مؤقتاً',
@@ -848,6 +850,8 @@
       somethingWrong: 'Something went wrong',
       failedLoad: 'Failed to load',
       live: 'live',
+      notifBell: 'Notifications',
+      notifEmpty: 'No new notifications',
       openBadge: 'Open',
       tempClosedBadge: 'Temporarily closed',
       closedBadge: 'Closed',
