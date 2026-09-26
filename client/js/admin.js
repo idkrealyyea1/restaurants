@@ -545,6 +545,13 @@
     eventSource.onerror = () => {
       // EventSource retries automatically.
     };
+    // FR-013: the server keeps no replay buffer, so reconcile views on every
+    // (re)connect — anything missed during a disconnect is refetched.
+    eventSource.onopen = () => {
+      refreshCurrentOrdersView();
+      refreshBookingsView();
+      if (!document.getElementById('tab-dashboard').classList.contains('hidden')) loadDashboard();
+    };
   }
 
   window.addEventListener('beforeunload', () => {

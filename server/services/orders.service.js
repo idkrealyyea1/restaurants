@@ -525,8 +525,9 @@ async function cancelByCustomer(code, graceMs) {
   const { rows } = await query(
     `UPDATE orders SET status = 'cancelled', updated_at = now()
      WHERE id = $1 AND status IN ('pending', 'confirmed')
+       AND created_at > now() - ($2 || ' milliseconds')::interval
      RETURNING id, code, status`,
-    [order.id]
+    [order.id, String(graceMs)]
   );
   if (!rows[0]) throw conflict('CANCEL_NOT_ALLOWED', 'This order can no longer be cancelled.');
   return { ...rows[0], restaurantId: order.restaurantId };

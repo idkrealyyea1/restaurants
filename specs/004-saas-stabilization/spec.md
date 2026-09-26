@@ -27,13 +27,16 @@ Facts below were verified by inspecting the repo. They bound the scope; they are
   on collision. Status machine `pending → confirmed → preparing → ready → out_for_delivery → completed`
   (+ `cancelled`), enforced in `changeStatus`. Customer cancel allowed only for `pending|confirmed`
   within a grace window. Bookings have a separate machine and no overlap guard on concurrent inserts.
-- Served frontend is `frontend/dist` (committed React bundle, 331KB JS): `server/app.js` serves it
-  statically with SPA fallbacks; zero references to `client/` exist in `server/`, `config/`,
-  `package.json`, or `app.yaml`. The vanilla `client/` tree (21 pages, 17 JS modules) is unserved dead
-  weight, as are root-level archives (`restivo-landing-frontend.zip`, `nowadded.html`, CSVs, PNGs).
-- Business logic is duplicated across three implementations: `client/js/*`, `frontend/src/*`
+- Served frontend at survey time was `frontend/dist` (committed React bundle, 331KB JS):
+  `server/app.js` served it statically with SPA fallbacks; zero references to `client/` existed in
+  `server/`, `config/`, `package.json`, or `app.yaml`. Per D1 the vanilla `client/` tree (21 pages,
+  17 JS modules) is the canonical application and has since been restored as the served frontend;
+  the React scaffold was retired. Root-level archives (`restivo-landing-frontend.zip`,
+  `nowadded.html`, CSVs, PNGs) remain unserved clutter (see Q4 decision).
+- Business logic was duplicated across three implementations: `client/js/*`, `frontend/src/*`
   (totals, status labels, i18n dictionaries with conflicting prices, theme tokens), and the server
-  (authoritative). i18n price strings disagree (`$19.99` vs `$8.99`); served-bundle source of truth TBD.
+  (authoritative). Resolved per D1: vanilla + server are the single source of truth; user-facing
+  strings reconciled to the server's platform pricing ($19.99).
 - Rate limiting and live-update events (SSE) are in-process/single-node only; documented as such in code.
 - Tests: 6 suites under `tests/` (`node --test`, requires `TEST_DATABASE_URL` on a disposable DB),
   covering auth, menu limits, orders, tenant isolation, and v2 flows. `npm run check` syntax-gates deploys.

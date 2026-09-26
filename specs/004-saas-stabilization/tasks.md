@@ -248,6 +248,23 @@ dashboards stay readable, reactivation restores ordering.
 
 ---
 
+## Phase 11: Convergence
+
+**Purpose**: Close remaining spec/plan gaps found by `/speckit.converge` (2026-09-26). Run these
+with `/speckit.implement`, then re-converge.
+
+- [X] T049 Enforce the cancel grace window inside the UPDATE in `cancelByCustomer` in
+  server/services/orders.service.js (add `AND created_at > now() - ($2 || ' milliseconds')::interval`
+  with graceMs as $2) per FR-010 (partial)
+- [X] T050 Refetch orders/bookings/dashboard views on SSE reconnect in `connectEvents` in
+  client/js/admin.js (add `eventSource.onopen` refresh; server sends no replay) per FR-013 (partial)
+- [X] T051 Evidence the sustained rate in scripts/load-probe.sh (add a 10-submissions/min sustained
+  run reporting success rate alongside the burst) per SC-006 (partial)
+- [X] T052 Reconcile stale spec wording in specs/004-saas-stabilization/spec.md Confirmed Facts
+  ("dead weight", "source of truth TBD") with Decisions D1/D5 per Spec Decisions (partial)
+
+---
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies
