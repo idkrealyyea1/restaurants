@@ -110,6 +110,22 @@
       </div>
     </section>
  
+    <section class="container mt-2" id="request">
+      <div class="card">
+        <h2>Request your own page · اطلب صفحتك</h2>
+        <p class="muted small">املأ النموذج وسنتواصل معك قريبًا — تحصل على رمز تتبع فور الإرسال. We'll reach out shortly after you send this.</p>
+        <form id="request-form" novalidate>
+          <div class="field"><label for="rq-name">Your name * · اسمك</label><input id="rq-name" type="text" maxlength="80" autocomplete="name"></div>
+          <div class="field"><label for="rq-rest">Restaurant name * · اسم المطعم</label><input id="rq-rest" type="text" maxlength="80"></div>
+          <div class="field"><label for="rq-phone">Phone * · الهاتف</label><input id="rq-phone" type="tel" dir="ltr" placeholder="+970599123456"></div>
+          <div class="field"><label for="rq-wa">WhatsApp * · واتساب</label><input id="rq-wa" type="tel" dir="ltr" placeholder="+970599123456"></div>
+          <div class="field"><label for="rq-city">City · المدينة</label><input id="rq-city" type="text" maxlength="60"></div>
+          <div class="field"><label for="rq-notes">Notes · ملاحظات</label><textarea id="rq-notes" rows="3" maxlength="500"></textarea></div>
+          <button id="rq-submit" type="submit" class="btn btn-primary">Send request · أرسل الطلب</button>
+          <div id="rq-msg" class="notice hidden mt-1" role="status" aria-live="polite"></div>
+        </form>
+      </div>
+    </section>
   </main>
   <footer class="mk-footer">
     <div class="mk-container" style="display:flex; gap:14px; flex-wrap:wrap; justify-content:space-between">
