@@ -1,5 +1,11 @@
 # Restivo — Engineering Handoff & Product Spec
 
+> ⚠️ **Deployment note (Oct 2026):** the platform has moved to
+> **Supabase (database) + Render (backend) + Cloudflare Pages (optional CDN
+> frontend)** — see `DEPLOY_SUPABASE_RENDER_PAGES.md` and `render.yaml`.
+> The Wasmer references in §9 below are the legacy rollback path
+> (`app.yaml` is untouched but no longer the primary target).
+
 > **Purpose of this document:** a complete, self-contained description of the
 > `restaurants-platform` project — what it is, how it is built, what it can do,
 > how it looks, how it is deployed, and its known weak spots. It is written so

@@ -1,5 +1,13 @@
 # Render Blueprint — full-stack deploy (API + static client, same origin).
 # Database lives on Supabase (set DATABASE_URL from the Supabase dashboard).
+#
+# FREE PLAN NOTE: pre-deploy commands are paid-only on Render, so migrations
+# are NOT a pre-deploy step here. They run automatically when the server
+# boots: server.js runs database/migrate.js whenever NODE_ENV=production.
+# The runner is idempotent, so it is safe on every deploy/restart/wake.
+# (If you ever upgrade to a paid instance, you may add back:
+#    preDeployCommand: npm run migrate )
+#
 # app.yaml (Wasmer Edge) is intentionally untouched: both stacks deploy from
 # this repo independently. Step-by-step guide: DEPLOY_SUPABASE_RENDER_PAGES.md
 services:
@@ -7,19 +15,26 @@ services:
     name: restaurants-api
     runtime: node
     plan: free
+    # Closest region to Supabase eu-central-1 (and to Middle East/EU users).
+    # You can't change a service's region after creation — pick before deploying.
+    region: frankfurt
     buildCommand: npm ci
     startCommand: node server.js
-    preDeployCommand: npm run migrate
     healthCheckPath: /api/healthz
     envVars:
       - key: NODE_ENV
         value: production
       - key: TRUST_PROXY
         value: 1
+      # Supabase → Connect → Session pooler URI (guide Part A):
       - key: DATABASE_URL
         sync: false
+      # Signs sessions. Render generates a strong value on first deploy
+      # (paste your own instead if you prefer — must be ≥ 32 chars):
       - key: SESSION_SECRET
-        sync: false
+        generateValue: true
+      # Public base URL for QR codes / share links. If left empty, the app
+      # derives it from RENDER_EXTERNAL_HOSTNAME automatically:
       - key: APP_URL
         sync: false
       # Only needed for the optional Cloudflare Pages split frontend:

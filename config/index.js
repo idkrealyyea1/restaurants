@@ -26,12 +26,19 @@ let trustProxy = process.env.TRUST_PROXY || '0';
 trustProxy = Number.parseInt(trustProxy, 10) >= 1 ? 1 : 0;
 
 let appUrl = (process.env.APP_URL || '').trim().replace(/\/+$/, '');
+// Render injects RENDER_EXTERNAL_HOSTNAME (your-service.onrender.com). Use it
+// as a fallback so QR codes / canonical links are correct even before APP_URL
+// is set. APP_URL always wins when present.
+if (!appUrl && process.env.RENDER_EXTERNAL_HOSTNAME) {
+  appUrl = `https://${process.env.RENDER_EXTERNAL_HOSTNAME.trim()}`;
+}
 if (appUrl && !/^https?:\/\//i.test(appUrl)) {
   throw new Error('APP_URL must start with http:// or https://');
 }
 
 // Optional split frontend (Cloudflare Pages → Render API). Unset = same
-// origin (Wasmer / Render full-stack): no CORS headers, no behavior change.
+// origin (Render full-stack, Wasmer, local dev): no CORS headers, no
+// behavior change.
 let frontendUrl = (process.env.FRONTEND_URL || '').trim().replace(/\/+$/, '');
 if (frontendUrl && !/^https?:\/\//i.test(frontendUrl)) {
   throw new Error('FRONTEND_URL must start with http:// or https://');
@@ -65,23 +72,25 @@ const uploadDir = path.resolve(process.env.UPLOAD_DIR || './data/uploads');
 const maxUploadMb = Math.min(intEnv('MAX_UPLOAD_MB', 2), 5);
 
 // Database connection. Two supported styles:
-//  1. DATABASE_URL (any managed Postgres provider), or
-//  2. Wasmer Edge managed database — Wasmer injects DB_HOST / DB_PORT /
-//     DB_NAME / DB_USERNAME / DB_PASSWORD automatically when the app.yaml
-//     declares `capabilities.database.engine: postgres`.
+//  1. DATABASE_URL (recommended — Supabase / Neon / Render / any managed
+//     Postgres provider), or
+//  2. Legacy: Wasmer Edge managed database — Wasmer injects DB_HOST /
+//     DB_PORT / DB_NAME / DB_USERNAME / DB_PASSWORD automatically when the
+//     app.yaml declares `capabilities.database.engine: postgres`.
 function resolveDbConfig() {
   if (process.env.DATABASE_URL) {
     const url = process.env.DATABASE_URL;
     // Managed Postgres (Supabase / Neon / Render) mandates TLS; a local dev
-    // database does not. Wasmer's DB_* path below is untouched.
+    // database does not. The legacy DB_* path below is untouched.
     const local = /@(localhost|127\.0\.0\.1|::1)([:/]|$)/.test(url) || /[?&]sslmode=disable/.test(url);
     return local
       ? { connectionString: url }
       : { connectionString: url, ssl: { rejectUnauthorized: false } };
   }
   if (process.env.DB_HOST && process.env.DB_NAME) {
-    // Wasmer managed Postgres: TLS is mandatory and the certificate comes
-    // from a private CA, so chain verification must stay off (per Wasmer docs).
+    // Legacy Wasmer Edge managed Postgres: TLS is mandatory and the
+    // certificate comes from a private CA, so chain verification must stay
+    // off (per Wasmer docs).
     return {
       host: process.env.DB_HOST,
       port: Number.parseInt(process.env.DB_PORT || '5432', 10),
@@ -101,7 +110,7 @@ const dbConfig = resolveDbConfig();
 const dbHostForGuard = process.env.DB_HOST || '';
 
 if (isProd && (!process.env.DATABASE_URL && !dbHostForGuard)) {
-  throw new Error('Production requires a database: set DATABASE_URL or attach a Wasmer managed database (capabilities.database in app.yaml).');
+  throw new Error('Production requires a database: set DATABASE_URL (Supabase / Neon / Render / any managed Postgres) or DB_HOST/DB_NAME (legacy Wasmer Edge).');
 }
 // In production the database must be remote; refuse obvious local defaults.
 if (

@@ -65,7 +65,7 @@ function buildApp() {
 
   /* ----------------- split-frontend CORS (optional) -------------------- */
   // Active only when FRONTEND_URL is set (Cloudflare Pages → Render API).
-  // Unset (Wasmer / same-origin): no CORS headers, behavior unchanged.
+  // Unset (single-origin deployments): no CORS headers, behavior unchanged.
   if (config.frontendUrl) {
     app.use((req, res, next) => {
       const origin = req.headers.origin;

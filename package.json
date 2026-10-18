@@ -14,7 +14,8 @@
     "seed:admin": "node database/seeds/seed-admin.js",
     "seed:demo": "node database/seeds/seed-demo.js",
     "check": "node scripts/check-syntax.js",
-    "test": "node --test tests/"
+    "api-base": "node scripts/set-api-base.js",
+    "test": "node --test --test-concurrency=1"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",

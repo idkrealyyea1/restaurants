@@ -2,8 +2,8 @@
 
 /**
  * Split-frontend (Cloudflare Pages → Render API): CORS preflight, origin
- * allowlist, and Wasmer parity (evil origins still rejected, default cookie
- * stays SameSite=Lax). Needs TEST_DATABASE_URL (disposable database only).
+ * allowlist, and same-origin parity (evil origins still rejected, default
+ * cookie stays SameSite=Lax). Needs TEST_DATABASE_URL (disposable database only).
  */
 
 process.env.TEST_DATABASE_URL = process.env.TEST_DATABASE_URL || '';
@@ -62,7 +62,7 @@ test('public GET echoes CORS headers for the allowlisted frontend', async () => 
   assert.strictEqual(res.headers.get('access-control-allow-origin'), 'https://shop-pages-dev.pages.dev');
 });
 
-test('default session cookie stays SameSite=Lax (Wasmer parity)', async () => {
+test('default session cookie stays SameSite=Lax (same-origin parity)', async () => {
   await env.createPlatformOwner('cors-root', 'owner-password-123');
   const res = await fetch(env.baseUrl + '/api/auth/login', {
     method: 'POST',

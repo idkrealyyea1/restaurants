@@ -66,6 +66,11 @@ A link opens in your browser → click **Approve**. Terminal confirms you're log
 
 # Part B — Choose your database region (one-time)
 
+> 👉 **This is the legacy Wasmer guide.** Your stack now is
+> **Supabase (database) + Render (backend) + Cloudflare Pages (frontend)** —
+> follow **[DEPLOY_SUPABASE_RENDER_PAGES.md](DEPLOY_SUPABASE_RENDER_PAGES.md)**
+> instead. These Wasmer instructions only remain as a rollback path.
+
 Open the file **`app.yaml`** in this folder with any text editor and find these lines at the bottom:
 
 ```yaml

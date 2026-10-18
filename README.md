@@ -11,15 +11,17 @@ A multi-tenant online-ordering SaaS: a platform owner creates restaurants; each 
 ```
 MY LAPTOP                      REMOTE BUILD/RUN ENV                PRODUCTION
 ┌───────────────┐   files    ┌──────────────────────────┐        ┌─────────────────┐
-│ source code   │──────────▶│ npm install / migrate /   │──────▶│ Wasmer Edge      │
+│ source code   │──────────▶│ npm install / migrate /   │──────▶│ Render (API+UI)  │
 │ config, docs  │            │ tests, app execution      │ deploy│  this app        │
 └───────────────┘            └────────────┬─────────────┘        └────────┬────────┘
                                           ▼                               ▼
-                                   disposable PostgreSQL          managed PostgreSQL
+                                   disposable PostgreSQL          Supabase PostgreSQL
                                    (tests/dev only)               via DATABASE_URL
 ```
 
-- **Frontend** (`client/`): static HTML/CSS/JS served by Express. CSP forbids inline scripts/styles.
+- **Frontend** (`client/`): static HTML/CSS/JS served by Express **or mirrored to
+  Cloudflare Pages (free CDN)** — the Pages copy calls the Render API
+  (`FRONTEND_URL` + `<meta name="api-base">`). CSP forbids inline scripts/styles.
 - **Backend** (`server/`): REST API. routes → controllers → services → parameterized SQL.
 - **Database** (`database/`): plain-SQL migrations + seeds. Prices are integer **cents**; orders **snapshot prices at purchase time**.
 
@@ -85,18 +87,14 @@ The suite refuses to run without an explicit `TEST_DATABASE_URL`. It migrates th
 - status transition rules, tracking by code, price snapshotting after menu changes
 - upload sniffing (MIME + magic bytes), QR, SSE auth, malformed bodies, cross-origin rejection, order rate limiting
 
-## Deployment (Wasmer Edge + Wasmer managed PostgreSQL)
+## Deployment (Supabase + Render + Cloudflare Pages — current stack)
 
-> **Full beginner-friendly walkthrough: [DEPLOYMENT.md](DEPLOYMENT.md)** — every click and command, no experience needed.
+> **Full beginner-friendly walkthrough: [DEPLOY_SUPABASE_RENDER_PAGES.md](DEPLOY_SUPABASE_RENDER_PAGES.md)** — every click and command.
 
-The app runs on Wasmer Edge with **Wasmer's own managed PostgreSQL** (`capabilities.database` in `app.yaml`). Wasmer injects `DB_HOST/DB_PORT/DB_NAME/DB_USERNAME/DB_PASSWORD` at runtime and `config/index.js` builds the connection automatically (TLS with Wasmer's private CA is handled). A `DATABASE_URL` for any other Postgres provider also works.
-
-1. Provision a database region in `app.yaml` (`fr-roub1` Europe / `ca-beau1` Americas) — done once, permanently.
-2. `wasmer deploy` → app + database are created; credentials via `wasmer app database list --with-password`.
-3. Set the `SESSION_SECRET` secret, run `npm run migrate` + `npm run seed:admin` against the injected `DB_*` values.
-4. `wasmer deploy` again.
-
-Wasmer keeps automatic database backups ≥14 days; Pro includes 1 GB of DB storage.
+- **Database:** Supabase free project → copy its **Session pooler** URI → set it as `DATABASE_URL` on Render.
+- **Backend:** `render.yaml` in this repo is a Render Blueprint (build `npm ci`, start `node server.js`, health `/api/healthz`, free plan). Migrations run automatically at boot (`NODE_ENV=production` → `database/migrate.js`), so no pre-deploy command is needed there (they are paid-only anyway). `SESSION_SECRET` auto-generates via `generateValue: true`, and `APP_URL` is auto-derived from `RENDER_EXTERNAL_HOSTNAME` when unset (`config/index.js`).
+- **Frontend (optional CDN):** send the `client/` folder to Cloudflare Pages and stamp the API origin with `npm run api-base -- https://<your-service>.onrender.com` (see guide Part C) — the same-origin Render deployment needs nothing and stays the default.
+- **Wasmer (legacy, kept untouched):** `app.yaml` still deploys `wasmer deploy --build-remote` exactly as before if you need a rollback path. See the old [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ## Security model (summary)
 
@@ -121,6 +119,7 @@ Wasmer keeps automatic database backups ≥14 days; Pro includes 1 GB of DB stor
 
 ## Known limitations / roadmap
 
-- Uploaded images live on the server filesystem. On ephemeral hosts (e.g. Wasmer Edge) they vanish on redeploy — wire Wasmer Volumes or S3-compatible storage into `server/middleware/upload.js` before relying on it in production.
+- Uploaded images live in **PostgreSQL** (`uploaded_files` bytea) and boot runs `database/migrate.js` — but there is still no shared store/bus for SSE and rate limiting (single-instance by design). If you ever scale to 2+ instances, add a shared store/bus.
+- Supabase free projects pause after 7 days of low activity; free Render instances spin down after 15 minutes idle (first hit takes ~1 min). See the deploy guide's "Free-plan behavior" section.
 - Rate limiting and the SSE hub are in-process (single instance). Add a shared store/bus before horizontal scaling.
 - Analytics are basic aggregates; no exports yet.

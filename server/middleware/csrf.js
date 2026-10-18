@@ -32,7 +32,7 @@ function originGuard(req, res, next) {
     if (h) allowedHosts.add(h);
   }
   // Optional split frontend (Cloudflare Pages → Render API). Unset by
-  // default, so same-origin deployments (Wasmer) behave exactly as before.
+  // default, so single-origin deployments behave exactly as before.
   if (config.frontendHost) allowedHosts.add(config.frontendHost);
 
   if (allowedHosts.has(hostOf(origin))) return next();
