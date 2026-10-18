@@ -793,6 +793,7 @@ module.exports = {
   STATUSES,
   REVENUE_STATUSES,
   REVENUE_SQL,
+  REVENUE_SQL_O,
   TRANSITIONS,
   createCheckout,
   listForRestaurant,

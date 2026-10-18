@@ -9,7 +9,7 @@ const { conflict, notFound, badRequest } = require('../utils/errors');
 const { isOpenNow, timeToHhmm } = require('../utils/datetime');
 const observe = require('../utils/observe');
 // Keep revenue semantics identical to orders.service (confirmed+ only).
-const { REVENUE_SQL } = require('./orders.service');
+const { REVENUE_SQL, REVENUE_SQL_O } = require('./orders.service');
 const delivery = require('./delivery.service');
 
 async function slugExists(slug) {
