@@ -107,7 +107,12 @@
       }
       btn.disabled=true; const old=btn.textContent; btn.textContent='جاري الإرسال…';
       try{
-        const r = await fetch('/api/restaurant-requests', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)});
+        // Split-frontend: send the request to the API host (Render), not the
+        // static host (Cloudflare Pages). Empty base = same origin.
+        let base=String(window.__API_BASE__||'');
+        if(!base){ const meta=document.querySelector('meta[name="api-base"]'); base=meta?String(meta.content||''):''; }
+        base=base.replace(/\/+$/,'');
+        const r = await fetch(base + '/api/restaurant-requests', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)});
         const data = await r.json().catch(()=>null);
         if(!r.ok) throw new Error(data && data.error && data.error.message || 'فشل الإرسال');
         showMsg('تم إرسال طلبك بنجاح — رمز: ' + (data.request && data.request.code || '') + ' — سنتواصل معك قريبًا', 'ok');

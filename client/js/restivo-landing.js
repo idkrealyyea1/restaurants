@@ -167,7 +167,11 @@ function openRequest() {
     if(!payload.customerName||!payload.restaurantName||!payload.phone){fail(lang==='ar'?'الرجاء تعبئة جميع الحقول':'Please fill in all fields');return}
     btn.disabled=true;
     try{
-      const r=await fetch('/api/restaurant-requests',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+      // Split-frontend: post to the API host (Render), not the static host.
+      let base=String(window.__API_BASE__||'');
+      if(!base){const meta=document.querySelector('meta[name="api-base"]');base=meta?String(meta.content||''):''}
+      base=base.replace(/\/+$/,'');
+      const r=await fetch(base+'/api/restaurant-requests',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
       const data=await r.json().catch(()=>null);
       if(!r.ok) throw new Error((data&&data.error&&data.error.message)||(lang==='ar'?'فشل الإرسال، حاول مجددًا':'Send failed, try again'));
       const code=data&&data.request&&data.request.code?` — ${data.request.code}`:'';
