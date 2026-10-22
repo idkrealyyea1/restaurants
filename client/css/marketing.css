@@ -1,4 +1,4 @@
-/* Restivo marketing — new identity: cream canvas, ink text, coral/sun/teal.
+/* Ordora marketing — new identity: cream canvas, ink text, coral/sun/teal.
    Vanilla CSS port of the React/Tailwind reference (no build step, CSP-safe:
    local files only, no external fonts/images). */
 :root {
@@ -13,6 +13,7 @@
 .mk-brand { display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 800; font-size: 1.5rem; color: var(--ink); letter-spacing: -.04em; text-decoration: none; }
 .mk-brand:hover { text-decoration: none; }
 .mk-brand-mark { position: relative; width: 40px; height: 40px; border-radius: 13px; background: var(--coral); color: #f8f0df; display: grid; place-items: center; font-size: 1.2rem; font-weight: 800; box-shadow: 4px 4px 0 var(--sun); overflow: hidden; }
+.mk-brand-lockup { width: 124px; height: auto; display: block; }
 .mk-links { display: flex; align-items: center; gap: 26px; margin-inline: auto; }
 .mk-links a { color: rgba(31,52,57,.65); font-weight: 700; font-size: .88rem; font-family: var(--font-ui); padding: 6px 0; }
 .mk-links a:hover { color: var(--ink); text-decoration: none; }
@@ -23,6 +24,7 @@
 @media (max-width: 640px){
   .mk-nav-inner { gap: 8px; }
   .mk-brand { font-size: 1.25rem; }
+.mk-brand-lockup { width: 110px; }
   .mk-actions { gap: 8px; margin-inline-start: auto; }
   .mk-actions a[href="/login.html"] { display: none; }
 }

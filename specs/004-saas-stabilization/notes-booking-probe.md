@@ -1,6 +1,6 @@
 # Booking Probe (T004) — 2026-09-25
 
-Disposable DB: local `supabase/postgres:17` container (`restivo-test-db`), NOT production.
+Disposable DB: local `supabase/postgres:17` container (`ordora-test-db`), NOT production.
 
 ## Findings
 

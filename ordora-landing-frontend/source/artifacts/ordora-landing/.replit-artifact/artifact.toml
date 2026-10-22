@@ -3,7 +3,7 @@ previewPath = "/"
 title = "Mohand Restaurant Menu"
 description = "An Arabic-first guest restaurant menu for browsing dishes, building an order, and sharing it when the restaurant is open."
 version = "1.0.0"
-id = "artifacts/restivo-landing"
+id = "artifacts/ordora-landing"
 router = "path"
 
 [[services]]
@@ -12,12 +12,12 @@ paths = [ "/" ]
 localPort = 23934
 
 [services.development]
-run = "pnpm --filter @workspace/restivo-landing run dev"
+run = "pnpm --filter @workspace/ordora-landing run dev"
 
 [services.production]
-build = [ "pnpm", "--filter", "@workspace/restivo-landing", "run", "build" ]
+build = [ "pnpm", "--filter", "@workspace/ordora-landing", "run", "build" ]
 serve = "static"
-publicDir = "artifacts/restivo-landing/dist/public"
+publicDir = "artifacts/ordora-landing/dist/public"
 
 [[services.production.rewrites]]
 from = "/*"

@@ -36,13 +36,13 @@ npm start
 
 ```bash
 curl -s http://localhost:3000/ | grep -o '<title>[^<]*</title>'
-# Expected: <title>Restivo — ...</title>
+# Expected: <title>Ordora — ...</title>
 
 curl -s http://localhost:3000/ | grep -o 'rel="canonical"[^>]*'
 # Expected: rel="canonical" href="http://localhost:3000/"
 
 curl -s http://localhost:3000/ | grep -o 'property="og:title"[^>]*'
-# Expected: property="og:title" content="Restivo — ..."
+# Expected: property="og:title" content="Ordora — ..."
 ```
 
 ### 2. SEO Metadata for Business Pages

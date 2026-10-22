@@ -34,7 +34,7 @@
 - Mobile: slides up from bottom, 90% height max, backdrop overlay, swipe-to-dismiss
 - Desktop: centered modal with max-width 600px
 - Focus trapping, Escape to close, aria-modal="true"
-- Reuses existing `.backdrop` / `.modal` CSS patterns from `restivo.css`
+- Reuses existing `.backdrop` / `.modal` CSS patterns from `ordora.css`
 - Product detail is UI state only — no URL change, no separate route
 
 ## R3: Platform Language Storage
@@ -70,7 +70,7 @@
 **Rationale**: Business metadata (name, type, description, menu) is already in the database. A service function generates title, description, canonical, OG tags, and structured data from the business record. This keeps the logic testable and reusable.
 
 **Implementation notes**:
-- Title: `{business_name} — {business_type_label} | Restivo`
+- Title: `{business_name} — {business_type_label} | Ordora`
 - Description: business description or fallback to menu summary
 - Canonical: `{origin}/restaurant/{slug}`
 - Structured data: Restaurant schema for restaurant/cafe/bakery/dessert_shop/cake_business/cloud_kitchen; LocalBusiness for home_kitchen/small_food_business

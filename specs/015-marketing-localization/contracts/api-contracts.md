@@ -45,13 +45,13 @@ Returns SEO metadata for a public business storefront.
 **Response 200**:
 ```json
 {
-  "title": "Shawarma Palace — Restaurant | Restivo",
+  "title": "Shawarma Palace — Restaurant | Ordora",
   "description": "Order from Shawarma Palace. Browse the menu and place your order online.",
-  "canonical": "https://restivo.example.com/restaurant/shawarma-palace",
-  "ogTitle": "Shawarma Palace — Restaurant | Restivo",
+  "canonical": "https://ordora.example.com/restaurant/shawarma-palace",
+  "ogTitle": "Shawarma Palace — Restaurant | Ordora",
   "ogDescription": "Order from Shawarma Palace...",
   "ogType": "restaurant",
-  "ogImage": "https://restivo.example.com/uploads/covers/abc-123.jpg",
+  "ogImage": "https://ordora.example.com/uploads/covers/abc-123.jpg",
   "structuredData": {
     "@context": "https://schema.org",
     "@type": "Restaurant",

@@ -1,4 +1,4 @@
-# Backups & Recovery — Restivo (Task 17, FR-017)
+# Backups & Recovery — Ordora (Task 17, FR-017)
 
 > Status: procedure documented from the deployment guide and `app.yaml` reality.
 > A backup that has never been restored is NOT verified — the rehearsal log
@@ -21,8 +21,8 @@
 ## Restore procedure (operator `pg_dump` copy, disposable database)
 
 ```bash
-pg_dump "$DATABASE_URL" -Fc -f restivo-backup.dump
-pg_restore -d <disposable-pg-url> --clean restivo-backup.dump
+pg_dump "$DATABASE_URL" -Fc -f ordora-backup.dump
+pg_restore -d <disposable-pg-url> --clean ordora-backup.dump
 TEST_DATABASE_URL=<disposable-pg-url> node --test tests/tenant-isolation.test.js
 ```
 

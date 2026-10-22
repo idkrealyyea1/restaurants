@@ -1,4 +1,4 @@
-# Restivo — What Was Built & How The Website Works (Step-by-Step)
+# Ordora — What Was Built & How The Website Works (Step-by-Step)
 
 > Generated for `idkrealyyea/restaurants` — this file documents **every single thing** changed, kept, and how the site appears and works from first paint to conversion.
 
@@ -6,7 +6,7 @@
 
 ## 0) TL;DR — Deliverables
 
-- **Brand** renamed from `منصة المطاعم / Restaurants Platform` → **Restivo** everywhere.
+- **Brand** renamed from `منصة المطاعم / Restaurants Platform` → **Ordora** everywhere.
 - **Pricing** is now **$8.99/month** (default) and **editable from owner panel `/owner.html`** without redeploy.
 - **Root `/` is now a premium marketing homepage**, old restaurant directory moved to **`/app`** (`/app/`).
 - **Static demo at `/demo.html`** — zero `/api` calls, uses existing `/images/logo-placeholder.svg`, instant paint.
@@ -18,12 +18,12 @@
 
 ---
 
-## 1) Brand Rename — Restivo
+## 1) Brand Rename — Ordora
 
 **Why:** old name was long, not memorable, bad for `title` and share cards.
 
 **Files touched:**
-- `client/js/i18n.js:13` `brand: 'Restivo'` (AR) and `:378` (EN), `poweredBy` → `Powered by Restivo`, `subscriptionH` → `$8.99`, `subPrice` → `$8.99…`
+- `client/js/i18n.js:13` `brand: 'Ordora'` (AR) and `:378` (EN), `poweredBy` → `Powered by Ordora`, `subscriptionH` → `$8.99`, `subPrice` → `$8.99…`
 - All `client/*.html` (`index.html`, `app/index.html`, `login.html`, `track.html`, `offer.html`, `leads.html`, `owner.html`, `restaurant.html`) `<title>` and brand spans.
 - `client/manifest.webmanifest` `name`, `short_name`.
 - `server/controllers/auth.controller.js:32`, `server/middleware/auth.js:74`, `server/services/orders.service.js:93`, `server/services/bookings.service.js:29` messages → `$8.99`.
@@ -31,7 +31,7 @@
 - `client/owner.html:16` → `العروض $8.99`, `client/js/offers.js:22` price constant → `$8.99`, `leads.controller.js:349` benefits → `$8.99`.
 - `outreach-templates.md`, `README.md`, `HANDOFF.md` titles.
 
-Search: `grep -rn "Restivo" client/ server/ --include="*.html" --include="*.js"` now returns only brand, no legacy.
+Search: `grep -rn "Ordora" client/ server/ --include="*.html" --include="*.js"` now returns only brand, no legacy.
 
 ---
 
@@ -44,8 +44,8 @@ Search: `grep -rn "Restivo" client/ server/ --include="*.html" --include="*.js"`
   ```sql
   CREATE TABLE platform_settings(id smallint PRIMARY KEY DEFAULT 1 CHECK(id=1),
     pricing_cents int DEFAULT 899, pricing_currency text DEFAULT 'USD',
-    pricing_period text DEFAULT 'month', trial_days int DEFAULT 7, brand_name text DEFAULT 'Restivo');
-  INSERT INTO platform_settings VALUES(1,899,'USD','month',7,'Restivo') ON CONFLICT DO NOTHING;
+    pricing_period text DEFAULT 'month', trial_days int DEFAULT 7, brand_name text DEFAULT 'Ordora');
+  INSERT INTO platform_settings VALUES(1,899,'USD','month',7,'Ordora') ON CONFLICT DO NOTHING;
   ```
 - **Service** `server/services/platform.service.js`:
   - `getPricing()` → `SELECT ... WHERE id=1` with `try/catch` fallback `{899,USD,month}` so marketing never 500s when DB is down.
@@ -87,17 +87,17 @@ Search: `grep -rn "Restivo" client/ server/ --include="*.html" --include="*.js"`
 ## 4) Marketing Homepage — `/` (`client/index.html`)
 
 **Meta & SEO (in `<head>`):**
-- `<title>Digital Menu & Online Ordering for Restaurants | Restivo</title>`
+- `<title>Digital Menu & Online Ordering for Restaurants | Ordora</title>`
 - `meta description: Create a digital restaurant menu, QR menu... — $8.99/month.`
-- `canonical: /`, `og:type website`, `og:title`, `og:description`, `og:image /icons/icon-512.png`, `twitter:card large`, `theme-color #c73d18`, `manifest`, `icon.svg`.
-- **JSON-LD** `Organization` (name Restivo, logo) + `SoftwareApplication` (BusinessApplication, offers $8.99 USD 2027-12-31, description digital menu/QR/WhatsApp).
+- `canonical: /`, `og:type website`, `og:title`, `og:description`, `og:image /icons/icon-512.png`, `twitter:card large`, `theme-color #c73d18`, `manifest`, `favicon.png`.
+- **JSON-LD** `Organization` (name Ordora, logo) + `SoftwareApplication` (BusinessApplication, offers $8.99 USD 2027-12-31, description digital menu/QR/WhatsApp).
 
-**Nav** `.mk-nav` sticky top: left brand `R` mark + `Restivo`, center links `Features → #features`, `How it Works → #how`, `Pricing → #pricing`, `Demo → /demo.html`, right `Login → /login.html` (outline) + `Get Started → /app/` (primary) + burger `#mk-burger` for mobile (toggles `#mk-drawer`). Drawer lists all subpages + industries. Lang toggle injected by `i18n.js` into `.mk-nav-inner` before burger (`langToggle` English ↔ العربية).
+**Nav** `.mk-nav` sticky top: left Ordora lockup logo, center links `Features → #features`, `How it Works → #how`, `Pricing → #pricing`, `Demo → /demo.html`, right `Login → /login.html` (outline) + `Get Started → /app/` (primary) + burger `#mk-burger` for mobile (toggles `#mk-drawer`). Drawer lists all subpages + industries. Lang toggle injected by `i18n.js` into `.mk-nav-inner` before burger (`langToggle` English ↔ العربية).
 
 **Sections in order (appearance):**
 1. **Hero** `.mk-hero-grid` 2-col (stacks ≤900px):
    - Left: eyebrow `Built for restaurants…` (`heroBadge`), `h1` `Turn Your Menu Into an Online Ordering Experience` (`heroTitle`, `<em>` accent primary), lead `Give your customers…` (`heroDesc`), CTAs `Try Live Demo → /demo.html` (primary) + `See How It Works → #how` (ghost), note `No account needed…` (`heroNote`).
-   - Right: `.mk-hero-visual` phone frame (260px, rounded 28px, dark notch) with 4 menu cards (Burger, Pizza, Baklava, Latte using `/images/logo-placeholder.svg`), QR card absolute top-end (88×88 checkerboard + “Scan to order” + `restivo.app/r/demo`), cart pill bottom (ink + `4 items • $34.69` + `View cart →`). All real UI pieces from `storefront.css`, no stock photo.
+   - Right: `.mk-hero-visual` phone frame (260px, rounded 28px, dark notch) with 4 menu cards (Burger, Pizza, Baklava, Latte using `/images/logo-placeholder.svg`), QR card absolute top-end (88×88 checkerboard + “Scan to order” + `ordora.app/r/demo`), cart pill bottom (ink + `4 items • $34.69` + `View cart →`). All real UI pieces from `storefront.css`, no stock photo.
 2. **Trust strip** `.mk-trust` 5-col (2-col ≤760px): QR Menu, Online Ordering, WhatsApp Orders, Restaurant Dashboard, Sales & Insights — simple icons, no animation.
 3. **Live Demo** muted `Try it yourself`: left text + `Open Live Demo → /demo.html` + `Open real storefront → /restaurant/demo` (target blank), right preview card (badge Live preview, 4 tags).
 4. **Problem → Solution** `.mk-problem` 2-col: left bullets (5 pains with ✕), right solution card (One link + QR, instant updates, no app, WhatsApp-ready).
@@ -105,7 +105,7 @@ Search: `grep -rn "Restivo" client/ server/ --include="*.html" --include="*.js"`
 6. **Features** `#features` 8 cards: Digital Menu, QR Code Menu, Online Ordering, WhatsApp Ordering, Restaurant Dashboard, Order Management, Analytics, Restaurant Customization — copy matches real capabilities from `restaurants.service`.
 7. **Showcase** 2-col: left “Your customers see this” (cover gradient + chip row), right “Your team manages this” (ink window + stat grid). Below flow.
 8. **Industries** 4-col (2-col ≤900px): Restaurants, Cafes, Dessert Shops, Cake Shops — gradient headers, `Explore →` links to `/for-*.html`.
-9. **Pricing** `#pricing` centered card: kicker Restivo, amount `#mk-price` + `#mk-price-period`, flat fee copy, 5 bullets, `Get Your Restaurant Online → /app/` + `Try demo`, note 7-day trial editable.
+9. **Pricing** `#pricing` centered card: kicker Ordora, amount `#mk-price` + `#mk-price-period`, flat fee copy, 5 bullets, `Get Your Restaurant Online → /app/` + `Try demo`, note 7-day trial editable.
 10. **FAQ** 9 `<details>` (QR, phone ordering, update prices, how orders received, logo, mobile, sales, create account, try before subscribing). Last two link to demo/login.
 11. **Final CTA** ink band `.mk-cta-band` (h2 + two buttons white vs outline on dark).
 12. **Footer** `.mk-footer` left ©, right 6 links (Features, How it Works, Pricing, Industries, Contact, App).
@@ -119,7 +119,7 @@ Search: `grep -rn "Restivo" client/ server/ --include="*.html" --include="*.js"`
 **Goal per your request:** realistic but **zero server requests**, reuses existing images, reduces load for many visitors.
 
 - **File** `client/demo.html` standalone, includes `storefront.css` + `marketing.css` + `skeleton.css` + own inline `<style>.demo-notice`.
-- **Data** `const DEMO` hardcoded: name `Restivo Demo — Grill & Pizza`, `openNow true`, settings `{USD, delivery 150, primary #c73d18}`, 3 categories (Grill, Pizza, Desserts), 6 items (Mixed Grill 1899, Shawarma 650, Margherita 1200, Pepperoni 1350, Baklava 999, Kunafa sold-out) all `image_path /images/logo-placeholder.svg` (existing, cached).
+- **Data** `const DEMO` hardcoded: name `Ordora Demo — Grill & Pizza`, `openNow true`, settings `{USD, delivery 150, primary #c73d18}`, 3 categories (Grill, Pizza, Desserts), 6 items (Mixed Grill 1899, Shawarma 650, Margherita 1200, Pepperoni 1350, Baklava 999, Kunafa sold-out) all `image_path /images/logo-placeholder.svg` (existing, cached).
 - **Render** functions `renderHero()`, `renderChips()`, `renderMenu()` mimic `restaurant.js` but **no `api.get('/api/.../menu')`**, no `fetch`. Search input filters locally, category chips `all/popular/category`, price ticket `+` button.
 - **Cart** `cart={}`, `subtotal()`, `totalUnits()`, `updateBar()` (pill `x items • $YY`), `flyToCart` omitted (simpler, less JS). Sheet `#sheet` + backdrop, quantity `−/+`, `pickup/delivery` toggle (fee 150), form name+WA+notes, `placeOrder` just validates name/WA, clears cart, shows success `Demo — تم! Browse real restaurants → /app` + `Get Started`, no `POST`.
 - **Header** `mk-nav` with Back to site + Get Started. Notice `.demo-notice` yellow: “Demo — no orders are sent… View real restaurants → /app”.
@@ -133,16 +133,16 @@ Generator `python3 mk_page(...)` created each with same nav/footer + unique SEO.
 
 | File | Title | Description (unique) | H1 | Key body |
 |------|-------|----------------------|-----|----------|
-| `features.html` | Features — Digital Menu, QR, Online Ordering | Explore Restivo features: digital menu, QR… | Features that actually exist — no mockups | 8 feature cards + dashboard menu vs settings 2-col |
-| `how-it-works.html` | How It Works — Create, Share, Receive | Learn 3 steps: create, share, receive… | How Restivo works | 3 steps detail + customer sees 5-step list + flow |
-| `pricing.html` | Pricing — $8.99/month, 0% | Restivo pricing $8.99 0%… 7-day trial | Simple pricing — $8.99/month | centered price card + FAQ pricing note |
+| `features.html` | Features — Digital Menu, QR, Online Ordering | Explore Ordora features: digital menu, QR… | Features that actually exist — no mockups | 8 feature cards + dashboard menu vs settings 2-col |
+| `how-it-works.html` | How It Works — Create, Share, Receive | Learn 3 steps: create, share, receive… | How Ordora works | 3 steps detail + customer sees 5-step list + flow |
+| `pricing.html` | Pricing — $8.99/month, 0% | Ordora pricing $8.99 0%… 7-day trial | Simple pricing — $8.99/month | centered price card + FAQ pricing note |
 | `for-restaurants.html` | Digital Menu for Restaurants — QR & Online | Digital menu for restaurants: QR table… | For Restaurants | 2-col why + perfect for + links to other 3 |
 | `for-cafes.html` | Digital Menu for Cafes — QR & Online | Cafe digital menu: fast QR… | For Cafes | counter QR, variants as items, reorder |
 | `for-dessert-shops.html` | Online Menu for Dessert Shops | Dessert shop online menu: visual catalog… | For Dessert Shops | gallery, categories, large orders, tip |
 | `for-cake-shops.html` | Online Ordering for Cake Shops | Cake shop online ordering: pre-orders… | For Cake Shops | pre-order notes, pickup/delivery, booking |
-| `contact.html` | Contact — Get Your Restaurant Online | Contact Restivo WhatsApp +972567439846… | Contact — Let's get… | WhatsApp button + what we need list |
-| `resources/index.html` | Resources — Restivo | Restivo resources — guides… | Resources | 5 “Coming soon” cards (digital vs printed etc.) |
-| `404.html` | Page not found — Restivo | Noindex, centered h1 + 4 links Home/Demo/Login/Restaurants |
+| `contact.html` | Contact — Get Your Restaurant Online | Contact Ordora WhatsApp +972567439846… | Contact — Let's get… | WhatsApp button + what we need list |
+| `resources/index.html` | Resources — Ordora | Ordora resources — guides… | Resources | 5 “Coming soon” cards (digital vs printed etc.) |
+| `404.html` | Page not found — Ordora | Noindex, centered h1 + 4 links Home/Demo/Login/Restaurants |
 
 All have `site.js` + `i18n.js` (added post-gen), `skeleton.css`, canonical `/file.html`, OG.
 
@@ -162,9 +162,9 @@ All have `site.js` + `i18n.js` (added post-gen), `skeleton.css`, canonical `/fil
 
 **`sitemap.xml`** (`site.routes.js:24`, `GET /sitemap.xml`): static 10 URLs (/, features, how-it-works, pricing, demo, 4 for-*, contact, resources/, app/) + dynamic up to 500 active restaurants `SELECT slug, updated_at FROM restaurants WHERE is_active AND (subscription_ends_at IS NULL OR > now())` with `lastmod`, `priority 1.0` for `/`, `0.8` marketing, `0.6` restaurants, `changefreq weekly`, `Cache-Control public max-age 3600`. Falls back to static only if DB down.
 
-**Structured data** (`index.html:22`): `Organization` (Restivo, url, logo) + `SoftwareApplication` (BusinessApplication, offers $8.99). Subpages have Organization only + ready for `BreadcrumbList` via sections.
+**Structured data** (`index.html:22`): `Organization` (Ordora, url, logo) + `SoftwareApplication` (BusinessApplication, offers $8.99). Subpages have Organization only + ready for `BreadcrumbList` via sections.
 
-**Social:** OG image `/icons/icon-512.png`, `og:locale ar_AR`, share on WhatsApp/Facebook will show Restivo card.
+**Social:** OG image `/icons/icon-512.png`, `og:locale ar_AR`, share on WhatsApp/Facebook will show Ordora card.
 
 ---
 
@@ -239,7 +239,7 @@ Tables: `restaurants(id, slug unique, name, status open|closed|temporarily_close
 
 ## 13) Appearance — Design System
 
-- **Colors:** parchment `--bg #fdf6ec`, surface `#fffdf5`/`#fdf1d8`, ink `#1b1e1c`, text `#2a2e26`, muted `#7a756e`, border `#e8ddd0`, primary `Restivo #c73d18` (derive `primary-dark #a33214`, `light #fde9e2`), secondary `#2f3f2e`/`#1f2a1f`, saffron `#e9b44c`, danger `#c23a26`.
+- **Colors:** parchment `--bg #fdf6ec`, surface `#fffdf5`/`#fdf1d8`, ink `#1b1e1c`, text `#2a2e26`, muted `#7a756e`, border `#e8ddd0`, primary `Ordora #c73d18` (derive `primary-dark #a33214`, `light #fde9e2`), secondary `#2f3f2e`/`#1f2a1f`, saffron `#e9b44c`, danger `#c23a26`.
 - **Typography:** display `El Messiri`, UI `Cairo`, body `Almarai`, mono `SF Mono`. Self-hosted woff2 in `/fonts` (`fonts.css`). Scale clamp for hero `2rem → 2.9rem`.
 - **Shapes:** `--radius 14px`, `--radius-lg 20px`, shadow soft + lg, glass blur on sticky navs.
 - **Marketing tokens:** `.mk-container max 1120px`, `.mk-section 36px` vertical, `.mk-grid` 2-col hero, trust 5-col, features 3-col (2-col ≤900, 1-col ≤560), industries 4-col.
@@ -250,7 +250,7 @@ Tables: `restaurants(id, slug unique, name, status open|closed|temporarily_close
 ## 14) How The Website Appears — User Journey (Desktop & Mobile)
 
 1. **First paint (0-200ms):** skeleton appears instantly (topbar shimmer + hero shimmer + cards shimmer), even on 2G/offline. Real marketing HTML loads behind.
-2. **Load (300ms-1s):** `window.load` → skeleton fades → marketing homepage visible: sticky nav (Restivo R mark, 4 links, Login, Get Started, burger), hero 2-col with badge, h1, lead, 2 CTAs, phone mock + QR + cart pill.
+2. **Load (300ms-1s):** `window.load` → skeleton fades → marketing homepage visible: sticky nav (Ordora lockup logo, 4 links, Login, Get Started, burger), hero 2-col with badge, h1, lead, 2 CTAs, phone mock + QR + cart pill.
 3. **Scroll:** trust 5 cards → demo muted band (2-col, preview card) → problem bullets vs solution card → how 3 steps + flow → 8 features → showcase dual cards + flow → 4 industries → pricing card ($8.99) → FAQ 9 details → ink CTA band → footer.
 4. **Click Demo → `/demo.html`:** skeleton then static storefront hero (gradient cover, logo, open badge), chips `الكل/Popular/Grill...`, search, 6 cards with price ticket + `+`. Add to cart → pill bottom shows count + total, sheet slides up with qty, pickup/delivery, total, form, Place Order (demo toast).
 5. **Click Get Started → `/app/`:** skeleton then directory grid `GET /api/restaurants` (live). Search filter, card shows cover/logo/name/description/itemCount/open badge, click → `/restaurant/:slug` (real storefront `restaurant.js` fetch menu, theme via `primaryColor`, hero, chips, search, grid, cart fly-to-cart, sheet checkout `POST /api/restaurants/:slug/orders` → code + track link, or `wa.me` prefilled).
@@ -270,7 +270,7 @@ Tables: `restaurants(id, slug unique, name, status open|closed|temporarily_close
 
 **Server:** `server/app.js` (helmet, static `client` extensions html, `/uploads/:subdir/:filename` from `uploaded_files`, session PG, attachUser, pages `/app|/restaurant/:slug|/track|/delivery|/leads|/offer/:code|/resources`, PWA routes, `siteRoutes`, `api` limiters, error handlers), `server/db/pool.js` (Pool, `withTx`, `query`), `server/middleware/auth.js` (attachUser, requireAuth/Owner/OwnerOrStaff/RestaurantAdmin/forbidStaffDelete/requireDelivery, tenantIdOf), `csrf.js` (originGuard SameSite), `ratelimit.js` (global/auth/order), `sse.js` (hub broadcast), `upload.js` (multer memory → magic-byte), `server/controllers/*.js` (auth, admin, owner+platformPricing, delivery, leads), `server/services/*.js` (restaurants, orders, bookings, users, settings, delivery, categories, menu, files, leads, enrichment, platform), `server/routes/*.js` (auth, public+pricing, admin, owner+platformPricing, delivery, leads, site+robots+sitemap+r), `server/utils/*.js` (errors with AppError + notFoundHandler HTML, checks, csv, datetime isOpenNow, ids orderCode), `server/validators/index.js` (login, restaurant, username, password, category, item, settings, hours, checkout, booking, delivery, platformPricing, pagination).
 
-**Client:** `client/index.html` marketing, `client/app/index.html` directory, `client/restaurant.html` storefront, `client/track.html`, `client/login.html`, `client/admin.html`, `client/owner.html`, `client/delivery.html`, `client/leads.html`, `client/offer.html`, `client/offers.html`, `client/demo.html` static, `client/features.html`, `how-it-works.html`, `pricing.html`, `for-restaurants.html`, `for-cafes.html`, `for-dessert-shops.html`, `for-cake-shops.html`, `contact.html`, `resources/index.html`, `404.html`, `client/css/style.css` 890 lines parchment, `storefront.css`, `marketing.css` 170 lines, `skeleton.css` 80 lines, `offers.css`, `client/js/api.js` (request + esc + fmtMoney + compressImage + theme buildTokens), `i18n.js` 800 lines AR/EN dict + toggle, `home.js` grid, `restaurant.js` 624 lines cart + hero + chips + fly + sheet, `track.js`, `admin.js` 1050 lines dashboard, `owner.js` 628 lines + pricing, `leads.js`, `offers.js`, `delivery.js`, `site.js` (burger + pricing fetch + scroll), `skeleton.js` (hide + offline), `pwa.js` (SW register), `sw.js` (CACHE v9 shell navigation network-first), `manifest.webmanifest` (Restivo, standalone, icons), `fonts/fonts.css` + `almarai-400/700, cairo-700/800, elmessiri-700 woff2`, `icons/icon.svg/192/512`, `images/logo-placeholder.svg`.
+**Client:** `client/index.html` marketing, `client/app/index.html` directory, `client/restaurant.html` storefront, `client/track.html`, `client/login.html`, `client/admin.html`, `client/owner.html`, `client/delivery.html`, `client/leads.html`, `client/offer.html`, `client/offers.html`, `client/demo.html` static, `client/features.html`, `how-it-works.html`, `pricing.html`, `for-restaurants.html`, `for-cafes.html`, `for-dessert-shops.html`, `for-cake-shops.html`, `contact.html`, `resources/index.html`, `404.html`, `client/css/style.css` 890 lines parchment, `storefront.css`, `marketing.css` 170 lines, `skeleton.css` 80 lines, `offers.css`, `client/js/api.js` (request + esc + fmtMoney + compressImage + theme buildTokens), `i18n.js` 800 lines AR/EN dict + toggle, `home.js` grid, `restaurant.js` 624 lines cart + hero + chips + fly + sheet, `track.js`, `admin.js` 1050 lines dashboard, `owner.js` 628 lines + pricing, `leads.js`, `offers.js`, `delivery.js`, `site.js` (burger + pricing fetch + scroll), `skeleton.js` (hide + offline), `pwa.js` (SW register), `sw.js` (CACHE v24 shell navigation network-first), `manifest.webmanifest` (Ordora, standalone, icons), `fonts/fonts.css` + `almarai-400/700, cairo-700/800, elmessiri-700 woff2`, `favicon.png`, `icons/icon-192/512.png`, `images/logo-placeholder.svg`.
 
 **Scripts:** `scripts/check-syntax.js` (node syntax check 65 files), `autoretry-deploy.sh`.
 
@@ -320,4 +320,4 @@ wasmer deploy --build-remote   # Wasmer Edge + managed PG (fr-roub1), needs `was
 
 ---
 
-*End of a.md — Restivo is ready. Visit `/` for marketing, `/demo.html` for static demo, `/app/` for real directory, `/login.html` for dashboards, `/owner.html` pricing card to change $8.99.*
+*End of a.md — Ordora is ready. Visit `/` for marketing, `/demo.html` for static demo, `/app/` for real directory, `/login.html` for dashboards, `/owner.html` pricing card to change $8.99.*

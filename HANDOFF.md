@@ -1,4 +1,4 @@
-# Restivo — Engineering Handoff & Product Spec
+# Ordora — Engineering Handoff & Product Spec
 
 > ⚠️ **Deployment note (Oct 2026):** the platform has moved to
 > **Supabase (database) + Render (backend) + Cloudflare Pages (optional CDN

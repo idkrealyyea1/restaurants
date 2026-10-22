@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Check, ChevronLeft, Clock3, MapPin, MessageCircle, Minus, Plus, Search, Share2, ShoppingBag, Star, X } from 'lucide-react';
-import foodTableImage from '@assets/generated_images/restivo-food-table.jpg';
+import foodTableImage from '@assets/generated_images/ordora-food-table.jpg';
 import type { Language } from '../content';
 
 type Category = 'all' | 'popular' | 'shawarma' | 'meals' | 'sides' | 'drinks';

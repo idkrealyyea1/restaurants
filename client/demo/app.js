@@ -23,7 +23,7 @@ const copy = {
     categoryLabel: "أقسام القائمة",
     popularRibbon: "اختيارات أحبّها ضيوفنا",
     footerCopyright: "© 2026 ذا ريد بن. جميع الحقوق محفوظة.",
-    footerMade: "صُنع مع Restivo",
+    footerMade: "صُنع مع Ordora",
     viewOrder: "عرض الطلب",
     all: "كل الأصناف",
     burgers: "برغر",
@@ -89,7 +89,7 @@ const copy = {
     categoryLabel: "Menu categories",
     popularRibbon: "Guest favorites",
     footerCopyright: "© 2026 The Red Bun. All rights reserved.",
-    footerMade: "Made with Restivo",
+    footerMade: "Made with Ordora",
     viewOrder: "View order",
     all: "Everything",
     burgers: "Burgers",
@@ -995,7 +995,7 @@ document.addEventListener("error", (event) => {
   if (!(image instanceof HTMLImageElement) || image.dataset.fallback === "true") return;
   if (!image.matches(".dish-photo img, .modal-image img, .cover-slide img")) return;
   image.dataset.fallback = "true";
-  image.src = "./images/restivo-food-table.jpg";
+  image.src = "./images/ordora-food-table.jpg";
 }, true);
 
 updateStaticCopy();

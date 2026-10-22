@@ -6,11 +6,11 @@
 
 ## Summary
 
-Rebuild Restivo's storefront presentation — plus the homepage and dashboard — so that visual quality matches the commercial menu benchmark, while every backend contract, authorization rule and money calculation stays exactly as it is. The work is sequenced **defects → tokens → presentation**, because the four live hero-image defects are correctness bugs that must not be buried inside a visual rewrite, and the shared token source must exist before any surface is restyled against it.
+Rebuild Ordora's storefront presentation — plus the homepage and dashboard — so that visual quality matches the commercial menu benchmark, while every backend contract, authorization rule and money calculation stays exactly as it is. The work is sequenced **defects → tokens → presentation**, because the four live hero-image defects are correctness bugs that must not be buried inside a visual rewrite, and the shared token source must exist before any surface is restyled against it.
 
 The only schema change is an **additive** per-product photo set that leaves `menu_items.image_path` authoritative for the primary image, so every existing consumer keeps working untouched.
 
-**Technical approach**: One new universal stylesheet (`client/css/tokens.css`) holds the authoritative palette, spacing, type scale, radii, elevation, motion and layer values, loaded by all 21 pages. Per-tenant brand tokens continue to be injected at runtime by the existing `theme.buildTokens`. `restivo.css`, `style.css`, `marketing.css` and `offers.css` keep their page-specific component rules but stop declaring tokens. The dead 533-line `storefront.css` is deleted and unlinked from the service worker. The storefront's 1179-line single-IIFE script is restructured in place — no framework, no build step, no new dependency.
+**Technical approach**: One new universal stylesheet (`client/css/tokens.css`) holds the authoritative palette, spacing, type scale, radii, elevation, motion and layer values, loaded by all 21 pages. Per-tenant brand tokens continue to be injected at runtime by the existing `theme.buildTokens`. `ordora.css`, `style.css`, `marketing.css` and `offers.css` keep their page-specific component rules but stop declaring tokens. The dead 533-line `storefront.css` is deleted and unlinked from the service worker. The storefront's 1179-line single-IIFE script is restructured in place — no framework, no build step, no new dependency.
 
 ## Technical Context
 
@@ -39,7 +39,7 @@ The only schema change is an **additive** per-product photo set that leaves `men
 | Principle | Gate | Verdict | Evidence |
 |---|---|---|---|
 | I. Preserve Working Functionality | No user-visible behaviour removed unless demonstrably broken | **PASS** | The Current State Baseline in `spec.md` enumerates 13 working features that are re-skinned, not rebuilt. FR-078 names all 21 capabilities to preserve |
-| II. No React Migration | Stay vanilla HTML/CSS/JS, no build | **PASS** | FR-075 forbids a new dependency and build step. The `restivo-landing-frontend/` React scaffold stays untouched and unreferenced |
+| II. No React Migration | Stay vanilla HTML/CSS/JS, no build | **PASS** | FR-075 forbids a new dependency and build step. The `ordora-landing-frontend/` React scaffold stays untouched and unreferenced |
 | III. No Architecture Rebuild Without Evidence | No rewrite absent evidence architecture cannot cope | **PASS with justification** | This *is* a presentation rebuild, which is what the architecture is for. No route, controller, service or auth path is restructured. The one schema addition is additive only |
 | IV. Inspect Before Deciding | Inspect code, migrations, tests, runtime before deciding | **PASS** | Two full codebase surveys, the reference-site design extraction, and five targeted verification passes were completed before this plan was written. All four defects verified at file:line |
 | V. Code Is Source Of Truth | Current code beats stale docs | **PASS** | The reference's own repo is instructive: its `single.php` comment explicitly documents a refactor rationale that contradicts an inline comment elsewhere. `spec.md` follows code, and notes the reference's own inconsistency |
@@ -60,7 +60,7 @@ The only schema change is an **additive** per-product photo set that leaves `men
 | XX. i18n Foundations, No Premature System | No full i18n framework | **PASS** | No new framework. Storefront language persistence is reused verbatim |
 | XXI. Honest SEO | Honest metadata, no fake structured data | **PASS** | FR-064 forbids fabricated proof. `test-seo.js` assertions preserved |
 | XXII. No Fabricated Proof | No invented logos, testimonials, statistics | **PASS** | FR-064 plus the honest-empty-state requirement for the logo strip |
-| XXIII. Preserve Restivo Visual Identity | Evolve within the system, no rebrand | **PASS** | Dark teal/navy, coral, warm yellow, cream retained as the token palette; the reference supplies *structure and quality*, not colours |
+| XXIII. Preserve Ordora Visual Identity | Evolve within the system, no rebrand | **PASS** | Dark teal/navy, coral, warm yellow, cream retained as the token palette; the reference supplies *structure and quality*, not colours |
 | XXIV. Reliability Over Feature Count | No N+1, unbounded loops, unsafe shared state | **PASS** | Photo sets load in the single existing menu query via one LEFT JOIN, not per-item requests |
 | XXV. Tests Required; Never Weaken Tests | Every implementation has tests; fix code not expectations | **PASS with declared exception** | One test (`tests/test-hero-images.js:6-11`) asserts a regex that is itself the defect. FR-081 requires correcting that expectation *together with* the behaviour. It is corrected, not deleted or relaxed. Every other test is preserved — including 9 source-asserting string contracts the rebuild must not break |
 | XXVI. Verify Against Spec and Plan | `npm run check` must pass; smoke key routes | **PASS** | `quickstart.md` defines the gate. No deploy without explicit approval |
@@ -98,7 +98,7 @@ specs/017-storefront-visual-rebuild/
 client/
 ├── css/
 │   ├── tokens.css           # NEW — authoritative design tokens, loaded by all 21 pages
-│   ├── restivo.css          # EDIT — storefront + homepage components; token declarations removed
+│   ├── ordora.css          # EDIT — storefront + homepage components; token declarations removed
 │   ├── style.css            # EDIT — dashboard/marketing components; token declarations removed
 │   ├── marketing.css        # EDIT — drops its own --mk-* tokens, consumes shared
 │   ├── offers.css           # EDIT — drops its own --oh-* tokens, consumes shared
@@ -108,8 +108,8 @@ client/
 │   ├── restaurant.js        # EDIT — storefront rebuild (cover, identity, rail, icons, sheet, photos)
 │   ├── admin.js             # EDIT — cover manager (drag-reorder, one-tap upload, limit notice)
 │   ├── owner.js             # EDIT — cover manager parity
-│   ├── restivo-landing.js   # EDIT — homepage narrative restructure
-│   ├── restivo-content.js   # EDIT — homepage copy for new sections
+│   ├── ordora-landing.js   # EDIT — homepage narrative restructure
+│   ├── ordora-content.js   # EDIT — homepage copy for new sections
 │   ├── api.js               # EDIT — brand token application moved to shared hook
 │   └── i18n.js              # EDIT — new keys only, both ar and en
 ├── restaurant.html          # EDIT — tokens.css link, dir fix, sheet carousel markup
@@ -166,12 +166,12 @@ Seven suites read client source strings. Verified assertions the rebuild must pr
 
 | Test | Must contain | Risk |
 |---|---|---|
-| `test-storefront-ux.js` | `restivo.css` has the grid breakpoint value (**currently `720px` — value will change, intent preserved**) | Value must be updated, not deleted |
+| `test-storefront-ux.js` | `ordora.css` has the grid breakpoint value (**currently `720px` — value will change, intent preserved**) | Value must be updated, not deleted |
 | `test-storefront-ux.js` | `restaurant.js` has `product-sheet`, `aria-modal`, `e.key === 'Escape'`; CSS has `.product-sheet` | Keep class name and Escape handler shape |
 | `test-storefront-ux.js` | `restaurant.js` has `data-open=` and **must not** have `data-addopts` | Keep the attribute; never reintroduce an add-options button |
 | `test-hero-images.js` | `restaurant.js` has `hero-carousel` and `heroImages` | Keep both identifiers |
 | `test-hero-images.js` | `restaurants.service.js` has `business_hero_images`, `'Maximum '`, `'hero images'` | Keep the cap message shape |
-| `test-localization.js` | `restaurant.js` has `storefrontLanguage`; `api.js` has `localStorage.setItem('restivo-lang'` | Keep both |
+| `test-localization.js` | `restaurant.js` has `storefrontLanguage`; `api.js` has `localStorage.setItem('ordora-lang'` | Keep both |
 | `test-seo.js` | `restaurant.js` has `/api/seo/business/` and `document.documentElement.dir` | Keep both |
 | `test-dashboard-nav.js` | `style.css` + `admin.html` drawer selectors | Keep drawer markup |
 | `onboarding-i18n.test.js`, `subscription-ux.test.js` | `i18n.js` keys exist in both ar and en | Every new key added in both |

@@ -1,7 +1,7 @@
 const copy = {
   ar: {
     nav: { how: "كيف يعمل", features: "المزايا", pricing: "الاشتراك", faq: "أسئلة شائعة", audience: "حلّ للمطاعم المستقلة", menu: "فتح القائمة", close: "إغلاق", startFree: "ابدأ مجانًا" },
-    hero: { titleA: "منيو رقمي.", titleB: "وطلب أسهل.", description: "اعرض أطباقك وأسعارها في منيو يفتحه ضيوفك عبر رابط أو QR، ويتيح لهم إرسال طلباتهم بسهولة — بلا تطبيق أو عمولة.", request: "تعرّف على Restivo", demo: "جرّب المنيو التجريبي مجانًا" },
+    hero: { titleA: "منيو رقمي.", titleB: "وطلب أسهل.", description: "اعرض أطباقك وأسعارها في منيو يفتحه ضيوفك عبر رابط أو QR، ويتيح لهم إرسال طلباتهم بسهولة — بلا تطبيق أو عمولة.", request: "تعرّف على Ordora", demo: "جرّب المنيو التجريبي مجانًا" },
     ticker: ["بدون عمولة على الطلبات", "لا يحتاج الضيف إلى تطبيق", "منيو بهوية مطعمك", "اشتراك شهري واضح"],
     story: { eyebrow: "من مطبخك إلى شاشة ضيفك", titleA: "منيو يحمل هويتك.", titleB: "وطلب أسهل لضيفك.", body: "اعرض أطباقك بصورها وأسعارها بوضوح، ليختار الضيف ما يحب ويراجع طلبه قبل إرساله. تجمع الصفحة المنيو والطلب في تجربة واحدة.", tag: "أطباقك، كما تحب أن يراها ضيوفك.", owner: "منيو رقمي على جهاز لوحي", note: "مصمم لصاحب المطعم وفريق الخدمة." },
     how: { eyebrow: "من الاختيار إلى الطلب", titleA: "ثلاث خطوات.", titleB: "وطلب يصل بوضوح.", body: "يمسح الضيف رمز QR، يتصفح المنيو ويضيف أطباقه إلى السلة، ثم يرسل ملخص الطلب لفريقك.", steps: [["يمسح", "رمز QR يفتح المنيو"], ["يختار", "يضيف أطباقه إلى السلة"], ["يرسل", "ملخص واضح للمطعم"]] },
@@ -11,22 +11,22 @@ const copy = {
       ["سلة طلب واضحة", "يختار الضيف أطباقه ويراجع الكميات والملاحظات قبل الإرسال.", "bag"],
       ["لوحة لمتابعة الطلبات", "تابع الطلبات والأطباق الأكثر اختيارًا من مكان واحد.", "chart"]
     ] },
-    dashboard: { eyebrow: "كل طلب، بتفاصيله", titleA: "الطلب يصل", titleB: "جاهزًا للتحضير.", body: "يرتب Restivo الأصناف والكميات والملاحظات في ملخص واحد، ويعرض الطلبات في لوحة مطعمك لتعرف ما يحتاجه فريقك.", chips: ["ملخص واضح", "متابعة الطلبات", "الأكثر طلبًا"], label: "لوحة الطلبات", date: "معاينة لوحة المطعم", today: "طلبات اليوم", yesterday: "خلال هذا اليوم", top: "الأكثر طلبًا", item: "برجر سموكي", count: "١٨ طلب", fresh: "جديد", done: "مكتمل", orders: ["#1042  برجر سموكي × 2", "#1041  ليمون ونعناع × 1", "#1040  وجبة بَسْطة × 3"] },
-    pricing: { eyebrow: "ببساطة", titleA: "خطة واحدة.", titleB: "سعر واضح.", body: "ابدأ بمنيو رقمي وسلة طلب ومتابعة للطلبات — باشتراك شهري واضح ومن دون عمولة على الطلبات.", label: "Restivo للمطاعم", month: "/ شهريًا", features: ["صفحة مطعم بهويتك", "رمز QR قابل للطباعة", "سلة طلب أونلاين", "ملخص جاهز لـ WhatsApp", "لوحة لمتابعة الطلبات", "بدون عمولة"], request: "ابدأ بمنيو مطعمك" },
+    dashboard: { eyebrow: "كل طلب، بتفاصيله", titleA: "الطلب يصل", titleB: "جاهزًا للتحضير.", body: "يرتب Ordora الأصناف والكميات والملاحظات في ملخص واحد، ويعرض الطلبات في لوحة مطعمك لتعرف ما يحتاجه فريقك.", chips: ["ملخص واضح", "متابعة الطلبات", "الأكثر طلبًا"], label: "لوحة الطلبات", date: "معاينة لوحة المطعم", today: "طلبات اليوم", yesterday: "خلال هذا اليوم", top: "الأكثر طلبًا", item: "برجر سموكي", count: "١٨ طلب", fresh: "جديد", done: "مكتمل", orders: ["#1042  برجر سموكي × 2", "#1041  ليمون ونعناع × 1", "#1040  وجبة بَسْطة × 3"] },
+    pricing: { eyebrow: "ببساطة", titleA: "خطة واحدة.", titleB: "سعر واضح.", body: "ابدأ بمنيو رقمي وسلة طلب ومتابعة للطلبات — باشتراك شهري واضح ومن دون عمولة على الطلبات.", label: "Ordora للمطاعم", month: "/ شهريًا", features: ["صفحة مطعم بهويتك", "رمز QR قابل للطباعة", "سلة طلب أونلاين", "ملخص جاهز لـ WhatsApp", "لوحة لمتابعة الطلبات", "بدون عمولة"], request: "ابدأ بمنيو مطعمك" },
     faq: { eyebrow: "قبل أن تبدأ", title: "إجابات قبل الاشتراك.", items: [
-      ["هل أحتاج إلى تطبيق خاص؟", "لا. يفتح Restivo في متصفح جوال الضيف مباشرة، من دون تحميل تطبيق أو إنشاء حساب."],
-      ["هل يأخذ Restivo عمولة على الطلبات؟", "لا. الاشتراك الشهري ثابت، ولا توجد عمولة على طلبات مطعمك."],
+      ["هل أحتاج إلى تطبيق خاص؟", "لا. يفتح Ordora في متصفح جوال الضيف مباشرة، من دون تحميل تطبيق أو إنشاء حساب."],
+      ["هل يأخذ Ordora عمولة على الطلبات؟", "لا. الاشتراك الشهري ثابت، ولا توجد عمولة على طلبات مطعمك."],
       ["أين تصل الطلبات؟", "تظهر الطلبات في لوحة مطعمك، ويمكنك مشاركة ملخصها عبر WhatsApp."],
       ["هل يمكنني استخدام ألوان وهوية مطعمي؟", "نعم. الصفحة مصممة لتشبه مطعمك، من الاسم والألوان إلى صور الأصناف وطريقة عرضها."]
     ] },
     final: { titleA: "منيو يليق بمطعمك.", titleB: "وطلب أسهل لضيوفك.", body: "اعرض أطباقك بوضوح، وخلي ضيوفك يرسلون طلبهم بثقة.", request: "ابدأ بمنيو مطعمك" },
     footer: ["منيو رقمي وطلبات أونلاين", "مصممان لعمل المطاعم اليومي."],
-    modal: { badge: "نبدأ من مطعمك", titleA: "خلّ منيو مطعمك", titleB: "جاهزًا لضيوفك.", description: "اترك بياناتك لنتحدث عن صفحة مطعمك على Restivo.", name: "اسمك", namePlaceholder: "مثال: محمد", restaurant: "اسم المطعم", restaurantPlaceholder: "مثال: مطعم واحة", phone: "رقم واتساب", submit: "أرسل طلبك", sending: "جارٍ الإرسال…", error: "تعذّر إرسال الطلب. حاول مجددًا.", note: "بدون التزام. نود معرفة المزيد عن مطعمك.", success: "وصلنا طلبك.", thanks: "شكرًا", tail: "سنتواصل معك قريبًا لنجهز حضور مطعمك.", done: "تمام" },
+    modal: { badge: "نبدأ من مطعمك", titleA: "خلّ منيو مطعمك", titleB: "جاهزًا لضيوفك.", description: "اترك بياناتك لنتحدث عن صفحة مطعمك على Ordora.", name: "اسمك", namePlaceholder: "مثال: محمد", restaurant: "اسم المطعم", restaurantPlaceholder: "مثال: مطعم واحة", phone: "رقم واتساب", submit: "أرسل طلبك", sending: "جارٍ الإرسال…", error: "تعذّر إرسال الطلب. حاول مجددًا.", note: "بدون التزام. نود معرفة المزيد عن مطعمك.", success: "وصلنا طلبك.", thanks: "شكرًا", tail: "سنتواصل معك قريبًا لنجهز حضور مطعمك.", done: "تمام" },
     phone: { name: "ذا ريد بن", status: "مفتوح الآن", description: "برغر طازج على الفحم، وصوصاتنا الخاصة", location: "يافا، فلسطين", search: "ابحث عن طبقك المفضل", categories: ["الكل", "برغر", "جانبيات", "مشروبات"], featured: "الأكثر طلبًا", burger: "ريد بن الأصلي", burgerDesc: "جبنة شيدر، خس، طماطم وصوصنا الخاص", second: "سموكي هاوس", secondDesc: "برغر مدخن مع جبنة ذائبة", cart: "عرض السلة", count: "2 أصناف", button: "افتح المنيو الكامل" }
   },
   en: {
     nav: { how: "How it works", features: "Features", pricing: "Pricing", faq: "FAQ", audience: "For independent restaurants", menu: "Open menu", close: "Close", startFree: "Start for free" },
-    hero: { titleA: "Digital menu.", titleB: "Simpler orders.", description: "Show your dishes and prices in one menu guests can open by link or QR, then send an order—no app download or commission.", request: "Talk to the Restivo team", demo: "Try the sample menu free" },
+    hero: { titleA: "Digital menu.", titleB: "Simpler orders.", description: "Show your dishes and prices in one menu guests can open by link or QR, then send an order—no app download or commission.", request: "Talk to the Ordora team", demo: "Try the sample menu free" },
     ticker: ["No commission on orders", "No app for guests", "A menu in your brand", "One clear monthly price"],
     story: { eyebrow: "From your kitchen to their screen", titleA: "A menu in your brand.", titleB: "An easier order for guests.", body: "Show every dish with clear photos and prices. Guests can choose what they want and review the order before sending. Your menu and online ordering live in one simple page.", tag: "Your dishes, shown the way you want.", owner: "A digital menu on a tablet", note: "Made for owners and the people serving guests." },
     how: { eyebrow: "From browsing to ordering", titleA: "Three simple steps.", titleB: "One clear order.", body: "Guests scan a QR code, browse the menu, add dishes to their cart, then send an order summary straight to your team.", steps: [["Scan", "A QR code opens the menu"], ["Choose", "Add dishes to the cart"], ["Send", "A clear order summary"]] },
@@ -36,17 +36,17 @@ const copy = {
       ["A clear order cart", "Guests review their dishes, quantities, and notes before they send the order.", "bag"],
       ["One place to follow orders", "See incoming orders and your most popular dishes in one dashboard.", "chart"]
     ] },
-    dashboard: { eyebrow: "Every order, in detail", titleA: "Orders arrive", titleB: "ready for your team.", body: "Restivo groups dishes, quantities, and notes into one clear summary, then shows incoming orders in your restaurant dashboard.", chips: ["Clear order summary", "Order tracking", "Popular dishes"], label: "Restaurant orders", date: "Dashboard preview", today: "Today’s orders", yesterday: "Since opening", top: "Most ordered", item: "Smoky burger", count: "18 orders", fresh: "New", done: "Complete", orders: ["#1042  Smoky burger × 2", "#1041  Lemon mint × 1", "#1040  Basta meal × 3"] },
-    pricing: { eyebrow: "Simple", titleA: "One plan.", titleB: "One clear price.", body: "Get a branded menu, an online order cart, and a place to follow orders—with one monthly price and no order commissions.", label: "Restivo for restaurants", month: "/ month", features: ["Restaurant page in your brand", "Printable QR code", "Online order cart", "WhatsApp-ready summary", "Order dashboard", "No commission"], request: "Start your restaurant menu" },
+    dashboard: { eyebrow: "Every order, in detail", titleA: "Orders arrive", titleB: "ready for your team.", body: "Ordora groups dishes, quantities, and notes into one clear summary, then shows incoming orders in your restaurant dashboard.", chips: ["Clear order summary", "Order tracking", "Popular dishes"], label: "Restaurant orders", date: "Dashboard preview", today: "Today’s orders", yesterday: "Since opening", top: "Most ordered", item: "Smoky burger", count: "18 orders", fresh: "New", done: "Complete", orders: ["#1042  Smoky burger × 2", "#1041  Lemon mint × 1", "#1040  Basta meal × 3"] },
+    pricing: { eyebrow: "Simple", titleA: "One plan.", titleB: "One clear price.", body: "Get a branded menu, an online order cart, and a place to follow orders—with one monthly price and no order commissions.", label: "Ordora for restaurants", month: "/ month", features: ["Restaurant page in your brand", "Printable QR code", "Online order cart", "WhatsApp-ready summary", "Order dashboard", "No commission"], request: "Start your restaurant menu" },
     faq: { eyebrow: "Before you start", title: "Answers before you sign up.", items: [
-      ["Do my guests need an app?", "No. Restivo opens in the guest’s mobile browser. There’s nothing to download and no account to create."],
-      ["Does Restivo charge a commission?", "No. The monthly subscription is flat, with no commission on your restaurant orders."],
+      ["Do my guests need an app?", "No. Ordora opens in the guest’s mobile browser. There’s nothing to download and no account to create."],
+      ["Does Ordora charge a commission?", "No. The monthly subscription is flat, with no commission on your restaurant orders."],
       ["Where do orders arrive?", "Orders appear in your restaurant dashboard, and you can share their summaries through WhatsApp."],
       ["Can I use my restaurant’s colors and identity?", "Yes. Your page is made to feel like your restaurant, from the name and colors to the food photos and menu presentation."]
     ] },
     final: { titleA: "A menu that fits", titleB: "your restaurant.", body: "Show your dishes clearly and make it easier for guests to send an order.", request: "Start your restaurant menu" },
     footer: ["Digital menus and online ordering", "built for the day-to-day of restaurants."],
-    modal: { badge: "Start with your restaurant", titleA: "Get your restaurant menu", titleB: "ready for guests.", description: "Leave your details to talk with us about a Restivo restaurant page.", name: "Your name", namePlaceholder: "Example: Alex", restaurant: "Restaurant name", restaurantPlaceholder: "Example: Oasis Restaurant", phone: "WhatsApp number", submit: "Send request", sending: "Sending…", error: "We couldn’t send your request. Please try again.", note: "No commitment. Tell us a little about your restaurant.", success: "Request received.", thanks: "Thanks", tail: "We’ll be in touch soon to set up your restaurant presence.", done: "Done" },
+    modal: { badge: "Start with your restaurant", titleA: "Get your restaurant menu", titleB: "ready for guests.", description: "Leave your details to talk with us about an Ordora restaurant page.", name: "Your name", namePlaceholder: "Example: Alex", restaurant: "Restaurant name", restaurantPlaceholder: "Example: Oasis Restaurant", phone: "WhatsApp number", submit: "Send request", sending: "Sending…", error: "We couldn’t send your request. Please try again.", note: "No commitment. Tell us a little about your restaurant.", success: "Request received.", thanks: "Thanks", tail: "We’ll be in touch soon to set up your restaurant presence.", done: "Done" },
     phone: { name: "The Red Bun", status: "Open now", description: "Flame-grilled burgers and house-made sauces", location: "Jaffa, Palestine", search: "Find your next favorite", categories: ["All", "Burgers", "Sides", "Drinks"], featured: "BEST SELLER", burger: "The Red Bun", burgerDesc: "Cheddar, lettuce, tomato & house sauce", second: "Smokehouse Stack", secondDesc: "Smoky burger, melty cheese", cart: "View your bag", count: "2 items", button: "Open the full menu" }
   }
 };
@@ -131,7 +131,7 @@ function icon(name, size = 20) {
 }
 
 function logo(light = false) {
-  return `<a class="brand brand-text${light ? " brand-light" : ""}" href="#top" aria-label="Restivo — Your Food, Online"><span class="brand-dot" aria-hidden="true">R</span><span>Restivo</span></a>`;
+  return `<a class="brand${light ? " brand-light" : ""}" href="#top" aria-label="Ordora — Your Food, Online"><img src="${asset("images/ordora-lockup.png")}" alt="Ordora — Your Food, Online"></a>`;
 }
 
 function qrMockup() {
@@ -167,7 +167,7 @@ function phonePreview(t) {
   const p = t.phone;
   return `<div class="phone-stage">
     <div class="floating-note floating-order"><span class="float-icon">${icon("bag", 17)}</span><strong>${language === "ar" ? "طلبك<br><small>جاهز للإرسال</small>" : "Your order<br><small>ready to send</small>"}</strong></div>
-    <div class="qr-mockup" aria-hidden="true"><span class="qr-label">${language === "ar" ? "نموذج QR للمنيو" : "MENU QR MOCKUP"}</span><div class="qr-code">${qrMockup()}</div><b>RESTIVO</b></div>
+    <div class="qr-mockup" aria-hidden="true"><span class="qr-label">${language === "ar" ? "نموذج QR للمنيو" : "MENU QR MOCKUP"}</span><div class="qr-code">${qrMockup()}</div><b>ORDORA</b></div>
     <div class="phone-frame"><div class="phone-screen" dir="${language === "ar" ? "rtl" : "ltr"}">
       <div class="phone-notch"></div><div class="statusbar"><span>9:41</span><span>${icon("wifi", 13)} ▰</span></div>
       <header class="restaurant-head"><img src="${asset("demo/images/red-bun-logo.svg")}" alt=""><div class="restaurant-copy"><strong>${p.name} <i></i></strong><small>${p.description}</small></div><span class="open-pill">${p.status}</span></header>
@@ -203,7 +203,7 @@ function render() {
   const rtl = language === "ar";
   document.documentElement.lang = language;
   document.documentElement.dir = rtl ? "rtl" : "ltr";
-  document.title = rtl ? "Restivo — منيو رقمي وطلبات أوضح لمطعمك" : "Restivo — Digital menus and clearer restaurant orders";
+  document.title = rtl ? "Ordora — منيو رقمي وطلبات أوضح لمطعمك" : "Ordora — Digital menus and clearer restaurant orders";
   app.innerHTML = `<div id="top" class="site-shell">
     <header class="site-header"><div class="container header-inner">${logo()}
       <nav class="desktop-nav"><a href="#how-it-works">${t.nav.how}</a><a href="#features">${t.nav.features}</a><a href="#pricing">${t.nav.pricing}</a><a href="#faq">${t.nav.faq}</a></nav>
@@ -221,7 +221,7 @@ function render() {
         </div>
       </section>
       <section class="ticker"><div class="container ticker-inner">${t.ticker.map((item, index) => `<span class="${index === 0 || index === 3 ? "ticker-muted" : ""}">${item}</span>`).join("")}</div></section>
-      <section class="story-section"><div class="container story-grid"><div class="story-art"><div class="story-photo"><img src="${asset("images/restivo-food-table.jpg")}" alt="${t.story.tag}"><span>${t.story.tag}</span></div><div class="owner-photo"><img src="${asset("images/restivo-owner-tablet.jpg")}" alt="${t.story.owner}"><b>${t.story.owner}</b></div></div><div class="story-copy"><span class="section-kicker">${t.story.eyebrow}</span><h2>${t.story.titleA}<br><em>${t.story.titleB}</em></h2><p>${t.story.body}</p><div class="story-note"><span>01</span>${t.story.note}</div></div></div></section>
+      <section class="story-section"><div class="container story-grid"><div class="story-art"><div class="story-photo"><img src="${asset("images/ordora-food-table.jpg")}" alt="${t.story.tag}"><span>${t.story.tag}</span></div><div class="owner-photo"><img src="${asset("images/ordora-owner-tablet.jpg")}" alt="${t.story.owner}"><b>${t.story.owner}</b></div></div><div class="story-copy"><span class="section-kicker">${t.story.eyebrow}</span><h2>${t.story.titleA}<br><em>${t.story.titleB}</em></h2><p>${t.story.body}</p><div class="story-note"><span>01</span>${t.story.note}</div></div></div></section>
       <section class="how-section" id="how-it-works"><div class="container"><div class="section-intro split-intro"><div><span class="section-kicker">${t.how.eyebrow}</span><h2>${t.how.titleA}<br><em>${t.how.titleB}</em></h2></div><p>${t.how.body}</p></div><div class="steps-grid">${t.how.steps.map((step, i) => `<article class="step-card"><div class="step-top"><span>0${i + 1}</span><i>${icon(["scan", "pointer", "message"][i], 21)}</i></div><h3>${step[0]}</h3><p>${step[1]}</p></article>`).join("")}</div></div></section>
       <section class="features-section" id="features"><div class="container"><div class="section-intro feature-intro"><div><span class="section-kicker">${t.features.eyebrow}</span><h2>${t.features.titleA}<br><em>${t.features.titleB}</em></h2></div><p>${t.features.aside}</p></div><div class="features-grid">${t.features.items.map((item, i) => `<article class="feature-card tone-${i + 1}"><div class="feature-top"><span>0${i + 1}</span><i>${icon(item[2], 21)}</i></div><div class="feature-copy"><h3>${item[0]}</h3><p>${item[1]}</p></div></article>`).join("")}</div></div></section>
       <section class="dashboard-section"><div class="container dashboard-grid"><div class="dashboard-copy"><span class="section-kicker">${t.dashboard.eyebrow}</span><h2>${t.dashboard.titleA}<br><em>${t.dashboard.titleB}</em></h2><p>${t.dashboard.body}</p><div class="dashboard-chips">${t.dashboard.chips.map((item) => `<span>${icon("check", 14)}${item}</span>`).join("")}</div></div><div class="dashboard-visual"><div class="dashboard-panel"><div class="panel-heading"><div><small>${t.dashboard.label}</small><b>${t.dashboard.date}</b></div><span>${icon("dashboard", 18)}</span></div><div class="stats-grid"><div><small>${t.dashboard.today}</small><strong>47</strong><em>${t.dashboard.yesterday}</em></div><div><small>${t.dashboard.top}</small><b>${t.dashboard.item}</b><em>${t.dashboard.count}</em></div></div><div class="order-list">${t.dashboard.orders.map((order, i) => `<div><span>${order}</span><b class="${i === 0 ? "order-new" : ""}">${i === 0 ? t.dashboard.fresh : t.dashboard.done}</b></div>`).join("")}</div></div></div></div></section>
@@ -229,7 +229,7 @@ function render() {
       <section class="faq-section" id="faq"><div class="container faq-container"><div class="faq-heading"><span class="section-kicker">${t.faq.eyebrow}</span><h2>${t.faq.title}</h2></div><div class="faq-list">${t.faq.items.map((item, i) => `<details class="faq-item"${i === 0 ? " open" : ""}><summary>${item[0]}<span>${icon("plus", 17)}</span></summary><p>${item[1]}</p></details>`).join("")}</div></div></section>
       <section class="final-section"><span class="final-spark">${icon("spark", 32)}</span><h2>${t.final.titleA}<br>${t.final.titleB}</h2><p>${t.final.body}</p><button type="button" class="button final-button" data-action="request">${t.final.request}${icon("arrow", 17)}</button></section>
     </main>
-      <footer class="site-footer"><div class="container footer-inner"><div>${logo(true)}<p>${t.footer[0]}<br>${t.footer[1]}</p></div><nav><a href="#features">${t.nav.features}</a><a href="#pricing">${t.nav.pricing}</a><a href="${demoUrl}">${t.hero.demo}</a><span>© Restivo</span></nav></div></footer>
+      <footer class="site-footer"><div class="container footer-inner"><div>${logo(true)}<p>${t.footer[0]}<br>${t.footer[1]}</p></div><nav><a href="#features">${t.nav.features}</a><a href="#pricing">${t.nav.pricing}</a><a href="${demoUrl}">${t.hero.demo}</a><span>© Ordora</span></nav></div></footer>
     ${modalOpen ? modalMarkup(t) : ""}
   </div>`;
 }

@@ -26,7 +26,7 @@ Refine the existing single-page storefront in place: complete the identity block
 
 **Performance Goals**: No new assets, no new requests, no gratuitous animation; lazy images, skeleton/offline resilience, and existing request count preserved
 
-**Constraints**: Restivo visual identity frozen (refine within system); Arabic RTL + English both correct; keyboard/touch operable; guest checkout default; Task 3 currency presentation untouched; search on every storefront
+**Constraints**: Ordora visual identity frozen (refine within system); Arabic RTL + English both correct; keyboard/touch operable; guest checkout default; Task 3 currency presentation untouched; search on every storefront
 
 **Scale/Scope**: One page (`restaurant.html` + `restaurant.js` + `storefront.css`); all business types share it
 

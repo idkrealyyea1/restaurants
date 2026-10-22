@@ -118,7 +118,7 @@
   }
 
   function refreshLabels() {
-    document.title = I.t('dlvTitle') + ' — Restivo';
+    document.title = I.t('dlvTitle') + ' — Ordora';
     if (groupName) subtitleEl.textContent = I.t('dlvSubtitle', { group: groupName });
     if (zone.querySelector('.order-card')) load();
   }
@@ -145,7 +145,7 @@
       groupName = (data.group && data.group.name) || '';
       groupEl.textContent = groupName;
       subtitleEl.textContent = I.t('dlvSubtitle', { group: groupName });
-      document.title = I.t('dlvTitle') + ' — Restivo';
+      document.title = I.t('dlvTitle') + ' — Ordora';
     } catch (err) {
       showError(err.message || I.t('dlvForbidden'));
     }

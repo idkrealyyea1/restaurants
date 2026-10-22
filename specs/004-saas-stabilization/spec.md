@@ -31,7 +31,7 @@ Facts below were verified by inspecting the repo. They bound the scope; they are
   `server/app.js` served it statically with SPA fallbacks; zero references to `client/` existed in
   `server/`, `config/`, `package.json`, or `app.yaml`. Per D1 the vanilla `client/` tree (21 pages,
   17 JS modules) is the canonical application and has since been restored as the served frontend;
-  the React scaffold was retired. Root-level archives (`restivo-landing-frontend.zip`,
+  the React scaffold was retired. Root-level archives (`ordora-landing-frontend.zip`,
   `nowadded.html`, CSVs, PNGs) remain unserved clutter (see Q4 decision).
 - Business logic was duplicated across three implementations: `client/js/*`, `frontend/src/*`
   (totals, status labels, i18n dictionaries with conflicting prices, theme tokens), and the server

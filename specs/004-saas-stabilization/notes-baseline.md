@@ -1,6 +1,6 @@
 # Baseline (T001–T002) — 2026-09-25
 
-`npm run check`: 75 files, 0 failures. Disposable DB: local PG17 container, fresh `restivo_test`.
+`npm run check`: 75 files, 0 failures. Disposable DB: local PG17 container, fresh `ordora_test`.
 Each suite run in isolation (`node --test tests/<file>.test.js`); multi-file runs interfere via
 shared-DB TRUNCATEs (pre-existing harness trait — always run files separately).
 

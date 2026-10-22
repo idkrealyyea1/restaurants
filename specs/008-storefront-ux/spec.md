@@ -6,7 +6,7 @@
 
 **Status**: Draft
 
-**Input**: User description: "Task 4: clearer, simpler, mobile-first storefront for all Food Business types preserving Restivo visual identity and ordering functionality. Immediate business identity (name, logo/cover, open/closed, description, location/contact); better discovery, category navigation, product presentation; keep search, simple cart, clear pickup/delivery, existing ordering, Task 3 currency; Arabic RTL + English without full i18n; accessibility basics; no variants (Task 5), no pre-orders, no accounts, no loyalty/reviews/favorites, no gratuitous animation; fast on weak devices; no React; no URL breakage."
+**Input**: User description: "Task 4: clearer, simpler, mobile-first storefront for all Food Business types preserving Ordora visual identity and ordering functionality. Immediate business identity (name, logo/cover, open/closed, description, location/contact); better discovery, category navigation, product presentation; keep search, simple cart, clear pickup/delivery, existing ordering, Task 3 currency; Arabic RTL + English without full i18n; accessibility basics; no variants (Task 5), no pre-orders, no accounts, no loyalty/reviews/favorites, no gratuitous animation; fast on weak devices; no React; no URL breakage."
 
 **Predecessors**: Tasks 1–3 implemented in working tree (business-type model, domain guarantees, per-business currency with order snapshots). Verified storefront truth 2026-09-29: single vanilla page (`restaurant.html` shell + `restaurant.js` renderer + `storefront.css`) with header/hero, category navigation, live search, product grids and cards, persistent cart bar, cart/checkout overlay with pickup/delivery toggle, WhatsApp order path, booking entry, share, skeleton loader with offline/retry states, Arabic-default RTL with English toggle, localStorage cart. This task refines that surface; it rebuilds nothing.
 
@@ -145,7 +145,7 @@ confirmation requirements stay correct and visible throughout.
 - **FR-011**: The storefront MUST stay fast on weak devices: no new
   heavy assets, no gratuitous animation, existing skeleton/offline
   resilience preserved.
-- **FR-012**: Restivo visual identity MUST be preserved throughout;
+- **FR-012**: Ordora visual identity MUST be preserved throughout;
   changes refine within the existing system only.
 
 ### Key Entities *(include if feature involves data)*

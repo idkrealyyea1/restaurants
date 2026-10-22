@@ -27,7 +27,7 @@
             '<a class="btn btn-outline btn-sm" href="https://wa.me/972567439846" target="_blank" rel="noopener">تواصل +972567439846</a>' +
           '</div>' +
           '<p class="small muted" style="margin-top:12px">7 أيام تجربة مجانية — '+esc(lead.score_level||'')+' '+esc(lead.score||'')+'/100</p></div>' +
-        '<p class="small muted" style="text-align:center;margin-top:12px">هذا العرض تم إنشاؤه خصيصاً لـ '+esc(lead.restaurant_name)+' — Restivo</p>';
+        '<p class="small muted" style="text-align:center;margin-top:12px">هذا العرض تم إنشاؤه خصيصاً لـ '+esc(lead.restaurant_name)+' — Ordora</p>';
       const img = zone.querySelector('.offer-hero img');
       if(img) img.addEventListener('error', ()=>{ img.style.display='none'; }, {once:true});
     }catch(e){ zone.innerHTML='<p class="notice notice-error">'+esc(e.message)+'</p>'; }

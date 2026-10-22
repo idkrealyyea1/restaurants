@@ -6,7 +6,7 @@
 
 ## Summary
 
-Evolve the Restivo multi-tenant food-ordering SaaS toward a global product. This plan covers: (1) marketing homepage with real plan data and SEO architecture, (2) centralized translation system with database-backed storage, (3) per-business currency and timezone with locale-aware formatting, (4) storefront hero image carousel, (5) responsive menu grid with product detail bottom sheet, (6) dashboard hamburger navigation. All changes preserve the existing vanilla HTML/CSS/JS architecture, PostgreSQL storage, and Task 13/14 onboarding/subscription systems.
+Evolve the Ordora multi-tenant food-ordering SaaS toward a global product. This plan covers: (1) marketing homepage with real plan data and SEO architecture, (2) centralized translation system with database-backed storage, (3) per-business currency and timezone with locale-aware formatting, (4) storefront hero image carousel, (5) responsive menu grid with product detail bottom sheet, (6) dashboard hamburger navigation. All changes preserve the existing vanilla HTML/CSS/JS architecture, PostgreSQL storage, and Task 13/14 onboarding/subscription systems.
 
 ## Technical Context
 
@@ -56,7 +56,7 @@ Evolve the Restivo multi-tenant food-ordering SaaS toward a global product. This
 | XX. i18n Foundation | PASS | Money in cents; locale-aware formatting; translation table |
 | XXI. Honest SEO | PASS | Truthful structured data; no fake reviews/ratings |
 | XXII. No Fabricated Proof | PASS | No fake testimonials/customers |
-| XXIII. Visual Identity | PASS | Restivo design system preserved |
+| XXIII. Visual Identity | PASS | Ordora design system preserved |
 | XXIV. Reliability | PASS | No N+1; no unbounded loops; concurrent-safe |
 | XXV. Tests Required | PASS | All new logic has tests; existing tests preserved |
 | XXVI. Verify | PASS | npm run check + smoke tests required |
@@ -116,11 +116,11 @@ client/
 ├── owner.html               # Owner dashboard (modify: add hamburger nav, hero image management)
 ├── admin.html               # Admin dashboard (modify: add hamburger nav, hero image management)
 ├── css/
-│   ├── restivo.css          # Restivo design system (modify: add carousel, bottom sheet, drawer styles)
+│   ├── ordora.css          # Ordora design system (modify: add carousel, bottom sheet, drawer styles)
 │   └── style.css            # Shared stylesheet (modify: add drawer styles)
 └── js/
-    ├── restivo-landing.js   # Landing page (modify: add plan data, language toggle)
-    ├── restivo-content.js   # Landing content (modify: add new sections)
+    ├── ordora-landing.js   # Landing page (modify: add plan data, language toggle)
+    ├── ordora-content.js   # Landing content (modify: add new sections)
     ├── restaurant.js        # Storefront (modify: add carousel, product detail, menu grid)
     ├── owner.js             # Owner dashboard (modify: add hamburger nav, hero image management)
     ├── admin.js             # Admin dashboard (modify: add hamburger nav, hero image management)

@@ -72,7 +72,7 @@
         const social = [l.instagram?`IG:${l.instagram}`:'', l.facebook?`FB`:'', l.website?`Web`:''].filter(Boolean).join(' ') || '-';
         return `<tr data-id="${esc(l.id)}" style="cursor:pointer">
           <td><input type="checkbox" data-sel="${esc(l.id)}" ${selected.has(l.id)?'checked':''}></td>
-          <td><div style="display:flex;gap:8px;align-items:center"><img class="avatar" src="${esc(l.logo_url||l.cover_url||'/icons/icon.svg')}" loading="lazy" onerror="this.src='/icons/icon.svg'"><div><strong>${esc(l.restaurant_name)}</strong><br><small class="muted">${esc(l.city)} · ${esc(l.category||'')}</small></div></div></td>
+          <td><div style="display:flex;gap:8px;align-items:center"><img class="avatar" src="${esc(l.logo_url||l.cover_url||'/images/ordora-mark.png')}" loading="lazy" onerror="this.src='/images/ordora-mark.png'"><div><strong>${esc(l.restaurant_name)}</strong><br><small class="muted">${esc(l.city)} · ${esc(l.category||'')}</small></div></div></td>
           <td>${esc(l.city)}<br><small class="muted">${esc(l.category||'')}</small></td>
           <td><small>${esc(contact)}<br>${esc(social)}</small></td>
           <td><small>${esc(l.source||'manual')}<br>${new Date(l.date_discovered).toLocaleDateString()}</small></td>
@@ -135,7 +135,7 @@
       <div class="section">
         <h3>Restaurant</h3>
         <div style="display:flex;gap:12px">
-          <img src="${esc(lead.logo_url||lead.cover_url||'/icons/icon.svg')}" style="width:80px;height:80px;border-radius:12px;object-fit:cover;border:1px solid var(--border)" onerror="this.src='/icons/icon.svg'">
+          <img src="${esc(lead.logo_url||lead.cover_url||'/images/ordora-mark.png')}" style="width:80px;height:80px;border-radius:12px;object-fit:cover;border:1px solid var(--border)" onerror="this.src='/images/ordora-mark.png'">
           <div style="flex:1">
             <strong>${esc(lead.restaurant_name)}</strong> <span class="muted">${esc(lead.city)} · ${esc(lead.category||'')}</span><br>
             <small>Phone: ${esc(lead.phone||'-')} · WhatsApp: ${esc(lead.whatsapp||'-')}</small><br>

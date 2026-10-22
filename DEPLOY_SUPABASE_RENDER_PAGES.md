@@ -50,7 +50,7 @@ Repo changes that enable this stack (Wasmer defaults unchanged):
 1. Go to **https://supabase.com** → **Start your project** → sign up (GitHub
    login is fastest).
 2. After login you land on the dashboard. If asked, create an **organization**
-   (any name, e.g. `restivo`, free plan is fine).
+   (any name, e.g. `ordora`, free plan is fine).
 
 ### A2. Create the database project
 1. Click **New project**.

@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * Live storefront in the Restivo menu design language (same markup, IDs and
+ * Live storefront in the Ordora menu design language (same markup, IDs and
  * CSS as the /demo/ preview, backed by live API data). SERVER computes all
  * totals at checkout; option prices shown here are display estimates.
  */
@@ -71,8 +71,8 @@
       searchPlaceholder: 'ابحث عن طبق تحبه',
       categoryLabel: 'أقسام القائمة',
       popularRibbon: 'اختيارات أحبّها ضيوفنا',
-      footerCopyright: '© 2026 Restivo. جميع الحقوق محفوظة.',
-      footerMade: 'صُنع مع Restivo',
+      footerCopyright: '© 2026 Ordora. جميع الحقوق محفوظة.',
+      footerMade: 'صُنع مع Ordora',
       viewOrder: 'عرض الطلب',
       all: 'كل الأصناف',
       bestSeller: 'الأكثر طلبًا',
@@ -156,8 +156,8 @@
       searchPlaceholder: 'Find something you love',
       categoryLabel: 'Menu categories',
       popularRibbon: 'Guest favorites',
-      footerCopyright: '© 2026 Restivo. All rights reserved.',
-      footerMade: 'Made with Restivo',
+      footerCopyright: '© 2026 Ordora. All rights reserved.',
+      footerMade: 'Made with Ordora',
       viewOrder: 'View order',
       all: 'Everything',
       bestSeller: 'Guest favorite',
@@ -439,7 +439,7 @@
 
   function applyBrandTheme(settings) {
     if (!App.theme || typeof App.theme.buildTokens !== 'function') return;
-    // No configured brand colours: keep the neutral Restivo palette instead of
+    // No configured brand colours: keep the neutral Ordora palette instead of
     // replacing it with the platform's fallback accent.
     if (!settings.primaryColor && !settings.secondaryColor) return;
     var tokens = App.theme.buildTokens(settings.primaryColor, settings.secondaryColor);
@@ -1132,21 +1132,19 @@
   }
 
   /* ------------------------------ checkout ------------------------- */
-  function cartKey() { return 'restivo_cart_' + slug; }
+  function cartKey() { return 'ordora_cart_' + slug; }
   function saveCart() {
     try { localStorage.setItem(cartKey(), JSON.stringify(state.cart)); } catch (_) { /* ignore */ }
   }
   function loadCart() {
     try {
-      var current = localStorage.getItem(cartKey());
-      // Keep carts created before the Restivo rename.
-      var raw = JSON.parse(current || localStorage.getItem('ordora_cart_' + slug) || '[]');
+      var raw = JSON.parse(localStorage.getItem(cartKey()) || '[]');
       if (!Array.isArray(raw)) return;
       state.cart = raw.filter(function (line) {
         return line && typeof line.key === 'string' && Number.isInteger(line.quantity) &&
           line.quantity > 0 && line.quantity <= 99 && typeof line.dishId === 'string';
       });
-      if (!current && state.cart.length) saveCart();
+      if (state.cart.length) saveCart();
     } catch (_) { /* ignore */ }
   }
   function coError(message) {
@@ -1270,11 +1268,11 @@
   }
   function updateSeo() {
     var settings = (view && view.settings) || {};
-    var name = view ? view.name : 'Restivo';
+    var name = view ? view.name : 'Ordora';
     var description = settings.description || getCopy('restaurantDescription');
     var title = view
       ? (state.language === 'ar' ? name + ' — القائمة' : name + ' — Menu')
-      : (state.language === 'ar' ? 'القائمة — Restivo' : 'Menu — Restivo');
+      : (state.language === 'ar' ? 'القائمة — Ordora' : 'Menu — Ordora');
     document.title = title;
     setMetaContent('meta[name="description"]', description);
     setMetaContent('meta[property="og:title"]', title);
@@ -1355,8 +1353,8 @@
     var foot = $('.footer-copyright');
     if (foot) {
       foot.textContent = state.language === 'ar'
-        ? '© 2026 ' + (view ? view.name : 'Restivo') + '. جميع الحقوق محفوظة.'
-        : '© 2026 ' + (view ? view.name : 'Restivo') + '. All rights reserved.';
+        ? '© 2026 ' + (view ? view.name : 'Ordora') + '. جميع الحقوق محفوظة.'
+        : '© 2026 ' + (view ? view.name : 'Ordora') + '. All rights reserved.';
     }
     updateHeroMeta();
     var statusText = view

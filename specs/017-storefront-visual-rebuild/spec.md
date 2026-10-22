@@ -144,9 +144,9 @@ An owner enables free delivery above a threshold and enters an amount. Customers
 
 ---
 
-### User Story 6 - A prospective owner evaluates Restivo on the homepage (Priority: P3)
+### User Story 6 - A prospective owner evaluates Ordora on the homepage (Priority: P3)
 
-A restaurant owner lands on the homepage, understands within seconds what Restivo is and who it is for, sees real businesses already using it, sees what the product actually looks like, understands pricing from real plan data, and gets a clear call to action.
+A restaurant owner lands on the homepage, understands within seconds what Ordora is and who it is for, sees real businesses already using it, sees what the product actually looks like, understands pricing from real plan data, and gets a clear call to action.
 
 **Why this priority**: Needed for growth, but the storefront — where revenue already happens — is P1.
 
@@ -154,7 +154,7 @@ A restaurant owner lands on the homepage, understands within seconds what Restiv
 
 **Acceptance Scenarios**:
 
-1. **Given** any visitor, **When** the homepage loads, **Then** the headline states what Restivo is, one primary and one secondary action are visible without scrolling, and the page does not open with a feature list.
+1. **Given** any visitor, **When** the homepage loads, **Then** the headline states what Ordora is, one primary and one secondary action are visible without scrolling, and the page does not open with a feature list.
 2. **Given** fewer real businesses with logos than the logo strip needs, **When** it renders, **Then** it shows exactly what exists and degrades gracefully — it never displays a placeholder business, invented name, or fabricated statistic.
 3. **Given** a visitor who has requested reduced motion, **When** the logo strip renders, **Then** the animation does not run and the content is still fully readable.
 4. **Given** a platform owner who has changed the subscription price, **When** the homepage renders, **Then** the displayed price reflects that real value and no invented price or invented capability appears anywhere.
@@ -298,7 +298,7 @@ A developer adding a component to the storefront needs one authoritative place f
 
 ### Homepage
 
-- **FR-056**: The homepage MUST open with a single clear statement of what Restivo is, one primary and one secondary action, both visible without scrolling.
+- **FR-056**: The homepage MUST open with a single clear statement of what Ordora is, one primary and one secondary action, both visible without scrolling.
 - **FR-057**: The homepage MUST NOT open with a feature list, and MUST NOT exceed roughly two screens before conveying the product's purpose.
 - **FR-058**: Immediately below the hero, the homepage MUST present a horizontal moving strip of businesses that exist in the platform, using their real names and real logos, and MUST display nothing rather than invented entries when too few exist.
 - **FR-059**: The logo strip MUST NOT animate for visitors who have requested reduced motion.
@@ -370,7 +370,7 @@ A developer adding a component to the storefront needs one authoritative place f
 
 ## Assumptions
 
-- The reference site is used strictly as a benchmark for visual and interaction quality. No reference source code, assets, logos, text, or graphics will be copied. Category, product, and marketing content remains Restivo's own.
+- The reference site is used strictly as a benchmark for visual and interaction quality. No reference source code, assets, logos, text, or graphics will be copied. Category, product, and marketing content remains Ordora's own.
 - The redesign is a presentation rebuild over the existing architecture. No framework migration, no build step, no new deployment infrastructure, and no change to authorization logic.
 - Existing functionality listed in the Current State Baseline is retained and re-skinned, not rebuilt. Requirements above specify the visual and behavioural delta only.
 - Free delivery remains a per-business opt-in with a safe default of disabled, enforced server-side, with prices in integer minor units.

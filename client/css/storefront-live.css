@@ -1,5 +1,5 @@
 /* Live tenant storefront.
-   The demo stylesheet provides the layout and a neutral Restivo base theme;
+   The demo stylesheet provides the layout and a neutral Ordora base theme;
    restaurant.js then overrides --coral / --teal with the tenant's colours.
    Keep demo-only styling (Red Bun art direction) out of this file. */
 
@@ -24,6 +24,22 @@
   gap: 9px;
   color: var(--ink);
   letter-spacing: -0.03em;
+}
+
+.brand-lockup {
+  width: 144px;
+  height: 40px;
+  display: block;
+  object-fit: contain;
+}
+
+.footer-logo {
+  width: 24px;
+  height: 24px;
+  display: block;
+  object-fit: contain;
+  border-radius: 6px;
+  flex: none;
 }
 
 .brand-monogram,
@@ -362,6 +378,16 @@
 
   .brand-word {
     font-size: 17px;
+  }
+
+  .brand-lockup {
+    width: 128px;
+    height: 36px;
+  }
+
+  .footer-logo {
+    width: 20px;
+    height: 20px;
   }
 
   .cover-placeholder {

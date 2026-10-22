@@ -62,9 +62,9 @@ npm test
 
 | Test | Asserts |
 |---|---|
-| `test-storefront-ux.js` | grid breakpoint value in `restivo.css`; `product-sheet`, `aria-modal`, `Escape` handler, `data-open=` present; `data-addopts` absent |
+| `test-storefront-ux.js` | grid breakpoint value in `ordora.css`; `product-sheet`, `aria-modal`, `Escape` handler, `data-open=` present; `data-addopts` absent |
 | `test-hero-images.js` | `hero-carousel` and `heroImages` present; `business_hero_images` + cap message in the service |
-| `test-localization.js` | `storefrontLanguage` in storefront; `localStorage.setItem('restivo-lang'` in api.js |
+| `test-localization.js` | `storefrontLanguage` in storefront; `localStorage.setItem('ordora-lang'` in api.js |
 | `test-seo.js` | `/api/seo/business/` and `document.documentElement.dir` in storefront |
 | `test-dashboard-nav.js` | drawer selectors in `style.css` + `admin.html` |
 | `hero-upload.test.js` | 5 hero-upload regressions incl. two consecutive uploads |

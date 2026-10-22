@@ -1,4 +1,4 @@
-# Restivo Constitution
+# Ordora Constitution
 
 ## Core Principles
 
@@ -166,9 +166,9 @@ Never fabricate customer logos, testimonials, ratings, businesses, or
 usage claims. Every public claim MUST trace to a verifiable source.
 Rationale: trust and legal safety outweigh marketing speed.
 
-### XXIII. Preserve Restivo Visual Identity
+### XXIII. Preserve Ordora Visual Identity
 
-Preserve the existing Restivo visual identity unless a future spec
+Preserve the existing Ordora visual identity unless a future spec
 explicitly requires changing it. Evolve within the system; do not
 rebrand by default. Hero/marketing visuals MUST add zero extra API/DB
 requests (inline emoji/CSS).

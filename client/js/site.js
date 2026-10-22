@@ -76,7 +76,7 @@
       try{
         const n=(document.getElementById('rq-name')?.value||'').trim();
         const r=(document.getElementById('rq-rest')?.value||'').trim();
-        let msg=tr('waRequestMsg', null, 'مرحبا Restivo — أريد صفحة لمطعمي');
+        let msg=tr('waRequestMsg', null, 'مرحبا Ordora — أريد صفحة لمطعمي');
         if(r) msg+=' ('+r+')';
         if(n) msg+=' — اسمي '+n;
         fast.href='https://wa.me/972567439846?text='+encodeURIComponent(msg);

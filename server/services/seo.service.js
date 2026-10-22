@@ -28,7 +28,7 @@ const TYPE_LABELS = {
 
 async function generateBusinessMetadata(business, origin) {
   const typeLabel = TYPE_LABELS[business.business_type] || 'Food Business';
-  const title = `${business.name} — ${typeLabel} | Restivo`;
+  const title = `${business.name} — ${typeLabel} | Ordora`;
   const description = business.description
     ? `${business.description.slice(0, 155)}`
     : `Order from ${business.name}. Browse the menu and place your order online.`;

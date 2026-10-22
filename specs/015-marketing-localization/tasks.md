@@ -72,8 +72,8 @@
 ### Implementation for User Story 1
 
 - [X] T027 [US1] Update client/index.html with complete SEO meta tags: title, description, canonical, OG tags, Twitter cards, JSON-LD SoftwareApplication schema, hreflang
-- [X] T028 [US1] Update client/js/restivo-landing.js to fetch plan data from GET /api/pricing and render pricing section dynamically
-- [X] T029 [US1] Update client/js/restivo-content.js with new content sections: trust/social proof (truthful only), FAQ, final CTA
+- [X] T028 [US1] Update client/js/ordora-landing.js to fetch plan data from GET /api/pricing and render pricing section dynamically
+- [X] T029 [US1] Update client/js/ordora-content.js with new content sections: trust/social proof (truthful only), FAQ, final CTA
 - [X] T030 [US1] Update server/routes/site.routes.js sitemap.xml to include hreflang tags and business metadata
 - [X] T031 [US1] Update server/routes/site.routes.js robots.txt to disallow /login.html and other private routes
 - [X] T032 [US1] Add noindex meta tag to private pages: client/login.html, client/signup.html (internal sections)
@@ -106,7 +106,7 @@
 - [X] T043 [US2] Add hero image upload endpoint to server/routes/admin.routes.js: POST /api/admin/images?type=covers (reuse existing upload middleware)
 - [X] T044 [US2] Add GET /api/restaurants/:slug/hero-images endpoint to server/routes/public.routes.js (public storefront data)
 - [X] T045 [US2] Update client/js/restaurant.js to render hero carousel: auto-advance every 5s, manual navigation arrows, touch/swipe support, pause on interaction
-- [X] T046 [US2] Add carousel CSS to client/css/restivo.css: .hero-carousel, .hero-slide, .hero-nav, .hero-dots, reduced-motion support
+- [X] T046 [US2] Add carousel CSS to client/css/ordora.css: .hero-carousel, .hero-slide, .hero-nav, .hero-dots, reduced-motion support
 - [X] T047 [US2] Update client/js/admin.js to add hero image management UI in settings tab: upload, preview, reorder, remove, set primary
 - [X] T048 [US2] Update client/js/owner.js to add hero image management in restaurant settings modal
 - [X] T049 [US2] Verify carousel displays 1 image as static (no chrome), 0 images as fallback
@@ -133,10 +133,10 @@
 
 ### Implementation for User Story 3
 
-- [X] T057 [US3] Update client/css/restivo.css .dish-grid: 1fr below 720px, repeat(2, 1fr) at 720px and above
+- [X] T057 [US3] Update client/css/ordora.css .dish-grid: 1fr below 720px, repeat(2, 1fr) at 720px and above
 - [X] T058 [US3] Remove "Add" button from dishCard in client/js/restaurant.js — make entire card clickable
 - [X] T059 [US3] Create product detail bottom sheet in client/js/restaurant.js: opens on card click, shows image/name/description/price/options/quantity/add-to-cart
-- [X] T060 [US3] Add bottom sheet CSS to client/css/restivo.css: .product-sheet, .product-sheet-backdrop, mobile slide-up animation, desktop centered modal
+- [X] T060 [US3] Add bottom sheet CSS to client/css/ordora.css: .product-sheet, .product-sheet-backdrop, mobile slide-up animation, desktop centered modal
 - [X] T061 [US3] Add bottom sheet accessibility: focus trapping, Escape closes, aria-modal, aria-label on controls
 - [X] T062 [US3] Integrate bottom sheet add-to-cart with existing cart system (localStorage cart_{slug})
 - [X] T063 [US3] Verify server-side price validation remains authoritative (no client trust)
@@ -193,7 +193,7 @@
 
 - [X] T083 [US5] Update client/js/i18n.js: load translations from API, set document.documentElement.lang and dir on switch
 - [X] T084 [US5] Add language toggle to client/index.html (if not present), client/restaurant.html, client/owner.html, client/admin.html
-- [X] T085 [US5] Add RTL/LTR CSS logical properties to client/css/restivo.css: margin-inline, padding-inline, inset-inline, text-align: start/end
+- [X] T085 [US5] Add RTL/LTR CSS logical properties to client/css/ordora.css: margin-inline, padding-inline, inset-inline, text-align: start/end
 - [X] T086 [US5] Add RTL/LTR CSS logical properties to client/css/style.css: same properties for dashboard
 - [X] T087 [US5] Store language preference in localStorage and users.platform_language
 - [X] T088 [US5] Verify language switch preserves cart, category, search term in storefront

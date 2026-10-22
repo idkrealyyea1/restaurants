@@ -14,7 +14,7 @@
 
 ### User Story 1 — Visitor discovers and understands the product (Priority: P1)
 
-A visitor lands on the marketing homepage from a search engine or social link. Within seconds they understand what Restivo is, who it's for, and how to start. The page is fast on mobile, the CTA leads to the real onboarding flow, and the page is properly indexed by search engines.
+A visitor lands on the marketing homepage from a search engine or social link. Within seconds they understand what Ordora is, who it's for, and how to start. The page is fast on mobile, the CTA leads to the real onboarding flow, and the page is properly indexed by search engines.
 
 **Why this priority**: This is the primary acquisition path. Without a clear, fast, discoverable homepage, no other feature matters.
 
@@ -346,10 +346,10 @@ The sitemap includes all public marketing pages and active business storefronts.
 
 ## Assumptions
 
-- The existing Restivo design system (CSS variables, typography, color palette) is preserved and extended, not replaced.
+- The existing Ordora design system (CSS variables, typography, color palette) is preserved and extended, not replaced.
 - The existing `uploaded_files` table and `files.service.js` continue to be the image storage mechanism. No CDN or object storage is introduced.
 - The existing `i18n.js` client-side dictionary approach is extended to cover all new strings. No server-side rendering or build pipeline is introduced.
-- The existing `restivo-landing.js` and `restivo-content.js` pattern (client-side rendering with language dictionaries) is preserved for the marketing homepage.
+- The existing `ordora-landing.js` and `ordora-content.js` pattern (client-side rendering with language dictionaries) is preserved for the marketing homepage.
 - The existing cart (localStorage-based) and checkout (server-validated) flow is preserved. No second cart or checkout is created.
 - The existing capability/entitlement system from Task 13/14 is the single authority for feature visibility. No second entitlement system is created.
 - The existing subscription lifecycle from Task 14 is not modified. Marketing pages may read plan data but cannot modify subscriptions.

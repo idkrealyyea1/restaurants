@@ -1,4 +1,4 @@
-# Outreach Templates — Restivo ( $8.99/mo) — Amman
+# Outreach Templates — Ordora ( $8.99/mo) — Amman
 
 ## What you sell (confident, complete)
 - **Website ordering** (`client/js/restaurant.js:359` `orderViaWebsite`) — customer orders directly on YOUR link `yourdomain.com/restaurant/slug` — cart, pickup/delivery, fees — order appears instantly in admin dashboard + SSE live feed, with tracking code (`/track?code=`)
@@ -32,7 +32,7 @@
 ---
 
 ## Script 3 — English (for mixed audience)
-Hi [Name] — I'm [YourName] from Restivo. Saw your restaurant in Amman — great menu.
+Hi [Name] — I'm [YourName] from Ordora. Saw your restaurant in Amman — great menu.
 We give you **your own ordering website + WhatsApp + table booking for flat $8.99/mo, 0% commission** (vs Talabat 20%+):
 - Customers order on YOUR link (cart, pickup/delivery) + instant dashboard & tracking code
 - Same cart can go to your WhatsApp

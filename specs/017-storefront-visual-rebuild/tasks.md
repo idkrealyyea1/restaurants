@@ -38,7 +38,7 @@ The brief reported one bug ("Unsupported image type" on a second hero upload). T
 
 ### Execution status (2026-10-03, second session)
 
-Verified live against a local Postgres (`restivo-test-db` container) and a running server on port 3111.
+Verified live against a local Postgres (`ordora-test-db` container) and a running server on port 3111.
 
 | Area | Verified | How |
 |---|---|---|
@@ -141,8 +141,8 @@ Single project: `client/`, `server/`, `database/`, `tests/` at repository root. 
 
 **⚠️ CRITICAL**: Every restyling phase depends on this. Restyling against scattered literals is what caused the current drift.
 
-- [X] T030 Create `client/css/tokens.css` holding the authoritative tokens: base palette (cream `#f8f0df`, sand `#f1e4c9`, ink `#1f3439`, teal `#27615f`, coral `#ed6b4c`, yellow `#f5c84b`, paper `#fffaf0`, line `rgba(31,52,57,.13)`), type scale, spacing scale, radii, elevation, motion/easing tokens and layer/z-index tokens — preserving Restivo's existing identity per Constitution XXIII
-- [X] T031 [P] Migrate the token declarations out of `client/css/restivo.css` (the `--cream/--sand/--ink/--teal/--coral/--yellow/--paper/--line/--sans/--display` set near line 3 and the `--sf-*` set near lines 227-232) so that file declares component rules only
+- [X] T030 Create `client/css/tokens.css` holding the authoritative tokens: base palette (cream `#f8f0df`, sand `#f1e4c9`, ink `#1f3439`, teal `#27615f`, coral `#ed6b4c`, yellow `#f5c84b`, paper `#fffaf0`, line `rgba(31,52,57,.13)`), type scale, spacing scale, radii, elevation, motion/easing tokens and layer/z-index tokens — preserving Ordora's existing identity per Constitution XXIII
+- [X] T031 [P] Migrate the token declarations out of `client/css/ordora.css` (the `--cream/--sand/--ink/--teal/--coral/--yellow/--paper/--line/--sans/--display` set near line 3 and the `--sf-*` set near lines 227-232) so that file declares component rules only
 - [X] T032 [P] Migrate the token declarations out of `client/css/style.css` (the `--primary/--secondary/--bg/--surface/--radius/--shadow/--font-*` set at lines 13-76) so that file declares component rules only
 - [X] T033 [P] Remove the local `--mk-max` / `--mk-pad` declarations from `client/css/marketing.css` and consume the shared equivalents
 - [X] T034 [P] Remove the local `--oh-accent` / `--oh-ink` declarations from `client/css/offers.css` and consume the shared equivalents
@@ -152,7 +152,7 @@ Single project: `client/`, `server/`, `database/`, `tests/` at repository root. 
 - [X] T038 In `client/js/restaurant.js:1103`, keep applying the runtime brand token map from `theme.buildTokens` (`client/js/api.js:207-224`) to `document.documentElement`; do not move brand tokens into the static stylesheet
 - [ ] T039 In `client/js/admin.js:1380`, apply the **full** brand token map to the dashboard root — it currently only reads `--on-primary` to colour one label, so the dashboard does not receive tenant brand tokens at all (FR-069)
 - [ ] T040 Verify the CSP needs no change: inline SVG icons are DOM elements, not image requests, so `imgSrc: ["'self'", 'data:', 'blob:']` at `server/app.js:48` is already sufficient
-- [ ] T041 Verify all 21 pages render correctly with no token regression, starting with the two highest-risk: `client/restaurant.html` and `client/index.html` (the only two loading `restivo.css`)
+- [ ] T041 Verify all 21 pages render correctly with no token regression, starting with the two highest-risk: `client/restaurant.html` and `client/index.html` (the only two loading `ordora.css`)
 - [ ] T042 Run `npm run check` and `npm test` — green
 
 **Checkpoint**: One token source drives every surface. Restyling can begin.
@@ -167,27 +167,27 @@ Single project: `client/`, `server/`, `database/`, `tests/` at repository root. 
 
 ### Tests for User Story 1
 
-- [ ] T043 [P] [US1] Create `tests/storefront-composition.test.js` asserting the storefront grid breakpoint is declared in `client/css/restivo.css` — write the **new** target value (≥1024px for two columns), replacing the current 720px assertion in `tests/test-storefront-ux.js:6-8`
+- [ ] T043 [P] [US1] Create `tests/storefront-composition.test.js` asserting the storefront grid breakpoint is declared in `client/css/ordora.css` — write the **new** target value (≥1024px for two columns), replacing the current 720px assertion in `tests/test-storefront-ux.js:6-8`
 - [ ] T044 [P] [US1] Add to `tests/storefront-composition.test.js` assertions that every menu item image element reserves its space before load (an explicit aspect-ratio or width/height pair), satisfying SC-006
 - [ ] T045 [P] [US1] Add to `tests/storefront-composition.test.js` an assertion that the first screenful of item images are not lazy-loaded while below-fold images are
 
 ### Implementation for User Story 1
 
-- [X] T046 [US1] Namespace the storefront component classes shared with the homepage live demo before restyling — `.live-hero`, `.dish`, `.qty`, `.cart-*` and `.add-btn` are used by both `client/js/restaurant.js` and `client/js/restivo-landing.js:186-251`, so a storefront restyle would otherwise break the homepage demo (research.md R-006)
-- [ ] T047 [US1] In `client/css/restivo.css`, remove the superseded duplicate blocks identified in research — the earlier hero rules near lines 179-188 and sheet rules near 196-213 are overridden by the fixes at 384-429, so only one definition of each selector should survive
+- [X] T046 [US1] Namespace the storefront component classes shared with the homepage live demo before restyling — `.live-hero`, `.dish`, `.qty`, `.cart-*` and `.add-btn` are used by both `client/js/restaurant.js` and `client/js/ordora-landing.js:186-251`, so a storefront restyle would otherwise break the homepage demo (research.md R-006)
+- [ ] T047 [US1] In `client/css/ordora.css`, remove the superseded duplicate blocks identified in research — the earlier hero rules near lines 179-188 and sheet rules near 196-213 are overridden by the fixes at 384-429, so only one definition of each selector should survive
 - [X] T048 [US1] Rebuild the cover composition in `client/js/restaurant.js` (`renderContent` at line 296, `initHeroCarousel` at line 374) to a deliberate aspect ratio that fills a substantial share of the initial mobile viewport, per FR-006 and SC-003, preserving the existing `hero-carousel` and `heroImages` identifiers that `tests/test-hero-images.js:15` asserts
-- [X] T049 [US1] In `client/css/restivo.css`, hide the cover position indicator entirely when only one cover photo exists, per FR-008, and style it as a designed element rather than default dots
+- [X] T049 [US1] In `client/css/ordora.css`, hide the cover position indicator entirely when only one cover photo exists, per FR-008, and style it as a designed element rather than default dots
 - [X] T050 [US1] Rebuild the restaurant identity block in `client/js/restaurant.js` (`renderContent`, the `.id-card` construction at lines 337-340) so the identity sits in its own surface overlapping the cover's lower edge by a deliberate amount, per FR-009 — it must read as one anchor unit, not an image floating on a photo
 - [X] T051 [US1] Add a deliberate monogram fallback in `client/js/restaurant.js` (`brand()` at line 250) for a business with no logo, per FR-011 — the existing letter fallback must look intentional rather than broken
-- [X] T052 [US1] In `client/css/restivo.css` and the identity markup in `client/js/restaurant.js` (`renderContent`, lines 337-340), keep the identity block legible at 320px and prevent a long business name colliding with its open/closed badge, per FR-010
-- [X] T053 [US1] In `client/css/restivo.css`, set the menu to the full available width with a single gutter of at most 16px per side at every breakpoint, per FR-001, and remove any narrow centered-column constraint
-- [X] T054 [US1] In `client/css/restivo.css`, implement a two-column menu composition at desktop widths, per FR-003, with no large empty region beside or between items
-- [X] T055 [US1] In `client/css/restivo.css`, normalise vertical spacing between items, category sections, and section headings to one consistent rhythm, per FR-004
-- [X] T056 [US1] In `client/css/restivo.css`, separate menu items by whitespace and subtle surface contrast rather than heavy borders and cards-within-cards, per FR-005
-- [X] T057 [US1] In `client/js/restaurant.js` (`dishCard` at line 621) and `client/css/restivo.css`, enlarge food imagery so the photo occupies at least one third of the item's visible surface, per FR-018 and SC-004, with a non-distorting crop
+- [X] T052 [US1] In `client/css/ordora.css` and the identity markup in `client/js/restaurant.js` (`renderContent`, lines 337-340), keep the identity block legible at 320px and prevent a long business name colliding with its open/closed badge, per FR-010
+- [X] T053 [US1] In `client/css/ordora.css`, set the menu to the full available width with a single gutter of at most 16px per side at every breakpoint, per FR-001, and remove any narrow centered-column constraint
+- [X] T054 [US1] In `client/css/ordora.css`, implement a two-column menu composition at desktop widths, per FR-003, with no large empty region beside or between items
+- [X] T055 [US1] In `client/css/ordora.css`, normalise vertical spacing between items, category sections, and section headings to one consistent rhythm, per FR-004
+- [X] T056 [US1] In `client/css/ordora.css`, separate menu items by whitespace and subtle surface contrast rather than heavy borders and cards-within-cards, per FR-005
+- [X] T057 [US1] In `client/js/restaurant.js` (`dishCard` at line 621) and `client/css/ordora.css`, enlarge food imagery so the photo occupies at least one third of the item's visible surface, per FR-018 and SC-004, with a non-distorting crop
 - [X] T058 [US1] Reserve image space before load in `client/js/restaurant.js:624` so no layout shift occurs, per FR-019, keeping `loading="lazy"` on below-fold images only, per FR-020
 - [X] T059 [US1] Add a deliberate proportion-preserving placeholder in `client/js/restaurant.js` (`dishCard`) for items with no photo, per FR-023
-- [X] T060 [US1] In `client/css/restivo.css`, restyle the popular/new/featured/sold-out badges as restrained overlays, and keep the sold-out treatment visibly unavailable without looking broken, per FR-022
+- [X] T060 [US1] In `client/css/ordora.css`, restyle the popular/new/featured/sold-out badges as restrained overlays, and keep the sold-out treatment visibly unavailable without looking broken, per FR-022
 - [X] T061 [US1] Confirm no prominent "ADD" affordance exists on storefront items — the item itself is the interaction, per FR-021 — and preserve the `data-open=` attribute while keeping `data-addopts` absent, as `tests/test-storefront-ux.js:20-26` asserts
 - [X] T062 [US1] Verify no horizontal page scroll at 320/375/390/430/768/1024/1280/1440/1920px, per FR-002 and SC-002
 - [X] T063 [US1] Run `npm run check` and `npm test`; confirm `tests/test-storefront-ux.js` and `tests/test-seo.js` are green
@@ -246,7 +246,7 @@ Single project: `client/`, `server/`, `database/`, `tests/` at repository root. 
 
 - [ ] T087 [P] [US3] In `client/js/restaurant.js` (`renderHead` at line 206, `setOrderType` at line 237), rebuild the delivery/pickup control as one immediately understandable, elegantly styled segmented control per FR-033, keeping it absent when `settings.deliveryEnabled === false` and persisting via the existing `ordertype_<slug>` localStorage key
 - [ ] T088 [P] [US3] In `client/js/restaurant.js` (`renderHead`), rebuild the search interaction so it reads as part of the menu per FR-034, matching item names and descriptions in both languages, with a designed empty state replacing any blank area or raw error text
-- [ ] T089 [P] [US3] In `client/js/restaurant.js` (`renderHead`, `setLang` at line 91), rebuild the language selector as a compact control with small tasteful language indicators per FR-035, preserving the `localStorage.setItem('restivo-lang'` call that `tests/test-localization.js:25` asserts and the `storefrontLanguage` identifier at line 1062 that `tests/test-localization.js:39` asserts
+- [ ] T089 [P] [US3] In `client/js/restaurant.js` (`renderHead`, `setLang` at line 91), rebuild the language selector as a compact control with small tasteful language indicators per FR-035, preserving the `localStorage.setItem('ordora-lang'` call that `tests/test-localization.js:25` asserts and the `storefrontLanguage` identifier at line 1062 that `tests/test-localization.js:39` asserts
 - [ ] T090 [US3] In `client/js/restaurant.js` (`renderOverlay` at line 656, `renderBar` at line 640), rebuild the cart presentation to match the new visual system with no separate visual language, per FR-036
 - [X] T091 [US3] Verify a language switch also switches direction inside an open product sheet, per FR-071 and the V-8 scenario
 - [X] T092 [US3] In `client/restaurant.html:42`, remove the hardcoded `dir="rtl"` on `<main>` that fights the JS-driven document direction — a latent bug for the English storefront
@@ -291,23 +291,23 @@ Single project: `client/`, `server/`, `database/`, `tests/` at repository root. 
 
 ---
 
-## Phase 9: User Story 6 - A prospective owner evaluates Restivo on the homepage (Priority: P3)
+## Phase 9: User Story 6 - A prospective owner evaluates Ordora on the homepage (Priority: P3)
 
 **Goal**: Strong hero, real-business logo strip, product demonstration, customer journey, business types, honest pricing, FAQ, final CTA, professional footer.
 
 **Independent Test**: Load `/` and answer "what is this, who is it for, what does it cost, what do I do next" without scrolling past pricing and the CTA.
 
-- [ ] T107 [P] [US6] Remove the restaurant showcase branded as a "family" from `client/js/restivo-landing.js` (the `.logos` section at line 62 and the dead `familyCard` function at lines 156-158) and remove its unused `.family-grid`, `.family-card`, `.family-logo` styling from `client/css/restivo.css:108-115`, per FR-063 — deletion, not renaming
-- [X] T108 [P] [US6] In `client/css/restivo.css`, style the `.trust` section, which is currently rendered at `restivo-landing.js:69` with **no CSS rule in any stylesheet** — it appears as a bare unstyled list
-- [X] T109 [US6] Rebuild the hero in `client/js/restivo-landing.js:58-60` to a single clear statement with one primary and one secondary action both visible without scrolling, per FR-056, and NOT opening with a feature list, per FR-057
-- [X] T110 [US6] Keep the real-business logo strip at `client/js/restivo-landing.js:62` and `loadFamily` at lines 137-150 driven by the live business directory — real names and real logos only, never invented entries, per FR-058
-- [X] T111 [US6] In `client/css/restivo.css:336-347`, ensure the strip degrades gracefully when fewer businesses exist than it needs and MUST NOT animate for visitors requesting reduced motion, per FR-059
-- [ ] T112 [US6] Add a product demonstration section and a customer-journey section to `client/js/restivo-landing.js` (section order at lines 50-73) styled by `client/css/restivo.css`, per FR-060 — sourcing imagery only from real assets such as `client/images/restivo-food-table.jpg`, never fabricated screenshots
-- [ ] T113 [US6] Add the supported food-business types section to `client/js/restivo-landing.js` and `client/js/restivo-content.js`, using the real closed set from `server/services/business-types.service.js` and never claiming unsupported types, per FR-061
-- [ ] T114 [US6] Keep pricing sourced from the real subscription data via `GET /api/pricing` (`restivo-landing.js:255-274`), per FR-062, and add a visible loading state so the static fallback price is not shown while real data loads
-- [ ] T115 [US6] Audit `client/index.html`, `client/js/restivo-landing.js`, `client/js/restivo-content.js` and `client/js/restivo-landing.js:137-150` (`loadFamily`) for invented businesses, logos, testimonials, ratings, customer counts or usage statistics, per FR-064 — remove anything unverifiable
-- [ ] T116 [US6] Finalise the call to action and footer in `client/js/restivo-landing.js` (lines 70 and 72) styled by `client/css/restivo.css`, so the page closes as one product with the storefront, per FR-065
-- [ ] T117 [US6] In `client/js/restivo-content.js`, add any new copy keys in **both** Arabic and English, as `tests/onboarding-i18n.test.js` and `tests/subscription-ux.test.js` assert both locales are complete
+- [ ] T107 [P] [US6] Remove the restaurant showcase branded as a "family" from `client/js/ordora-landing.js` (the `.logos` section at line 62 and the dead `familyCard` function at lines 156-158) and remove its unused `.family-grid`, `.family-card`, `.family-logo` styling from `client/css/ordora.css:108-115`, per FR-063 — deletion, not renaming
+- [X] T108 [P] [US6] In `client/css/ordora.css`, style the `.trust` section, which is currently rendered at `ordora-landing.js:69` with **no CSS rule in any stylesheet** — it appears as a bare unstyled list
+- [X] T109 [US6] Rebuild the hero in `client/js/ordora-landing.js:58-60` to a single clear statement with one primary and one secondary action both visible without scrolling, per FR-056, and NOT opening with a feature list, per FR-057
+- [X] T110 [US6] Keep the real-business logo strip at `client/js/ordora-landing.js:62` and `loadFamily` at lines 137-150 driven by the live business directory — real names and real logos only, never invented entries, per FR-058
+- [X] T111 [US6] In `client/css/ordora.css:336-347`, ensure the strip degrades gracefully when fewer businesses exist than it needs and MUST NOT animate for visitors requesting reduced motion, per FR-059
+- [ ] T112 [US6] Add a product demonstration section and a customer-journey section to `client/js/ordora-landing.js` (section order at lines 50-73) styled by `client/css/ordora.css`, per FR-060 — sourcing imagery only from real assets such as `client/images/ordora-food-table.jpg`, never fabricated screenshots
+- [ ] T113 [US6] Add the supported food-business types section to `client/js/ordora-landing.js` and `client/js/ordora-content.js`, using the real closed set from `server/services/business-types.service.js` and never claiming unsupported types, per FR-061
+- [ ] T114 [US6] Keep pricing sourced from the real subscription data via `GET /api/pricing` (`ordora-landing.js:255-274`), per FR-062, and add a visible loading state so the static fallback price is not shown while real data loads
+- [ ] T115 [US6] Audit `client/index.html`, `client/js/ordora-landing.js`, `client/js/ordora-content.js` and `client/js/ordora-landing.js:137-150` (`loadFamily`) for invented businesses, logos, testimonials, ratings, customer counts or usage statistics, per FR-064 — remove anything unverifiable
+- [ ] T116 [US6] Finalise the call to action and footer in `client/js/ordora-landing.js` (lines 70 and 72) styled by `client/css/ordora.css`, so the page closes as one product with the storefront, per FR-065
+- [ ] T117 [US6] In `client/js/ordora-content.js`, add any new copy keys in **both** Arabic and English, as `tests/onboarding-i18n.test.js` and `tests/subscription-ux.test.js` assert both locales are complete
 - [ ] T118 [US6] Run `npm run check` and `npm test`; confirm `tests/test-seo.js` is green — it asserts `client/index.html` structure and that `restaurant.js` retains `/api/seo/business/` and `document.documentElement.dir`
 
 **Checkpoint**: US1–US6 complete.
@@ -339,7 +339,7 @@ Single project: `client/`, `server/`, `database/`, `tests/` at repository root. 
 **Independent Test**: Change one token in the browser and observe it on every surface; grep finds no literal colour/radius/shadow/transition values outside the token source.
 
 - [ ] T126 [US8] Run the V-12 verification: grep `client/css/storefront.css` references expecting none, and confirm raw hex values exist only in `client/css/tokens.css`
-- [ ] T127 [US8] Confirm no hardcoded colour, radius, shadow or transition literal remains outside `client/css/tokens.css`, per FR-067 and SC-013 — convert every remaining literal in `restivo.css`, `style.css`, `marketing.css` and `offers.css` to a token reference
+- [ ] T127 [US8] Confirm no hardcoded colour, radius, shadow or transition literal remains outside `client/css/tokens.css`, per FR-067 and SC-013 — convert every remaining literal in `ordora.css`, `style.css`, `marketing.css` and `offers.css` to a token reference
 - [ ] T128 [US8] Verify brand tints and active states derive from the business's configured brand colour across every surface via `client/js/api.js:207-224` (`theme.buildTokens`) and its call sites `client/js/restaurant.js:1103` and `client/js/admin.js:1380`, per FR-069 — this depends on T039 applying the full brand token map to the dashboard
 - [ ] T129 [US8] Confirm the token source holds no per-tenant values; brand tokens remain runtime-injected, per research.md R-001
 - [ ] T130 [US8] Confirm changing one token in `client/css/tokens.css` visibly updates the homepage, storefront, product sheet, cart, checkout and dashboard without editing a second file

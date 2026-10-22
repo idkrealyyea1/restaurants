@@ -10,12 +10,12 @@ All unknowns below were resolved by direct inspection of code, migrations, tests
 
 **Decision**: One new universal stylesheet, `client/css/tokens.css`, loaded by all 21 pages. Per-surface files keep component rules but stop declaring tokens.
 
-**Rationale**: The CSS load matrix proves a universal-file pattern already exists and is cheap — `/fonts/fonts.css` is loaded by all 21 pages. So does `style.css` (17 pages) and `restivo.css` (exactly 2: `index.html`, `restaurant.html`). There is therefore no structural obstacle and an existing precedent.
+**Rationale**: The CSS load matrix proves a universal-file pattern already exists and is cheap — `/fonts/fonts.css` is loaded by all 21 pages. So does `style.css` (17 pages) and `ordora.css` (exactly 2: `index.html`, `restaurant.html`). There is therefore no structural obstacle and an existing precedent.
 
 | File | Pages loading it | Token role |
 |---|---|---|
 | `client/css/style.css` | 17 | Large dashboard/marketing set (`--primary`, `--surface`, `--radius`, `--shadow`, `--font-*`) |
-| `client/css/restivo.css` | 2 (`index.html`, `restaurant.html`) | Brand primitives (`--cream`, `--sand`, `--ink`, `--teal`, `--coral`, `--yellow`, `--paper`, `--line`) plus `--sf-*` |
+| `client/css/ordora.css` | 2 (`index.html`, `restaurant.html`) | Brand primitives (`--cream`, `--sand`, `--ink`, `--teal`, `--coral`, `--yellow`, `--paper`, `--line`) plus `--sf-*` |
 | `client/css/marketing.css` | 8 | `--mk-max`, `--mk-pad` |
 | `client/css/offers.css` | 2 | `--oh-accent`, `--oh-ink` |
 | `client/css/storefront.css` | **0** | Dead — 533 lines, no HTML references it |
@@ -135,7 +135,7 @@ The benchmark's own fallback treatment is a tinted circle with a vector glyph (`
 
 **Rationale**: The benchmark's product popup is `height: 100vh` with `border-radius: 0` — a full-screen takeover. The brief explicitly states "approximately 65–75% viewport height" and "It should NOT immediately become full-screen… This gives context." These conflict.
 
-The brief wins: it is the explicit, repeated instruction, and the stated rationale (keep the menu visible for context) is a deliberate UX decision. The current implementation is already a true bottom sheet capped at `max-height: 82dvh` (`restivo.css:299-300, 406-429`), so this is a tuning change within existing behaviour, not a redesign. Recorded per Constitution XXVII.
+The brief wins: it is the explicit, repeated instruction, and the stated rationale (keep the menu visible for context) is a deliberate UX decision. The current implementation is already a true bottom sheet capped at `max-height: 82dvh` (`ordora.css:299-300, 406-429`), so this is a tuning change within existing behaviour, not a redesign. Recorded per Constitution XXVII.
 
 ---
 
@@ -143,7 +143,7 @@ The brief wins: it is the explicit, repeated instruction, and the stated rationa
 
 **Decision**: Namespace storefront component classes before restyling.
 
-**Rationale**: The homepage's live demo (`restivo-landing.js:222-251`) reuses storefront class names — the `dish`, `qty`, `cart-*`, `live-hero`, `add-btn` family — and much of `restivo.css`'s `.live-*` styling targets them. A storefront restyle can therefore silently break the homepage demo and vice versa. Since both are being redesigned in this feature, the collision must be broken first, or every later visual change is unverifiable in isolation.
+**Rationale**: The homepage's live demo (`ordora-landing.js:222-251`) reuses storefront class names — the `dish`, `qty`, `cart-*`, `live-hero`, `add-btn` family — and much of `ordora.css`'s `.live-*` styling targets them. A storefront restyle can therefore silently break the homepage demo and vice versa. Since both are being redesigned in this feature, the collision must be broken first, or every later visual change is unverifiable in isolation.
 
 ---
 
@@ -154,7 +154,7 @@ The brief wins: it is the explicit, repeated instruction, and the stated rationa
 | CSS custom properties | Single `:root` block, no preprocessor, no build step | Project constraint; `styleSrc` already permits `'unsafe-inline'` so runtime overrides remain possible |
 | Responsive images | Reserve space with explicit aspect ratio before load to hold CLS ≤2px | SC-006 |
 | Lazy loading | `loading="lazy"` below the fold only; first screenful never lazy | Existing precedent `restaurant.js:320` already sets `fetchpriority="high"` on slide 0 |
-| Reduced motion | Existing convention honoured — carousel autoplay off, sheet teardown 0ms, marquee becomes a static wrap | `restaurant.js:381,492`; `restivo.css:88,347` |
+| Reduced motion | Existing convention honoured — carousel autoplay off, sheet teardown 0ms, marquee becomes a static wrap | `restaurant.js:381,492`; `ordora.css:88,347` |
 | Focus management | Existing focus trap + focus restore retained; dialog semantics preserved | `restaurant.js:586-598`; required by `test-storefront-ux.js` |
 | Upload validation | Sniff content bytes, ignore declared MIME and filename, derive extension from bytes | Existing `upload.js:26-40,69-70`; correct as-is |
 | Migrations | Idempotent, one transaction per file, `schema_migrations` ledger, rollback on failure | `database/migrate.js:17-53`; Constitution VII |
@@ -166,4 +166,4 @@ The brief wins: it is the explicit, repeated instruction, and the stated rationa
 | Restyle breaks the homepage live demo through shared classes | R-006: namespace first |
 | Breaking a source-asserting test | `plan.md` carries an explicit preserve-list of every verified string contract |
 | Correcting `test-hero-images.js` looks like weakening a test | FR-081 requires correcting the expectation *with* the behaviour; the corrected regex keeps its traversal and foreign-namespace assertions |
-| Token consolidation regresses storefront rendering | `restivo.css` loads on only 2 pages, so it is the smallest blast radius; verify those 2 first |
+| Token consolidation regresses storefront rendering | `ordora.css` loads on only 2 pages, so it is the smallest blast radius; verify those 2 first |

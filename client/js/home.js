@@ -102,7 +102,7 @@
   }
 
   function boot() {
-    document.title = I.t('homeRestH') + ' — Restivo';
+    document.title = I.t('homeRestH') + ' — Ordora';
     load();
 
     const search = document.getElementById('rest-search');
@@ -121,7 +121,7 @@
     }
 
     I.onChange(() => {
-      document.title = I.t('homeRestH') + ' — Restivo';
+      document.title = I.t('homeRestH') + ' — Ordora';
       render();
     });
   }

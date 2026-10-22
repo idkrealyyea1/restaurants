@@ -1,4 +1,4 @@
-# Restivo
+# Ordora
 
 A multi-tenant online-ordering SaaS: a platform owner creates restaurants; each restaurant gets a public menu page, a private dashboard, and receives orders from customers who never need an account.
 

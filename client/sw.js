@@ -5,7 +5,7 @@
    - Static assets: cache-first.
    - API + uploads: never cached (must stay live/fresh). */
 
-const CACHE = 'restaurants-v23';
+const CACHE = 'restaurants-v24';
 const SHELL = [
   '/',
   '/css/style.css',
@@ -21,12 +21,14 @@ const SHELL = [
   '/js/pwa.js',
   '/js/skeleton.js',
   '/js/site.js',
-  '/images/restivo-food-table.jpg',
-  '/images/restivo-owner-tablet.jpg',
+  '/images/ordora-food-table.jpg',
+  '/images/ordora-owner-tablet.jpg',
+  '/images/ordora-lockup.png',
+  '/images/ordora-mark.png',
+  '/favicon.png',
   '/images/dish-placeholder.svg',
   '/login.html',
   '/app/',
-  '/icons/icon.svg',
 ];
 
 self.addEventListener('install', (event) => {
@@ -104,8 +106,8 @@ self.addEventListener('push', (event) => {
     self.registration.showNotification(title, {
       body,
       tag,
-      icon: '/icons/icon.svg',
-      badge: '/icons/icon.svg',
+      icon: '/icons/icon-192.png',
+      badge: '/icons/icon-192.png',
       data: { url },
     })
   );

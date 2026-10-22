@@ -6,7 +6,7 @@
 
 **Status**: Draft
 
-**Input**: User description: "Prepare the existing Restivo SaaS for its next evolution from a restaurant-focused ordering system into a broader Food Business Ordering Platform. This is an existing project. Do not rebuild it. Minimum safe product and architectural foundation for the next roadmap phases (cafes, dessert shops, bakeries, cake businesses, home kitchens, cloud kitchens, small food businesses) on one shared model with configurable capabilities, plus multi-currency and pre-order foundations. No payment gateways, no React migration, no homepage redesign, no full i18n, no unrelated features."
+**Input**: User description: "Prepare the existing Ordora SaaS for its next evolution from a restaurant-focused ordering system into a broader Food Business Ordering Platform. This is an existing project. Do not rebuild it. Minimum safe product and architectural foundation for the next roadmap phases (cafes, dessert shops, bakeries, cake businesses, home kitchens, cloud kitchens, small food businesses) on one shared model with configurable capabilities, plus multi-currency and pre-order foundations. No payment gateways, no React migration, no homepage redesign, no full i18n, no unrelated features."
 
 ## Clarifications
 

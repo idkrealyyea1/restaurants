@@ -54,7 +54,7 @@
     navEl.style.display = screen === 'done' ? 'none' : '';
     backBtn.style.visibility = idx === 0 ? 'hidden' : 'visible';
     nextBtn.textContent = screen === 'review' ? I.t('su_finish') : I.t('su_continue');
-    document.title = I.t(screen === 'account' ? 'su_accountTitle' : screen === 'done' ? 'su_doneTitle' : 'su_stepOf', { n: idx + 1, total: SCREENS.length - 1 }) + ' — Restivo';
+    document.title = I.t(screen === 'account' ? 'su_accountTitle' : screen === 'done' ? 'su_doneTitle' : 'su_stepOf', { n: idx + 1, total: SCREENS.length - 1 }) + ' — Ordora';
     if (document.activeElement && stepEl.contains(document.activeElement)) document.activeElement.blur();
     const first = stepEl.querySelector('input, select, button');
     if (first) first.focus({ preventScroll: true });
