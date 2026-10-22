@@ -216,7 +216,7 @@ function render() {
           <div class="hero-grid"><div class="hero-copy">
             <h1>${t.hero.titleA}<span>${t.hero.titleB}<svg viewBox="0 0 330 13" aria-hidden="true"><path d="M2 9.5C82 2 236 1.5 328 7"/></svg></span></h1>
             <p class="hero-description">${t.hero.description}</p>
-            <div class="hero-ctas"><a class="button hero-start" href="/signup.html">${t.nav.startFree}${icon("arrow", 17)}</a><a class="button button-dark" href="${demoUrl}">${t.hero.demo}</a></div>
+            <div class="hero-ctas"><a class="button hero-start" href="/signup.html">${t.nav.startFree}${icon("arrow", 17)}</a><a class="button hero-demo" href="${demoUrl}">${t.hero.demo}${icon("arrow", 17)}</a></div>
           </div><div class="hero-preview">${phonePreview(t)}</div></div>
         </div>
       </section>

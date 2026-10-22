@@ -936,3 +936,15 @@ input[type="color"] { width: 52px; height: 38px; padding: 2px; border: 1px solid
 @media (max-width: 899px){#nav-burger{display:inline-flex}.tabs-mobile{display:none}}
 body.drawer-open{overflow:hidden}
 @media (prefers-reduced-motion: reduce){.nav-drawer{transition:none}}
+
+/* Product option builder */
+.badge-preorder{background:var(--primary-soft);color:var(--primary-dark)}
+.option-admin-top{align-items:flex-start;flex-wrap:wrap;gap:6px 12px}
+.option-admin-head{align-items:flex-start;gap:12px}
+.option-admin-head .muted{line-height:1.55}
+.option-choice-form{display:grid;grid-template-columns:minmax(0,1fr) 110px auto;gap:8px;margin-top:10px}
+.option-choice-form input{min-width:0}
+@media (max-width:640px){
+  .option-choice-form{grid-template-columns:minmax(0,1fr) 100px}
+  .option-choice-form button{grid-column:1 / -1}
+}

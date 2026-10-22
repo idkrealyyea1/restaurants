@@ -836,6 +836,8 @@
           (i.is_available
             ? ''
             : '<span class="badge badge-soldout">' + esc(I.t('soldOut')) + '</span> ') +
+          (i.is_preorder ? '<span class="badge badge-preorder">' + esc(I.t('preorderBadge')) + '</span> ' : '') +
+          (i.options && i.options.length ? '<span class="badge">' + esc(I.t('optCount', { n: i.options.length })) + '</span> ' : '') +
           (i.is_popular ? '<span class="badge badge-popular">' + esc(I.t('popular')) + '</span>' : '') +
         '</td>' +
         '<td>' +
@@ -896,10 +898,11 @@
       toast(I.t('createFirstCat'), 'error');
       return;
     }
-    const isNew = !item;
+    let isNew = !item;
+    let currentItem = item || null;
 
     openModal(
-      '<div class="modal-head"><h2>' + esc(isNew ? I.t('newItemH') : I.t('editItemH')) + '</h2>' +
+      '<div class="modal-head"><h2 id="item-modal-title">' + esc(isNew ? I.t('newItemH') : I.t('editItemH')) + '</h2>' +
         '<button type="button" class="modal-close" aria-label="Close">&times;</button></div>' +
       '<form id="item-form">' +
         '<div class="field"><label for="it-name">' + esc(I.t('nameReq')) + '</label>' +
@@ -917,22 +920,36 @@
         '</div>' +
         '<div class="checkbox-line mb-1"><input id="it-available" type="checkbox"' + (!item || item.is_available ? ' checked' : '') + '><label for="it-available">' + esc(I.t('availableL')) + '</label></div>' +
         '<div class="checkbox-line mb-1"><input id="it-popular" type="checkbox"' + (item && item.is_popular ? ' checked' : '') + '><label for="it-popular">' + esc(I.t('popularL')) + '</label></div>' +
-        '<div class="checkbox-line mb-1"><input id="it-preorder" type="checkbox"' + (item && item.is_preorder ? ' checked' : '') + '><label for="it-preorder">' + esc(I.t('preorderBadge')) + '</label></div>' +
-        '<div class="field"><label for="it-prenote">' + esc(I.t('preorderBadge')) + '</label>' +
-          '<input id="it-prenote" maxlength="300" value="' + esc(item ? (item.preorder_note || '') : '') + '"></div>' +
+        '<div class="checkbox-line mb-1"><input id="it-preorder" type="checkbox"' + (item && item.is_preorder ? ' checked' : '') + '><label for="it-preorder">' + esc(I.t('preorderAvailableL')) + '</label></div>' +
+        '<div class="field" id="it-prenote-field"' + (item && item.is_preorder ? '' : ' hidden') + '><label for="it-prenote">' + esc(I.t('preorderNoteL')) + '</label>' +
+          '<input id="it-prenote" maxlength="300" value="' + esc(item ? (item.preorder_note || '') : '') + '" placeholder="' + esc(I.t('preorderNotePh')) + '">' +
+          '<div class="hint">' + esc(I.t('preorderNoteHint')) + '</div></div>' +
         '<div class="field mt-2"><label for="it-image">' + esc(I.t('imageL')) + '</label>' +
           (!isNew && item.image_path ? '<img src="' + esc(item.image_path) + '" alt="" class="mb-1" width="120" height="90">' : '') +
           '<input id="it-image" type="file" accept="image/jpeg,image/png,image/webp">' +
           '<div class="hint">' + esc(I.t('imgHint')) + '</div>' +
           '<div id="it-image-progress" class="progress hidden"><div id="it-image-progress-fill" class="progress-fill"></div></div>' +
         '</div>' +
-        '<button id="it-save" type="submit" class="btn btn-block">' + esc(isNew ? I.t('createItemBtn') : I.t('saveChangesBtn')) + '</button>' +
+        '<button id="it-save" type="submit" class="btn btn-block">' + esc(isNew ? I.t('createItemOptionsBtn') : I.t('saveChangesBtn')) + '</button>' +
       '</form>' +
-      (!isNew ? '<div id="item-options" class="mt-2"></div>' : '')
+      '<div id="item-options" class="mt-2"></div>'
     );
     document.querySelector('.modal-close').addEventListener('click', closeModal);
 
-    if (!isNew) loadItemOptions(item.id);
+    const preorderCheck = document.getElementById('it-preorder');
+    const prenoteField = document.getElementById('it-prenote-field');
+    function syncPreorderNote() {
+      if (prenoteField) prenoteField.hidden = !preorderCheck.checked;
+    }
+    preorderCheck.addEventListener('change', syncPreorderNote);
+    syncPreorderNote();
+
+    if (isNew) {
+      const zone = document.getElementById('item-options');
+      if (zone) zone.innerHTML = '<div class="notice notice-warn">' + esc(I.t('optNewItemHint')) + '</div>';
+    } else {
+      loadItemOptions(currentItem.id);
+    }
 
     document.getElementById('item-form').addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -952,14 +969,24 @@
         isPreorder: document.getElementById('it-preorder').checked,
         preorderNote: document.getElementById('it-prenote').value.trim(),
       };
+      let createdNow = false;
       try {
         submitBtn.disabled = true;
         let saved;
         if (isNew) {
           saved = await api.post('/api/admin/items', body);
+          currentItem = saved.item;
+          isNew = false;
+          createdNow = true;
+          const title = document.getElementById('item-modal-title');
+          if (title) title.textContent = I.t('editItemH');
+          submitBtn.textContent = I.t('saveChangesBtn');
+          await loadItemOptions(currentItem.id, I.t('optCreatedHint'));
+          const zone = document.getElementById('item-options');
+          if (zone && zone.scrollIntoView) zone.scrollIntoView({ behavior: 'smooth', block: 'start' });
           toast(I.t('itemCreated'), 'success');
         } else {
-          saved = await api.patch('/api/admin/items/' + item.id, body);
+          saved = await api.patch('/api/admin/items/' + currentItem.id, body);
           toast(I.t('itemUpdated'), 'success');
         }
         // Upload image after save so it attaches immediately.
@@ -982,13 +1009,22 @@
           );
           toast(I.t('imgCompressed'));
         }
-        closeModal();
         await reloadInfo();
         loadMenu();
+        if (createdNow) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = I.t('saveChangesBtn');
+          return;
+        }
+        closeModal();
       } catch (err) {
+        if (createdNow) {
+          try { await reloadInfo(); } catch (_) { /* item already exists */ }
+          loadMenu();
+        }
         toast(err.message, 'error');
         submitBtn.disabled = false;
-        submitBtn.textContent = isNew ? I.t('createItemBtn') : I.t('saveChangesBtn');
+        submitBtn.textContent = isNew ? I.t('createItemOptionsBtn') : I.t('saveChangesBtn');
         const prog = document.getElementById('it-image-progress');
         const fill = document.getElementById('it-image-progress-fill');
         if (prog) prog.classList.add('hidden');
@@ -1012,7 +1048,7 @@
 
   /* --------------------- product option groups --------------------- */
 
-  async function loadItemOptions(itemId) {
+  async function loadItemOptions(itemId, notice) {
     const zone = document.getElementById('item-options');
     if (!zone) return;
     try {
@@ -1022,37 +1058,55 @@
         group: g,
         choices: (await api.get('/api/admin/option-groups/' + g.id + '/choices')).choices || [],
       })));
-      zone.innerHTML = '<h3 class="section-title">' + esc(I.t('optGroups')) + '</h3>' +
-        withChoices.map(({ group: g, choices }) =>
-          '<div class="card mb-1"><div class="flex-between"><strong>' + esc(g.name) + '</strong>' +
-          '<span><span class="badge">' + esc(g.pricing) + '</span> ' +
-          (g.is_required ? '<span class="badge badge-closed">' + esc(I.t('optRequired')) + '</span> ' : '') +
-          '<span class="muted small">' + g.min_picks + '–' + g.max_picks + '</span> ' +
-          '<button type="button" class="btn btn-danger btn-sm" data-del-group="' + esc(g.id) + '">' + esc(I.t('del')) + '</button></span></div>' +
+      const groupCards = withChoices.map(({ group: g, choices }) => {
+        const required = !!g.is_required || Number(g.min_picks) > 0;
+        const minPicks = required ? Math.max(1, Number(g.min_picks) || 0) : Math.max(0, Number(g.min_picks) || 0);
+        const maxPicks = Math.max(1, Number(g.max_picks) || 1);
+        const pricingLabel = g.pricing === 'replace' ? I.t('optPricingReplace') : I.t('optPricingAdjust');
+        const typeLabel = maxPicks === 1 ? I.t('optTypeSingle') : I.t('optTypeMultiple');
+        return '<div class="card mb-1 option-admin-group">' +
+          '<div class="flex-between option-admin-head"><div><strong>' + esc(g.name) + '</strong>' +
+          '<div class="muted small">' + esc(typeLabel) + ' · ' + esc(pricingLabel) + ' · ' +
+          esc(required ? I.t('optRequired') : I.t('optOptional')) + ' (' + minPicks + '–' + maxPicks + ')</div></div>' +
+          '<button type="button" class="btn btn-danger btn-sm" data-del-group="' + esc(g.id) + '">' + esc(I.t('del')) + '</button></div>' +
           (choices.length
             ? '<div class="table-wrap"><table class="data"><tbody>' + choices.map((c) =>
               '<tr><td>' + esc(c.name) + '</td><td>' + fmtMoney(c.price_cents, currency) +
               '</td><td class="small muted">×' + c.max_quantity + (c.is_available ? '' : ' · ' + esc(I.t('soldOut'))) + '</td>' +
               '<td><button type="button" class="btn btn-danger btn-sm" data-del-choice="' + esc(g.id + '|' + c.id) + '">' +
               esc(I.t('del')) + '</button></td></tr>').join('') + '</tbody></table></div>'
-            : '') +
-          '<form data-choice-form="' + esc(g.id) + '" class="flex-between">' +
-            '<input maxlength="60" required placeholder="' + esc(I.t('optChoices')) + '">' +
-            '<input type="number" min="0" step="0.01" value="0" title="' + esc(I.t('optPrice')) + '">' +
+            : '<p class="hint">' + esc(I.t('optNoChoicesYet')) + '</p>') +
+          '<form data-choice-form="' + esc(g.id) + '" class="option-choice-form">' +
+            '<input maxlength="60" required placeholder="' + esc(I.t('optChoiceNamePh')) + '" aria-label="' + esc(I.t('optChoiceName')) + '">' +
+            '<input type="number" min="0" step="0.01" value="0" placeholder="0.00" aria-label="' + esc(I.t('optPrice')) + '" title="' + esc(I.t('optPrice')) + '">' +
             '<button type="submit" class="btn btn-outline btn-sm">' + esc(I.t('optAddChoice')) + '</button>' +
-          '</form></div>'
-        ).join('') +
-        '<form id="group-form" class="card"><div class="form-row form-row-2">' +
-          '<div class="field"><label>' + esc(I.t('optGroups')) + '</label>' +
-            '<input id="ng-name" maxlength="60" required></div>' +
-          '<div class="field"><label>' + esc(I.t('optPricing')) + '</label>' +
-            '<select id="ng-pricing"><option value="adjust">adjust</option><option value="replace">replace</option></select></div>' +
-        '</div><div class="form-row form-row-2">' +
-          '<div class="field"><label>' + esc(I.t('optMinMax')) + '</label>' +
-            '<input id="ng-min" type="number" min="0" max="99" value="0"> <input id="ng-max" type="number" min="1" max="99" value="1"></div>' +
-          '<div class="field"><label>&nbsp;</label><div class="checkbox-line"><input id="ng-req" type="checkbox">' +
-            '<label for="ng-req">' + esc(I.t('optRequired')) + '</label></div></div>' +
-        '</div><button type="submit" class="btn btn-block">' + esc(I.t('optAddGroup')) + '</button></form>';
+          '</form></div>';
+      }).join('');
+
+      zone.innerHTML =
+        (notice ? '<div class="notice notice-ok mb-1">' + esc(notice) + '</div>' : '') +
+        '<div class="flex-between mt-2 option-admin-top"><h3 class="section-title">' + esc(I.t('optGroups')) + '</h3>' +
+          '<span class="muted small">' + esc(I.t('optGroupsHint')) + '</span></div>' +
+        (withChoices.length ? groupCards : '<div class="empty-state card mb-1">' + esc(I.t('optNoGroupsYet')) + '</div>') +
+        '<form id="group-form" class="card option-group-form">' +
+          '<h3>' + esc(I.t('optAddGroup')) + '</h3>' +
+          '<p class="hint">' + esc(I.t('optGroupFormHint')) + '</p>' +
+          '<div class="form-row form-row-2">' +
+            '<div class="field"><label for="ng-name">' + esc(I.t('optGroupName')) + '</label>' +
+              '<input id="ng-name" maxlength="60" required placeholder="' + esc(I.t('optGroupNamePh')) + '"></div>' +
+            '<div class="field"><label for="ng-pricing">' + esc(I.t('optPricing')) + '</label>' +
+              '<select id="ng-pricing"><option value="adjust">' + esc(I.t('optPricingAdjust')) + '</option><option value="replace">' + esc(I.t('optPricingReplace')) + '</option></select></div>' +
+          '</div>' +
+          '<div class="form-row form-row-2">' +
+            '<div class="field"><label for="ng-type">' + esc(I.t('optSelectionType')) + '</label>' +
+              '<select id="ng-type"><option value="single">' + esc(I.t('optTypeSingle')) + '</option><option value="multiple">' + esc(I.t('optTypeMultiple')) + '</option></select></div>' +
+            '<div class="field" id="ng-max-field" hidden><label for="ng-max">' + esc(I.t('optMaxChoices')) + '</label>' +
+              '<input id="ng-max" type="number" min="1" max="99" value="3"></div>' +
+          '</div>' +
+          '<div class="checkbox-line mb-1"><input id="ng-req" type="checkbox"><label for="ng-req">' + esc(I.t('optRequiredGuest')) + '</label></div>' +
+          '<p class="hint">' + esc(I.t('optRequiredHint')) + '</p>' +
+          '<button type="submit" class="btn btn-block">' + esc(I.t('optAddGroup')) + '</button>' +
+        '</form>';
 
       zone.querySelectorAll('[data-del-group]').forEach((b) => b.addEventListener('click', async () => {
         try { await api.del('/api/admin/option-groups/' + b.dataset.delGroup); loadItemOptions(itemId); loadMenu(); }
@@ -1060,7 +1114,7 @@
       }));
       zone.querySelectorAll('[data-del-choice]').forEach((b) => b.addEventListener('click', async () => {
         const [gid, cid] = b.dataset.delChoice.split('|');
-        try { await api.del('/api/admin/option-groups/' + gid + '/choices/' + cid); loadItemOptions(itemId); }
+        try { await api.del('/api/admin/option-groups/' + gid + '/choices/' + cid); loadItemOptions(itemId); loadMenu(); }
         catch (err) { toast(err.message, 'error'); }
       }));
       zone.querySelectorAll('[data-choice-form]').forEach((f) => f.addEventListener('submit', async (e) => {
@@ -1073,24 +1127,57 @@
             priceCents: Math.max(0, Math.round((Number.isFinite(priceMajor) ? priceMajor : 0) * 100)),
           });
           loadItemOptions(itemId);
-        } catch (err) { toast(err.message, 'error'); }
-      }));
-      const gf = document.getElementById('group-form');
-      if (gf) gf.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        try {
-          await api.post('/api/admin/option-groups', {
-            menuItemId: itemId,
-            name: document.getElementById('ng-name').value.trim(),
-            isRequired: document.getElementById('ng-req').checked,
-            minPicks: Number(document.getElementById('ng-min').value),
-            maxPicks: Number(document.getElementById('ng-max').value),
-            pricing: document.getElementById('ng-pricing').value,
-          });
-          loadItemOptions(itemId);
           loadMenu();
         } catch (err) { toast(err.message, 'error'); }
-      });
+      }));
+
+      const gf = document.getElementById('group-form');
+      if (gf) {
+        const pricingSelect = document.getElementById('ng-pricing');
+        const typeSelect = document.getElementById('ng-type');
+        const maxField = document.getElementById('ng-max-field');
+        const maxInput = document.getElementById('ng-max');
+        const requiredInput = document.getElementById('ng-req');
+        const syncType = () => {
+          const multiple = typeSelect.value === 'multiple';
+          maxField.hidden = !multiple;
+          if (!multiple) {
+            maxInput.value = '1';
+          } else if (maxInput.value === '1' || !maxInput.value) {
+            maxInput.value = '3';
+          }
+          if (multiple && pricingSelect.value === 'replace') pricingSelect.value = 'adjust';
+        };
+        const syncPricing = () => {
+          if (pricingSelect.value === 'replace') {
+            typeSelect.value = 'single';
+            maxInput.value = '1';
+          }
+          syncType();
+        };
+        typeSelect.addEventListener('change', syncType);
+        pricingSelect.addEventListener('change', syncPricing);
+        syncPricing();
+
+        gf.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const multiple = typeSelect.value === 'multiple';
+          const required = requiredInput.checked;
+          const maxPicks = multiple ? Math.max(1, Math.min(99, Number(maxInput.value) || 3)) : 1;
+          try {
+            await api.post('/api/admin/option-groups', {
+              menuItemId: itemId,
+              name: document.getElementById('ng-name').value.trim(),
+              isRequired: required,
+              minPicks: required ? 1 : 0,
+              maxPicks: maxPicks,
+              pricing: pricingSelect.value,
+            });
+            loadItemOptions(itemId);
+            loadMenu();
+          } catch (err) { toast(err.message, 'error'); }
+        });
+      }
     } catch (err) {
       zone.innerHTML = '<p class="notice notice-error">' + esc(err.message) + '</p>';
     }
@@ -1132,11 +1219,58 @@
   }
 
   function vapidKeyToBytes(base64) {
-    const pad = '='.repeat((4 - (base64.length % 4)) % 4);
-    const raw = atob(base64.replace(/-/g, '+').replace(/_/g, '/') + pad);
+    const normalized = String(base64 || '').replace(/-/g, '+').replace(/_/g, '/').replace(/\s+/g, '');
+    if (!normalized) throw new Error(I.t('pushInvalidKey'));
+    const pad = '='.repeat((4 - (normalized.length % 4)) % 4);
+    let raw;
+    try {
+      raw = atob(normalized + pad);
+    } catch (_) {
+      throw new Error(I.t('pushInvalidKey'));
+    }
     const out = new Uint8Array(raw.length);
     for (let i = 0; i < raw.length; i++) out[i] = raw.charCodeAt(i);
+    // A VAPID applicationServerKey is an uncompressed P-256 point (65 bytes).
+    if (out.length !== 65) throw new Error(I.t('pushInvalidKey'));
     return out;
+  }
+
+  function bytesEqual(a, b) {
+    if (!a || !b || a.length !== b.length) return false;
+    for (let i = 0; i < a.length; i++) {
+      if (a[i] !== b[i]) return false;
+    }
+    return true;
+  }
+
+  function subscriptionKeyBytes(sub) {
+    try {
+      const key = sub && sub.options && sub.options.applicationServerKey;
+      return key ? new Uint8Array(key) : null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  async function ensurePushRegistration() {
+    let reg = await navigator.serviceWorker.getRegistration('/');
+    if (!reg) reg = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
+    await Promise.race([
+      navigator.serviceWorker.ready,
+      new Promise((_, reject) => {
+        setTimeout(() => reject(new Error(I.t('pushServiceError'))), 12000);
+      }),
+    ]);
+    return reg;
+  }
+
+  function pushFailureMessage(err) {
+    const message = String((err && err.message) || '');
+    if (window.isSecureContext === false) return I.t('pushInsecure');
+    if (err && err.name === 'NotAllowedError') return I.t('pushDeniedHint');
+    if (err && (err.name === 'AbortError' || err.name === 'InvalidStateError')) return I.t('pushServiceError');
+    if (/push service|registration failed|service unavailable|fcm|gcm/i.test(message)) return I.t('pushServiceError');
+    return message || I.t('pushServiceError');
   }
 
   async function loadPushCard() {
@@ -1144,6 +1278,10 @@
     if (!box) return;
     if (!pushSupported()) {
       box.innerHTML = '<p class="muted small">' + esc(I.t('pushUnsupported')) + '</p>';
+      return;
+    }
+    if (window.isSecureContext === false) {
+      box.innerHTML = '<p class="muted small">' + esc(I.t('pushInsecure')) + '</p>';
       return;
     }
     let cfg;
@@ -1180,29 +1318,64 @@
     const enableBtn = document.getElementById('push-enable-btn');
     if (enableBtn) {
       enableBtn.addEventListener('click', async () => {
+        const originalLabel = enableBtn.textContent;
         enableBtn.disabled = true;
+        enableBtn.textContent = I.t('pushEnabling');
         try {
+          if (window.isSecureContext === false) throw new Error(I.t('pushInsecure'));
           const permission = await Notification.requestPermission();
           if (permission !== 'granted') {
             toast(I.t('pushDeniedHint'), 'error');
             loadPushCard();
             return;
           }
-          const reg = await navigator.serviceWorker.ready;
-          const sub = await reg.pushManager.subscribe({
-            userVisibleOnly: true,
-            applicationServerKey: vapidKeyToBytes(cfg.publicKey),
-          });
+          const reg = await ensurePushRegistration();
+          const key = vapidKeyToBytes(cfg.publicKey);
+          let sub = await reg.pushManager.getSubscription();
+
+          // A subscription created with an older VAPID key makes Chrome's
+          // subscribe() fail with "Registration failed - push service error".
+          // Reuse a current subscription; otherwise clear the stale one first.
+          if (sub) {
+            const existingKey = subscriptionKeyBytes(sub);
+            if (!existingKey || !bytesEqual(existingKey, key)) {
+              try { await sub.unsubscribe(); } catch (_) { /* best effort */ }
+              sub = null;
+            }
+          }
+
+          if (!sub) {
+            const subscribe = () => reg.pushManager.subscribe({
+              userVisibleOnly: true,
+              applicationServerKey: key,
+            });
+            try {
+              sub = await subscribe();
+            } catch (firstErr) {
+              // Some browsers leave a half-dead subscription behind. Clear it
+              // once and retry with the current key before surfacing the error.
+              const stale = await reg.pushManager.getSubscription().catch(() => null);
+              if (!stale) throw firstErr;
+              try { await stale.unsubscribe(); } catch (_) { /* best effort */ }
+              sub = await subscribe();
+            }
+          }
+
+          const json = sub.toJSON();
+          if (!json.keys || !json.keys.p256dh || !json.keys.auth) {
+            throw new Error(I.t('pushInvalidKey'));
+          }
           await api.post('/api/admin/push-subscriptions', {
             endpoint: sub.endpoint,
-            keys: { p256dh: sub.toJSON().keys.p256dh, auth: sub.toJSON().keys.auth },
+            keys: { p256dh: json.keys.p256dh, auth: json.keys.auth },
             label: '',
           });
           toast(I.t('pushSubscribed'), 'success');
           loadPushCard();
         } catch (err) {
-          toast(err.message, 'error');
+          toast(pushFailureMessage(err), 'error');
           enableBtn.disabled = false;
+          enableBtn.textContent = originalLabel;
         }
       });
     }
@@ -1671,15 +1844,18 @@
     try {
       const qr = await api.get('/api/admin/qr');
       const svgDataUri = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(qr.svg)));
-      const publicUrl = location.origin + '/restaurant/' + encodeURIComponent(info.restaurant.slug);
+      // The server builds the canonical storefront URL from the current slug
+      // (and APP_URL when configured). Never rebuild it from a possibly stale
+      // in-page restaurant object or the dashboard's current origin.
+      const publicUrl = qr.url;
 
       zone.innerHTML =
         '<h1 class="section-title">' + esc(I.t('shareYourRestaurant')) + '</h1>' +
         '<section class="card qr-box">' +
           '<img src="' + svgDataUri + '" alt="QR code to your menu" width="260" height="260">' +
-          '<p class="muted small mt-1">' + esc(qr.url) + '</p>' +
+          '<p class="muted small mt-1">' + esc(publicUrl) + '</p>' +
           '<div class="flex-between mt-1">' +
-            '<a class="btn btn-primary" href="/restaurant/' + encodeURIComponent(info.restaurant.slug) + '" target="_blank" rel="noopener">' + esc(I.t('openPublicPage')) + '</a>' +
+            '<a class="btn btn-primary" href="' + esc(publicUrl) + '" target="_blank" rel="noopener">' + esc(I.t('openPublicPage')) + '</a>' +
             '<button id="copy-link-btn" type="button" class="btn btn-outline">' + esc(I.t('copyLink')) + '</button>' +
           '</div>' +
         '</section>';

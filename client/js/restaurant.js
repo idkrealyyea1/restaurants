@@ -106,6 +106,8 @@
       itemsCount: '{n} صنف',
       soldOut: 'غير متوفر',
       preorderBadge: 'طلب مسبق',
+      preorderDefault: 'هذا الصنف متاح للطلب المسبق. تواصل مع المطعم لمعرفة وقت التحضير.',
+      preorderCart: 'صنف بطلب مسبق',
       pickHint: 'حتى {n} خيارات',
       noThanks: 'بدون إضافة',
       freeDeliveryProgress: 'أضف {amount} لتحصل على توصيل مجاني',
@@ -191,6 +193,8 @@
       itemsCount: '{n} items',
       soldOut: 'Sold out',
       preorderBadge: 'Pre-order',
+      preorderDefault: 'This dish is available by pre-order. Contact the restaurant for preparation time.',
+      preorderCart: 'Pre-order item',
       pickHint: 'Choose up to {n}',
       noThanks: 'No thanks',
       freeDeliveryProgress: 'Add {amount} for free delivery',
@@ -581,23 +585,35 @@
     window.addEventListener('resize', queueUpdate);
     queueUpdate();
   }
+  function preorderIcon() {
+    return '<svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7" />' +
+      '<path d="M10 6v4l2.4 1.4" /></svg>';
+  }
   function dishMarkup(dish) {
     var name = localize(dish.name);
     var hasOptions = dish.options.length > 0;
     var quickLabel = hasOptions ? getCopy('options') : getCopy('addToOrder');
     var available = dish.available !== false;
-    var tag = dish.tag
-      ? '<span class="dish-tag"><span aria-hidden="true">' + (dish.tag === 'bestSeller' ? '🔥' : '🌿') + '</span>' +
-        escapeHTML(getCopy(dish.tag)) + '</span>'
-      : '';
-    if (!available) {
-      tag = '<span class="dish-tag dish-tag-soldout">' + escapeHTML(getCopy('soldOut')) + '</span>';
+    var tags = [];
+    if (dish.tag) {
+      tags.push('<span class="dish-tag"><span aria-hidden="true">' + (dish.tag === 'bestSeller' ? '🔥' : '🌿') + '</span>' +
+        escapeHTML(getCopy(dish.tag)) + '</span>');
     }
-    var note = dish.preorder
-      ? '<span class="food-markers"><span class="food-dot" aria-hidden="true"></span>' +
-        escapeHTML(getCopy('preorderBadge')) + '</span>'
-      : '<span class="food-markers"><span>' +
-        escapeHTML(hasOptions ? getCopy('options') : getCopy('addToOrder')) + '</span></span>';
+    if (dish.preorder) {
+      tags.push('<span class="dish-tag dish-tag-preorder">' + preorderIcon() +
+        escapeHTML(getCopy('preorderBadge')) + '</span>');
+    }
+    if (!available) {
+      tags = ['<span class="dish-tag dish-tag-soldout">' + escapeHTML(getCopy('soldOut')) + '</span>'];
+    }
+    var tag = tags.length ? '<span class="dish-tags">' + tags.join('') + '</span>' : '';
+    var preorder = dish.preorder
+      ? '<span class="dish-preorder"><span class="dish-preorder-label">' + preorderIcon() +
+        escapeHTML(getCopy('preorderBadge')) + '</span><span class="dish-preorder-text">' +
+        escapeHTML(dish.preorderNote || getCopy('preorderDefault')) + '</span></span>'
+      : '';
+    var note = '<span class="food-markers"><span>' +
+      escapeHTML(hasOptions ? getCopy('options') : getCopy('addToOrder')) + '</span></span>';
     return '<article class="dish-card dish-row' + (available ? '' : ' is-soldout') + '">' +
       '<button class="dish-photo" type="button" data-open-dish="' + escapeHTML(dish.id) + '"' +
       (available ? '' : ' disabled') + ' aria-label="' + escapeHTML(name) + '">' +
@@ -610,7 +626,7 @@
       (available ? '' : ' disabled') + '>' +
       '<span class="dish-title-row"><span class="dish-name">' + escapeHTML(name) + '</span>' +
       '<span class="dish-price">' + escapeHTML(money(dish.priceCents)) + '</span></span>' +
-      '<span class="dish-description">' + escapeHTML(localize(dish.description)) + '</span>' +
+      '<span class="dish-description">' + escapeHTML(localize(dish.description)) + '</span>' + preorder +
       '<span class="dish-foot">' + note + '</span></button></article>';
   }
   function menuSkeletonMarkup() {
@@ -802,10 +818,13 @@
     var selectedPrice = unitPrice * state.modalQuantity;
     var valid = getModalValidity(dish);
     var title = localize(dish.name);
+    var modalTags = [];
+    if (dish.tag) modalTags.push('<span class="dish-tag">' + escapeHTML(getCopy(dish.tag)) + '</span>');
+    if (dish.preorder) modalTags.push('<span class="dish-tag dish-tag-preorder">' + preorderIcon() + escapeHTML(getCopy('preorderBadge')) + '</span>');
+    var modalTag = modalTags.length ? '<span class="dish-tags">' + modalTags.join('') + '</span>' : '';
     return '<div class="modal-backdrop" data-close-modal><section class="dish-modal" role="dialog"' +
       ' aria-modal="true" aria-labelledby="modalTitle" tabindex="-1"><div class="modal-image">' +
-      '<img src="' + escapeHTML(dish.image) + '" alt="' + escapeHTML(title) + '" />' +
-      (dish.tag ? '<span class="dish-tag">' + escapeHTML(getCopy(dish.tag)) + '</span>' : '') + '</div>' +
+      '<img src="' + escapeHTML(dish.image) + '" alt="' + escapeHTML(title) + '" />' + modalTag + '</div>' +
       '<div class="modal-body"><button class="close-modal dish-modal-close" type="button" data-close-modal' +
       ' aria-label="' + escapeHTML(getCopy('close')) + '">' +
       '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 5 10 10M15 5 5 15" /></svg></button>' +
@@ -813,8 +832,9 @@
       '<h2 id="modalTitle">' + escapeHTML(title) + '</h2>' +
       '<p class="modal-description">' + escapeHTML(localize(dish.description)) + '</p>' +
       (dish.preorder
-        ? '<p class="modal-preorder"><strong>' + escapeHTML(getCopy('preorderBadge')) + '</strong>' +
-          (dish.preorderNote ? ' ' + escapeHTML(dish.preorderNote) : '') + '</p>'
+        ? '<div class="modal-preorder" role="note"><span class="modal-preorder-icon" aria-hidden="true">' +
+          preorderIcon() + '</span><div><strong>' + escapeHTML(getCopy('preorderBadge')) + '</strong><p>' +
+          escapeHTML(dish.preorderNote || getCopy('preorderDefault')) + '</p></div></div>'
         : '') +
       '<div class="modal-base-price" id="modalBasePrice">' + escapeHTML(money(unitPrice)) + '</div>' +
       (optionsMarkup ? '<div class="modal-options">' + optionsMarkup + '</div>' : '') +
@@ -935,6 +955,11 @@
         '<p class="cart-line-name">' + escapeHTML(name) + '</p>' +
         '<strong class="line-price">' + escapeHTML(money(unitPrice * line.quantity)) + '</strong></div>' +
         (options ? '<p class="cart-line-options">' + escapeHTML(options) + '</p>' : '') +
+        (dish.preorder
+          ? '<p class="cart-line-preorder"><span class="cart-line-preorder-label">' +
+            escapeHTML(getCopy('preorderCart')) + '</span> ' +
+            escapeHTML(dish.preorderNote || getCopy('preorderDefault')) + '</p>'
+          : '') +
         '<div class="quantity-control">' +
         '<button type="button" data-cart-delta="-1" data-line="' + escapeHTML(line.key) + '"' +
         ' aria-label="' + escapeHTML(getCopy('decrease')) + '">−</button>' +

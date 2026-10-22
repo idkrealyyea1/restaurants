@@ -398,3 +398,167 @@
     font-size: 16px; /* Prevent iOS zoom on focus. */
   }
 }
+
+/* --------------------------- pre-order visibility ---------------------- */
+/* Keep the badge stack above the photo, and make the pre-order state a real
+   content block instead of a tiny line under the card. */
+.dish-tags {
+  max-width: calc(100% - 8px);
+  position: absolute;
+  z-index: 2;
+  inset-block-start: 5px;
+  inset-inline-start: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.dish-tags .dish-tag {
+  max-width: 100%;
+  position: static;
+  inset: auto;
+}
+
+.dish-tag-preorder {
+  background: var(--coral);
+  color: #fffaf4;
+  gap: 4px;
+}
+
+.dish-tag-preorder svg {
+  width: 10px;
+  height: 10px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.dish-preorder {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 3px 7px;
+  margin-top: 7px;
+  padding: 6px 8px;
+  border: 1px solid color-mix(in srgb, var(--coral) 34%, transparent);
+  border-inline-start: 3px solid var(--coral);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--coral) 9%, #fffaf4);
+  color: #6d3b2c;
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.dish-preorder-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+  font-weight: 800;
+  color: color-mix(in srgb, var(--coral) 70%, var(--ink));
+}
+
+.dish-preorder-label svg {
+  width: 11px;
+  height: 11px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.dish-preorder-text {
+  min-width: 0;
+  flex: 1 1 120px;
+}
+
+.modal-image .dish-tags {
+  inset-block-start: 12px;
+  inset-inline-start: 12px;
+  max-width: calc(100% - 72px);
+}
+
+.dish-modal .dish-tag-preorder {
+  min-height: 25px;
+  padding: 0 10px;
+  font-size: 9px;
+}
+
+.modal-preorder {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 12px 0 0;
+  padding: 12px 14px;
+  border: 1px solid color-mix(in srgb, var(--coral) 28%, transparent);
+  border-inline-start: 4px solid var(--coral);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--coral) 9%, #fffaf4);
+  color: #6d3b2c;
+}
+
+.modal-preorder-icon {
+  width: 30px;
+  height: 30px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--coral) 16%, #fffaf4);
+  color: color-mix(in srgb, var(--coral) 70%, var(--ink));
+}
+
+.modal-preorder-icon svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.modal-preorder strong {
+  display: block;
+  color: color-mix(in srgb, var(--coral) 70%, var(--ink));
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.modal-preorder p {
+  margin: 2px 0 0;
+  color: #6d3b2c;
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.cart-line-preorder {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 2px 6px;
+  margin: 4px 0 6px;
+  padding: 5px 7px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--coral) 9%, #fffaf4);
+  color: #6d3b2c;
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+.cart-line-preorder-label {
+  flex: none;
+  font-weight: 800;
+  color: color-mix(in srgb, var(--coral) 70%, var(--ink));
+}
+
+@media (max-width: 640px) {
+  .dish-preorder {
+    font-size: 9px;
+  }
+}
