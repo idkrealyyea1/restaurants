@@ -395,11 +395,25 @@ async function listPublicDirectory() {
        FROM restaurants r
        LEFT JOIN restaurant_settings s ON s.restaurant_id = r.id
        LEFT JOIN subscriptions sub ON sub.restaurant_id = r.id
-       WHERE r.is_active AND (r.subscription_ends_at IS NULL OR r.subscription_ends_at > now())
-         AND (sub.status IS NULL OR sub.status IN ('trial', 'active', 'grace')
-           OR (sub.status = 'cancelled'
-             AND COALESCE(sub.cancel_effective_at, sub.current_period_end, now()) > now()))
-         AND (sub.status IS NULL OR sub.status <> 'suspended')
+       WHERE r.is_active
+         AND (
+           -- Legacy tenants without a subscription row keep using the clock.
+           (sub.id IS NULL AND (r.subscription_ends_at IS NULL OR r.subscription_ends_at > now()))
+           OR (
+             sub.status <> 'suspended'
+             AND (
+               -- A cancellation scheduled for the future still has access.
+               (sub.status = 'cancelled'
+                 AND COALESCE(sub.cancel_effective_at, sub.current_period_end) > now())
+               -- Trial/active/grace: access lasts through the later of the
+               -- paid period and the grace window, exactly like derive().
+               OR (sub.status <> 'cancelled'
+                 AND (sub.current_period_end IS NULL
+                   OR sub.current_period_end > now()
+                   OR sub.grace_until > now()))
+             )
+           )
+         )
        ORDER BY r.created_at ASC`
     )
   ).rows;

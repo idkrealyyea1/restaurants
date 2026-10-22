@@ -91,8 +91,8 @@
       '<p class="muted small">' + esc(I.t('su_accountDesc')) + '</p>' +
       field('su_email', input('f-email', 'email', draft.email, 'autocomplete="email" required'), 'f-email') +
       field('su_username', input('f-username', 'text', draft.username, 'autocomplete="username" required'), 'f-username') +
-      field('su_password', input('f-password', 'password', '', 'autocomplete="new-password" required'), 'f-password' +
-        '<p class="muted small">' + esc(I.t('su_passwordHint')) + '</p>');
+      field('su_password', input('f-password', 'password', '', 'autocomplete="new-password" required') +
+        '<p class="muted small">' + esc(I.t('su_passwordHint')) + '</p>', 'f-password');
   }
 
   function showType() {
@@ -165,7 +165,7 @@
     });
     document.getElementById('skip-product').addEventListener('click', async () => {
       await recordStep('product');
-      go('fulfillment');
+      await go(nextAfter('product'));
     });
   }
 
@@ -280,15 +280,19 @@
         draft.businessName = document.getElementById('f-bizname').value.trim();
         draft.slug = document.getElementById('f-slug').value.trim();
         if (draft.businessName.length < 2) throw new Error(I.t('su_bizName'));
-        const res = await api.post('/api/signup', {
-          email: draft.email, username: draft.username, password: draft.password,
-          businessName: draft.businessName, businessType: draft.businessType,
-          ...(draft.slug ? { slug: draft.slug } : {}),
-        });
-        business = { ...res.business, slug: res.business.slug };
-        draft.password = '';
-        await loadProfile();
-        await recordStep('info');
+        // Going back after signup must not create a second account. The
+        // business already exists at this point, so only the first pass posts.
+        if (!business) {
+          const res = await api.post('/api/signup', {
+            email: draft.email, username: draft.username, password: draft.password,
+            businessName: draft.businessName, businessType: draft.businessType,
+            ...(draft.slug ? { slug: draft.slug } : {}),
+          });
+          business = { ...res.business, slug: res.business.slug };
+          draft.password = '';
+          await loadProfile();
+          await recordStep('info');
+        }
         await go('product');
       } else if (screen === 'product') {
         await saveProduct();
@@ -358,6 +362,28 @@
   });
   nextBtn.addEventListener('click', submit);
 
+  function inputKey(el) {
+    if (el.id) return 'id:' + el.id;
+    return [el.name || '', el.type || '', el.dataset.day || '', el.className || '', el.type === 'radio' ? el.value : ''].join('|');
+  }
+
+  function snapshotInputs() {
+    const values = {};
+    stepEl.querySelectorAll('input, select, textarea').forEach((el) => {
+      values[inputKey(el)] = el.type === 'checkbox' || el.type === 'radio' ? el.checked : el.value;
+    });
+    return values;
+  }
+
+  function restoreInputs(values) {
+    stepEl.querySelectorAll('input, select, textarea').forEach((el) => {
+      const key = inputKey(el);
+      if (!(key in values)) return;
+      if (el.type === 'checkbox' || el.type === 'radio') el.checked = Boolean(values[key]);
+      else el.value = values[key];
+    });
+  }
+
   /* --------------------------------- boot --------------------------------- */
 
   (async function boot() {
@@ -396,18 +422,12 @@
     await go('account');
   })();
 
-  if (window.I18N && window.I18N.onChange) window.I18N.onChange(() => {
-    // Keep typed values across the language re-render.
-    const stash = (id, key) => {
-      const el = document.getElementById(id);
-      if (el) draft[key] = el.value;
-    };
-    stash('f-email', 'email');
-    stash('f-username', 'username');
-    stash('f-bizname', 'businessName');
-    stash('f-slug', 'slug');
-    const picked = stepEl.querySelector('input[name="bt"]:checked');
-    if (picked) draft.businessType = picked.value;
-    go(screen);
+  if (window.I18N && window.I18N.onChange) window.I18N.onChange(async () => {
+    // Keep every typed field (including password, product, fee, and hours)
+    // across the language re-render.
+    const current = screen;
+    const values = snapshotInputs();
+    await go(current);
+    restoreInputs(values);
   });
 })();

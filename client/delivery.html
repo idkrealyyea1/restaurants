@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="api-base" content="">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111827">
+  <title>لوحة التوصيل — Restivo</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/fonts/fonts.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner container">
+      <a class="brand" href="/" data-i18n="brand">Restivo</a>
+      <span class="spacer"></span>
+      <span id="dlv-group" class="muted small"></span>
+      <button id="logout-btn" type="button" class="btn btn-outline btn-sm" data-i18n="logout">خروج</button>
+    </div>
+  </header>
+
+  <main class="container mt-2">
+    <div class="flex-between mb-2" style="gap:12px;flex-wrap:wrap">
+      <div>
+        <h1 class="section-title" data-i18n="dlvTitle">لوحة التوصيل</h1>
+        <p id="dlv-subtitle" class="muted small"></p>
+      </div>
+      <div class="flex-between" style="gap:8px">
+        <label class="sr-only" for="dlv-status" data-i18n="statusTh">الحالة</label>
+        <select id="dlv-status">
+          <option value="" data-i18n="dlvAll">كل الطلبات</option>
+          <option value="ready" data-i18n="status_ready">جاهز</option>
+          <option value="out_for_delivery" data-i18n="status_out_for_delivery">في طريق التوصيل</option>
+          <option value="completed" data-i18n="status_completed">مكتمل</option>
+        </select>
+        <button id="dlv-refresh" type="button" class="btn btn-outline btn-sm" data-i18n="refresh">تحديث</button>
+      </div>
+    </div>
+    <div id="dlv-error" class="notice notice-error hidden" role="alert"></div>
+    <div id="dlv-zone" aria-live="polite" aria-busy="false"></div>
+  </main>
+
+  <script src="/js/i18n.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/delivery.js"></script>
+</body>
+</html>

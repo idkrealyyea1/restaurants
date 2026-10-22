@@ -21,6 +21,7 @@ const files = require('./services/files.service');
 const authRoutes = require('./routes/auth.routes');
 const signupRoutes = require('./routes/signup.routes');
 const onboardingRoutes = require('./routes/onboarding.routes');
+const deliveryRoutes = require('./routes/delivery.routes');
 const publicRoutes = require('./routes/public.routes');
 const adminRoutes = require('./routes/admin.routes');
 const ownerRoutes = require('./routes/owner.routes');
@@ -149,8 +150,8 @@ function buildApp() {
 
   /* ----------------- page routes (vanilla, D1) ----------------- */
   // express.static (extensions:['html']) already resolves /app, /track, /leads,
-  // /resources, /login, /owner, /admin and friends. Only parameterized pages
-  // need explicit routes. /delivery was removed with delivery accounts (D4).
+  // /resources, /login, /owner, /admin, /delivery and friends. Only
+  // parameterized pages need explicit routes.
   app.get('/restaurant/:slug', (req, res) => {
     res.sendFile(path.join(CLIENT_DIR, 'restaurant.html'));
   });
@@ -178,6 +179,7 @@ function buildApp() {
   app.use('/api/auth', authRoutes);
   app.use('/api', signupRoutes);
   app.use('/api/onboarding', onboardingRoutes);
+  app.use('/api/delivery', deliveryRoutes);
   app.use('/api/admin', adminRoutes);
   app.use('/api/owner', ownerRoutes);
   app.use('/api/owner/leads', leadsRoutes);

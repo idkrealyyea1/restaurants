@@ -4,7 +4,7 @@ const { test } = require('node:test');
 const assert = require('node:assert');
 
 test('menu grid breakpoint is 720px', () => {
-  const css = require('fs').readFileSync(require('path').join(__dirname, '..', 'client', 'css', 'restivo.css'), 'utf8');
+  const css = require('fs').readFileSync(require('path').join(__dirname, '..', 'client', 'demo', 'styles.css'), 'utf8');
   assert.ok(css.includes('720px'));
 });
 

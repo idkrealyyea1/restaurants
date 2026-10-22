@@ -36,7 +36,7 @@ async function create({ restaurantId, payload }) {
     {
       const { accessAllowed } = require('./subscriptions.service');
       if (!(await accessAllowed(client, restaurantId))) {
-        throw require('../utils/errors').forbidden('SUBSCRIPTION_EXPIRED', 'Subscription expired — please renew ($19.99/month) | انتهت التجربة — تواصل +972567439846');
+        throw require('../utils/errors').forbidden('SUBSCRIPTION_EXPIRED', 'Subscription expired — please renew | انتهى الاشتراك — يرجى التجديد');
       }
     }
 

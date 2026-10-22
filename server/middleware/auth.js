@@ -71,7 +71,8 @@ async function requireRestaurantAdmin(req, res, next) {
       const { getSubscription } = require('../services/restaurants.service');
       const sub = await getSubscription(req.user.restaurant_id);
       if (!sub.active && req.method !== 'GET') {
-        return next(forbidden('SUBSCRIPTION_EXPIRED', 'انتهت فترة التجربة 7 أيام — تواصل +972567439846 ($19.99/شهر) | 7-day trial finished — contact +972567439846'));
+        // Neutral copy: the owner can change price and trial length at any time.
+        return next(forbidden('SUBSCRIPTION_EXPIRED', 'انتهت فترة التجربة — تواصل مع الإدارة للتجديد | Trial finished — contact the platform owner to renew'));
       }
     } catch (e) { return next(e); }
   }

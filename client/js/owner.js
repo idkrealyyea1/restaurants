@@ -169,10 +169,10 @@
         e.preventDefault();
         const priceMaj = parseFloat(document.getElementById('pricing-price').value);
         const cur = document.getElementById('pricing-currency').value;
-        if (!Number.isFinite(priceMaj) || priceMaj < 0) { toast('Invalid price', 'error'); return; }
+        if (!Number.isFinite(priceMaj) || priceMaj < 0) { toast(I.t('ownerInvalidPrice'), 'error'); return; }
         try {
           await api.patch('/api/owner/platform-pricing', { pricingCents: Math.round(priceMaj * 100), pricingCurrency: cur });
-          toast('Pricing saved', 'success');
+          toast(I.t('ownerPricingSaved'), 'success');
           await loadPricing();
         } catch (err) { toast(err.message, 'error'); }
       });
@@ -798,7 +798,11 @@
       const major = (p.pricing_cents / 100).toFixed(2);
       document.getElementById('pricing-price').value = major;
       document.getElementById('pricing-currency').value = p.pricing_currency || 'USD';
-      zone.textContent = 'Current: ' + fmtMoney(p.pricing_cents, p.pricing_currency || 'USD') + ' / ' + (p.pricing_period || 'month') + ' — trial ' + (p.trial_days || 7) + ' days';
+      zone.textContent = I.t('ownerCurrentPricing', {
+        price: fmtMoney(p.pricing_cents, p.pricing_currency || 'USD'),
+        period: p.pricing_period || 'month',
+        days: p.trial_days || 7,
+      });
     } catch (err) {
       zone.textContent = err.message;
     }

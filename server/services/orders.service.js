@@ -110,6 +110,7 @@ async function priceSelections(client, { restaurantId, menuItemId, baseCents, se
       throw badRequest(`Pick between ${g.minPicks} and ${g.maxPicks} for "${g.name}"`, [{ field: 'selections' }]);
     }
     if (g.pricing === 'replace') {
+      if (qtyByChoice.size === 0) continue; // optional group left unpicked
       const [[choiceId]] = [...qtyByChoice.entries()];
       const c = g.choices.get(choiceId);
       if (!c) throw badRequest('Unknown option selection', [{ field: 'selections' }]);
@@ -195,7 +196,10 @@ async function createCheckout({ restaurantId, payload }) {
     {
       const { accessAllowed } = require('./subscriptions.service');
       if (!(await accessAllowed(client, restaurantId))) {
-        throw require('../utils/errors').forbidden('SUBSCRIPTION_EXPIRED', 'Subscription expired — please renew ($19.99/month) | انتهت التجربة — تواصل +972567439846');
+        throw require('../utils/errors').forbidden(
+          'SUBSCRIPTION_EXPIRED',
+          'This restaurant is not accepting orders right now. Please try again later.'
+        );
       }
     }
 
@@ -247,23 +251,47 @@ async function createCheckout({ restaurantId, payload }) {
 
     const lines = [];
     let subtotal = 0;
-    // Merge duplicate item entries (and their selections) exactly like quantities.
-    const selByItem = new Map();
-    for (const p of payload.items) {
-      const key = String(p.itemId).toLowerCase();
-      selByItem.set(key, (selByItem.get(key) || []).concat(p.selections || []));
+    // A cart may contain the same dish more than once with different option
+    // sets (for example one large and one small). Merge only lines whose
+    // selections are identical; merging by item id alone would concatenate
+    // two option sets into one invalid selection.
+    function selectionSignature(selections) {
+      return (selections || []).map((sel) => {
+        const choices = (sel.choices || [])
+          .map((choice) => String(choice.choiceId).toLowerCase() + ':' + choice.quantity)
+          .sort()
+          .join(',');
+        return String(sel.groupId).toLowerCase() + '[' + choices + ']';
+      }).sort().join('|');
     }
-    for (const row of itemRes.rows) {
-      const qty = wanted.get(row.id);
+    const groupedLines = new Map();
+    for (const p of payload.items) {
+      const itemId = String(p.itemId).toLowerCase();
+      const key = itemId + '||' + selectionSignature(p.selections);
+      const existing = groupedLines.get(key);
+      if (existing) {
+        existing.quantity += p.quantity;
+      } else {
+        groupedLines.set(key, {
+          itemId,
+          quantity: p.quantity,
+          selections: p.selections || [],
+        });
+      }
+    }
+    const rowsById = new Map(itemRes.rows.map((row) => [String(row.id).toLowerCase(), row]));
+    for (const grouped of groupedLines.values()) {
+      const row = rowsById.get(grouped.itemId);
+      if (!row) continue; // availability was already enforced above
+      const qty = grouped.quantity;
       let unit = row.price_cents;
       const snapshots = [];
-      const sels = selByItem.get(String(row.id).toLowerCase()) || [];
-      if (sels.length > 0) {
+      if (grouped.selections.length > 0) {
         unit = await priceSelections(client, {
           restaurantId,
           menuItemId: row.id,
           baseCents: row.price_cents,
-          selections: sels,
+          selections: grouped.selections,
           snapshots,
         });
       }

@@ -1,5 +1,12 @@
 'use strict';
 (function(){
+  const I = window.I18N;
+  function tr(key, vars, fallback){
+    try{
+      const value = I && I.t ? I.t(key, vars) : key;
+      return value && value !== key ? value : fallback;
+    }catch(_){ return fallback; }
+  }
   const burger=document.getElementById('mk-burger');
   const drawer=document.getElementById('mk-drawer');
   if(burger && drawer){
@@ -11,30 +18,27 @@
       if(e.target.tagName==='A') drawer.classList.remove('open');
     });
   }
-  // pricing fetch for homepage pricing section
+  // One pricing fetch shared by every price label on the page.
   const priceEl=document.getElementById('mk-price');
   const pricePeriodEl=document.getElementById('mk-price-period');
-  if(priceEl){
-    fetch('/api/pricing', {credentials:'include'}).then(r=>r.json()).then(d=>{
+  const priceLabels=Array.from(document.querySelectorAll('[data-pricing]'));
+  if(priceEl || priceLabels.length){
+    let base=String(window.__API_BASE__||'');
+    if(!base){ const meta=document.querySelector('meta[name="api-base"]'); base=meta?String(meta.content||''):''; }
+    base=base.replace(/\/+$/,'');
+    fetch(base+'/api/pricing', {credentials:'include'}).then(r=>r.json()).then(d=>{
       const p=d.pricing||d;
-      if(p && p.pricing_cents!=null){
-        const major=(p.pricing_cents/100).toFixed(2).replace(/\.00$/,'');
-        const cur=p.pricing_currency||'USD';
-        try{
-          priceEl.textContent=new Intl.NumberFormat(undefined,{style:'currency',currency:cur}).format(p.pricing_cents/100);
-        }catch(_){ priceEl.textContent='$'+major; }
-        if(pricePeriodEl) pricePeriodEl.textContent='/'+(p.pricing_period||'month');
-      }
+      if(!p || p.pricing_cents==null) return;
+      const cur=p.pricing_currency||'USD';
+      let formatted;
+      try{
+        formatted=new Intl.NumberFormat(undefined,{style:'currency',currency:cur}).format(p.pricing_cents/100);
+      }catch(_){ formatted='$'+(p.pricing_cents/100).toFixed(2); }
+      if(priceEl) priceEl.textContent=formatted;
+      if(pricePeriodEl) pricePeriodEl.textContent='/'+(p.pricing_period||'month');
+      priceLabels.forEach(el=>{ el.textContent=formatted; });
     }).catch(()=>{});
   }
-  // demo pricing small
-  document.querySelectorAll('[data-pricing]').forEach(el=>{
-    fetch('/api/pricing').then(r=>r.json()).then(d=>{
-      const p=d.pricing||d;
-      const major=(p.pricing_cents/100).toFixed(2);
-      el.textContent='$'+major;
-    }).catch(()=>{});
-  });
   // smooth scroll for hash links
   document.querySelectorAll('a[href^="#"]').forEach(a=>{
     a.addEventListener('click',e=>{
@@ -72,7 +76,7 @@
       try{
         const n=(document.getElementById('rq-name')?.value||'').trim();
         const r=(document.getElementById('rq-rest')?.value||'').trim();
-        let msg='مرحبا Restivo — أريد صفحة لمطعمي';
+        let msg=tr('waRequestMsg', null, 'مرحبا Restivo — أريد صفحة لمطعمي');
         if(r) msg+=' ('+r+')';
         if(n) msg+=' — اسمي '+n;
         fast.href='https://wa.me/972567439846?text='+encodeURIComponent(msg);
@@ -103,9 +107,9 @@
         notes: document.getElementById('rq-notes').value.trim()
       };
       if(!payload.customerName || !payload.restaurantName || !payload.phone || !payload.whatsapp){
-        showMsg('الرجاء تعبئة الحقول المطلوبة *', 'error'); return;
+        showMsg(tr('rqRequired', null, 'الرجاء تعبئة الحقول المطلوبة *'), 'error'); return;
       }
-      btn.disabled=true; const old=btn.textContent; btn.textContent='جاري الإرسال…';
+      btn.disabled=true; const old=btn.textContent; btn.textContent=tr('rqSending', null, 'جاري الإرسال…');
       try{
         // Split-frontend: send the request to the API host (Render), not the
         // static host (Cloudflare Pages). Empty base = same origin.
@@ -114,10 +118,10 @@
         base=base.replace(/\/+$/,'');
         const r = await fetch(base + '/api/restaurant-requests', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)});
         const data = await r.json().catch(()=>null);
-        if(!r.ok) throw new Error(data && data.error && data.error.message || 'فشل الإرسال');
-        showMsg('تم إرسال طلبك بنجاح — رمز: ' + (data.request && data.request.code || '') + ' — سنتواصل معك قريبًا', 'ok');
+        if(!r.ok) throw new Error(data && data.error && data.error.message || tr('rqError', null, 'تعذّر الإرسال — حاول مجددًا'));
+        showMsg(tr('rqSent', { code: (data.request && data.request.code) || '' }, 'تم إرسال طلبك بنجاح — رمز: ' + ((data.request && data.request.code) || '')), 'ok');
         form.reset();
-        if(window.App && window.App.toast) window.App.toast('تم إرسال طلبك', 'success');
+        if(window.App && window.App.toast) window.App.toast(tr('rqSentToast', null, 'تم إرسال طلبك'), 'success');
       }catch(err){
         showMsg(err.message || 'حدث خطأ، حاول مجددًا', 'error');
         if(window.App && window.App.toast) window.App.toast(err.message, 'error');

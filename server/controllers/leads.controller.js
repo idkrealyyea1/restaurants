@@ -9,6 +9,7 @@ const categoriesService = require('../services/categories.service');
 const { normalizeSlug } = require('../utils/checks');
 const { badRequest } = require('../utils/errors');
 const { asyncHandler } = require('../utils/errors');
+const platform = require('../services/platform.service');
 const config = require('../../config');
 
 async function list(req,res){
@@ -163,7 +164,7 @@ async function prepareOne(id){
     demo = r ? { slug: r.slug, admin:{ username: lead.trial_username, password:'••••••••'} } : null;
   }
   const offer = buildOffer(lead, demo);
-  const messages = buildMessages(lead, demo);
+  const messages = await buildMessages(lead, demo);
   await leads.setOfferAndMessages(id, { offer_data: offer, messages, assets });
   return { lead: await leads.getById(id), offer, messages, demo };
 }
@@ -291,7 +292,7 @@ async function generateDemo(req,res){
   const result = await generateDemoForLead(lead);
   const updatedLead = await leads.getById(req.params.id);
   const offer = buildOffer(updatedLead, result);
-  const messages = buildMessages(updatedLead, result);
+  const messages = await buildMessages(updatedLead, result);
   await leads.setOfferAndMessages(lead.id, { offer_data: offer, messages, assets: { demo: result } });
   res.json({ lead: await leads.getById(req.params.id), restaurant: result.restaurant, credentials: { username: result.admin.username, password: result.admin.password }, offer, messages });
 }
@@ -317,12 +318,20 @@ function buildOffer(lead, demo){
   };
 }
 
-function buildMessages(lead, demo){
+async function buildMessages(lead, demo){
   const appUrl = config.appUrl || config.frontendUrl;
   const demoUrl = demo ? `${appUrl}/restaurant/${demo.slug}` : `${appUrl}/restaurant/demo`;
   const loginUrl = `${appUrl}/login.html`;
   const user = demo?.admin?.username || lead.trial_username || `${lead.restaurant_name.toLowerCase().replace(/[^a-z0-9]/g,'_').slice(0,15)}_admin`;
   const pass = demo?.admin?.password || '••••••••';
+  // Live platform pricing: the owner may change price/period/trial at any time,
+  // so outreach copy must never hardcode a stale number.
+  const pricing = await platform.getPricing().catch(() => ({ pricing_cents: 1999, pricing_currency: 'USD', pricing_period: 'month', trial_days: 7 }));
+  const price = new Intl.NumberFormat('en-US', { style: 'currency', currency: pricing.pricing_currency || 'USD' }).format((pricing.pricing_cents || 0) / 100);
+  const periodShort = pricing.pricing_period === 'year' ? 'سنة' : 'شهر';
+  const periodYearly = pricing.pricing_period === 'year' ? 'سنوياً' : 'شهرياً';
+  const trialDays = Number.isInteger(pricing.trial_days) ? pricing.trial_days : 7;
+  const trialPhrase = trialDays === 1 ? 'يوم واحد' : trialDays === 2 ? 'يومين' : `${trialDays} أيام`;
   const hasWebsite = !!lead.website;
   const hasMenu = !!lead.menu_url;
   const hasInsta = !!lead.instagram;
@@ -346,17 +355,17 @@ function buildMessages(lead, demo){
     problem = `لكن عبر وسيط بياخذ 18-25% من كل طلب — من 100 طلب بـ 5000 شيكل، بتخسروا 1000`;
   }
   const solution = `عشان هيك جهزت لكم **ديمو حي باسم مطعمكم** — نفس منيوكم، بألوانكم، جاهز للطلب:`;
-  const benefits = `✓ رابط خاص فيكم (مثلاً ${demoUrl}) + QR للطاولات\n✓ الزبون بطلب من موقعكم — الطلب بوصلك واتساب + لوحة تحكم مع كود تتبع\n✓ حجز طاولات بنفس الموقع\n✓ **0% عمولة** — $19.99/شهر ثابت، لو بعت بـ 10,000 بتوفر 2000 مقارنة بـ Talabat`;
-  const cta = `جربوه الآن 7 أيام مجاناً — بدون بطاقة، أنا جهزت كل شيء:`;
+  const benefits = `✓ رابط خاص فيكم (مثلاً ${demoUrl}) + QR للطاولات\n✓ الزبون بطلب من موقعكم — الطلب بوصلك واتساب + لوحة تحكم مع كود تتبع\n✓ حجز طاولات بنفس الموقع\n✓ **0% عمولة** — ${price} ${periodYearly} ثابت، لو بعت بـ 10,000 بتوفر 2000 مقارنة بـ Talabat`;
+  const cta = `جربوه الآن ${trialPhrase} مجاناً — بدون بطاقة، أنا جهزت كل شيء:`;
   // WhatsApp — short, punchy, proof + demo + CTA
   const whatsapp = `مرحبا ${lead.restaurant_name} 👋\n${hook} ${problem}.\n\n${solution}\n${benefits}\n\n${cta}\n🔗 ${demoUrl}\n🔐 دخول: ${loginUrl}\n👤 ${user}\n🔑 ${pass}\n\nلو عجبكم بتخلوه، لو لا بحذفه — شو رأيكم أبعتلكم فيديو 30 ثانية كيف الزبون بطلب؟\n— Restivo | واتساب: +972567439846`;
   // Instagram — even shorter (people skim)
-  const instagram = `مرحبا ${lead.restaurant_name} 👋 ${hook.split('—')[0]} — جهزت لكم ديمو حي: ${demoUrl} (طلب مباشر + واتساب + حجز طاولات، 0% عمولة $19.99/شهر).\nتجربة 7 أيام: ${loginUrl} | ${user} / ${pass}\nتحبوا تشوفوه؟`;
+  const instagram = `مرحبا ${lead.restaurant_name} 👋 ${hook.split('—')[0]} — جهزت لكم ديمو حي: ${demoUrl} (طلب مباشر + واتساب + حجز طاولات، 0% عمولة ${price}/${periodShort}).\nتجربة ${trialPhrase}: ${loginUrl} | ${user} / ${pass}\nتحبوا تشوفوه؟`;
   // Email — full story with subject that gets opened
   const email_subject = `لـ ${lead.restaurant_name}: وفر 20% من كل طلب — ديمو جاهز باسمكم`;
-  const email_body = `مرحبا فريق ${lead.restaurant_name}،\n\n${hook}.\n${problem}.\n\n${solution}\n${demoUrl}\n\n${benefits}\n\n${cta}\n• رابط الديمو: ${demoUrl}\n• لوحة الإدارة: ${loginUrl}\n• المستخدم: ${user}\n• الباسورد: ${pass}\n• المدة: 7 أيام مجاناً\n\nمثال: مطعم في ${lead.city||'عمان'} كان يدفع 900 شيكل عمولة شهرياً، الآن يدفع $19.99 ثابت ويحتفظ ببيانات زبائنه.\n\nلو حابين أعدل الأصناف/الأسعار حسب منيوكم الحقيقي، ابعتولي منيو وصور وأنا أحدثه خلال ساعة.\n\nبانتظار رأيكم،\nRestivo — +972567439846\n${appUrl}\n\nP.S. الديمو فيه 6 أصناف مؤقتة للعرض — بنبدلها بمنيوكم الحقيقي مجاناً.`;
+  const email_body = `مرحبا فريق ${lead.restaurant_name}،\n\n${hook}.\n${problem}.\n\n${solution}\n${demoUrl}\n\n${benefits}\n\n${cta}\n• رابط الديمو: ${demoUrl}\n• لوحة الإدارة: ${loginUrl}\n• المستخدم: ${user}\n• الباسورد: ${pass}\n• المدة: ${trialPhrase} مجاناً\n\nمثال: مطعم في ${lead.city||'عمان'} كان يدفع 900 شيكل عمولة شهرياً، الآن يدفع ${price} ثابت ويحتفظ ببيانات زبائنه.\n\nلو حابين أعدل الأصناف/الأسعار حسب منيوكم الحقيقي، ابعتولي منيو وصور وأنا أحدثه خلال ساعة.\n\nبانتظار رأيكم،\nRestivo — +972567439846\n${appUrl}\n\nP.S. الديمو فيه 6 أصناف مؤقتة للعرض — بنبدلها بمنيوكم الحقيقي مجاناً.`;
   // Short version for offer card
-  const short_whatsapp = `مرحبا ${lead.restaurant_name} — جهزت لكم موقع طلب خاص ${demoUrl} (0% عمولة $19.99/شهر) — تجربة 7 أيام: ${user}/${pass}`;
+  const short_whatsapp = `مرحبا ${lead.restaurant_name} — جهزت لكم موقع طلب خاص ${demoUrl} (0% عمولة ${price}/${periodShort}) — تجربة ${trialPhrase}: ${user}/${pass}`;
   return {
     whatsapp, short_whatsapp,
     instagram,
@@ -386,7 +395,7 @@ async function prepareEverything(req,res){
       steps.push({ step:'demo', ok:true, existing:true });
     }
     const offer = buildOffer(lead, demo);
-    const messages = buildMessages(lead, demo);
+    const messages = await buildMessages(lead, demo);
     await leads.setOfferAndMessages(id, { offer_data: offer, messages, assets });
     steps.push({ step:'offer', ok:true });
     steps.push({ step:'messages', ok:true });

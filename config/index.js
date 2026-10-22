@@ -156,6 +156,10 @@ const config = Object.freeze({
     global: { windowMs: intEnv('RATE_LIMIT_WINDOW_MS', 15 * 60 * 1000), max: intEnv('RATE_LIMIT_MAX', 300) },
     auth: { windowMs: intEnv('AUTH_RATE_WINDOW_MS', 15 * 60 * 1000), max: intEnv('AUTH_RATE_MAX', 10) },
     order: { windowMs: intEnv('ORDER_RATE_WINDOW_MS', 60 * 60 * 1000), max: intEnv('ORDER_RATE_MAX', 20) },
+    // Order tracking is polled every 15s by the customer page, so it needs a
+    // much higher ceiling than login while still making code enumeration
+    // pointless (31^8 possible codes).
+    track: { windowMs: intEnv('TRACK_RATE_WINDOW_MS', 15 * 60 * 1000), max: intEnv('TRACK_RATE_MAX', 240) },
   },
 });
 

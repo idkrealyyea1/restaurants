@@ -9,6 +9,8 @@
   const errorBox = document.getElementById('error-box');
   const form = document.getElementById('track-form');
   const codeInput = document.getElementById('code-input');
+  const submitBtn = form ? form.querySelector('button[type="submit"]') : null;
+  const lastUpdatedEl = document.getElementById('last-updated');
 
   const FLOW_PICKUP = ['pending', 'confirmed', 'preparing', 'ready', 'completed'];
   const FLOW_DELIVERY = ['pending', 'confirmed', 'preparing', 'ready', 'out_for_delivery', 'completed'];
@@ -16,6 +18,19 @@
   let pollTimer = null;
   let currentCode = null;
   let lastOrder = null;
+
+  function markUpdated() {
+    if (!lastUpdatedEl) return;
+    try {
+      const time = new Date().toLocaleTimeString(I.lang === 'ar' ? 'ar' : 'en', {
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+      lastUpdatedEl.textContent = ' · ' + I.t('lastUpdated', { time: time });
+    } catch (_) {
+      lastUpdatedEl.textContent = '';
+    }
+  }
 
   function statusLabel(status) {
     return I.t('status_' + status);
@@ -34,14 +49,25 @@
     return msg;
   }
 
-  async function loadOrder(code) {
+  async function loadOrder(code, options) {
+    const silent = !!(options && options.silent);
     try {
       const data = await api.get('/api/orders/track/' + encodeURIComponent(code));
       render(data.order);
+      markUpdated();
+      return true;
     } catch (err) {
-      stopPolling();
-      showLookup();
+      const sameOrder = lastOrder && String(lastOrder.code).toUpperCase() === String(code).toUpperCase();
+      if (!silent || !sameOrder) {
+        stopPolling();
+        if (!sameOrder) showLookup();
+      }
+      if (err && err.status === 404) {
+        stopPolling();
+        if (!sameOrder) showLookup();
+      }
       showError(friendlyError(err));
+      return false;
     }
   }
 
@@ -58,7 +84,8 @@
       '<div class="flex-between">' +
         '<div><h1 class="order-code">' + esc(order.code) + '</h1>' +
         '<p class="muted small mb-0">' + esc(order.restaurant_name) + ' &middot; ' +
-        fmtDateTime(order.created_at) + '</p></div>' +
+        fmtDateTime(order.created_at) + ' &middot; ' +
+        esc(I.t(order.order_type === 'delivery' ? 'delivery' : 'pickup')) + '</p></div>' +
         '<span class="badge status-' + esc(order.status) + '">' + esc(statusLabel(order.status)) + '</span>' +
       '</div>';
 
@@ -77,7 +104,9 @@
     const rows = order.items.map((it) =>
       '<div class="total-row"><span>' + esc(it.quantity) + ' &times; ' + esc(it.item_name) +
       (((it.options || []).length)
-        ? '<br><small>' + esc(it.options.map((o) => o.choice_name + (o.quantity > 1 ? ' ×' + o.quantity : '')).join(', ')) + '</small>'
+        ? '<br><small>' + esc(it.options.map((o) =>
+            (o.group_name ? o.group_name + ': ' : '') + o.choice_name +
+            (o.quantity > 1 ? ' ×' + o.quantity : '')).join(', ')) + '</small>'
         : '') +
       (it.is_preorder
         ? '<br><small>' + esc(I.t('preorderBadge')) + (it.preorder_note ? ': ' + esc(it.preorder_note) : '') + '</small>'
@@ -104,8 +133,9 @@
 
   function renderActions(order) {
     const zone = document.getElementById('order-actions');
+    const reorderItems = order.items.slice(0, 30).map((it) => it.menu_item_id + ':' + it.quantity).join(',');
     const reorder = '/restaurant/' + encodeURIComponent(order.restaurant_slug) + '?reorder=' +
-      encodeURIComponent(order.items.map((it) => it.menu_item_id + ':' + it.quantity).join(',')) +
+      encodeURIComponent(reorderItems) +
       '&reorderFrom=' + encodeURIComponent(order.code);
 
     const btns = [];
@@ -141,7 +171,9 @@
     if (document.hidden) return;
     if (lastOrder && TERMINAL_STATUSES.has(lastOrder.status)) return;
     pollTimer = setInterval(() => {
-      api.get('/api/orders/track/' + encodeURIComponent(code)).then((d) => render(d.order)).catch(() => {});
+      api.get('/api/orders/track/' + encodeURIComponent(code))
+        .then((d) => { render(d.order); markUpdated(); })
+        .catch(() => {});
     }, 15000);
   }
 
@@ -162,6 +194,7 @@
   function showLookup() {
     orderBox.classList.add('hidden');
     lookupBox.classList.remove('hidden');
+    errorBox.classList.add('hidden');
   }
 
   form.addEventListener('submit', (e) => {
@@ -169,35 +202,51 @@
     const code = codeInput.value.trim().toUpperCase();
     if (!code) return;
     history.replaceState(null, '', '/track?code=' + encodeURIComponent(code));
-    loadOrder(code).then(() => startPolling(code));
+    if (submitBtn) submitBtn.disabled = true;
+    loadOrder(code)
+      .then((ok) => { if (ok) startPolling(code); })
+      .finally(() => { if (submitBtn) submitBtn.disabled = false; });
   });
 
   document.getElementById('reset-btn').addEventListener('click', () => {
     stopPolling();
     currentCode = null;
     lastOrder = null;
+    if (lastUpdatedEl) lastUpdatedEl.textContent = '';
     history.replaceState(null, '', '/track');
     showLookup();
   });
 
-  document.getElementById('refresh-btn').addEventListener('click', () => {
-    if (currentCode) loadOrder(currentCode);
+  document.getElementById('refresh-btn').addEventListener('click', (event) => {
+    if (!currentCode) return;
+    const button = event.currentTarget;
+    button.disabled = true;
+    loadOrder(currentCode, { silent: true })
+      .finally(() => { button.disabled = false; });
   });
 
   window.addEventListener('offline', () => showError(I.t('offlineTrack')));
   window.addEventListener('online', () => {
-    if (currentCode) loadOrder(currentCode).then(() => startPolling(currentCode));
+    if (currentCode) {
+      loadOrder(currentCode, { silent: true });
+      if (lastOrder && !TERMINAL_STATUSES.has(lastOrder.status)) startPolling(currentCode);
+    }
   });
 
   // Deep link support: /track?code=XXXX
   const initial = qsParam('code');
   if (initial && /^[A-Za-z0-9]{6,12}$/.test(initial)) {
     codeInput.value = initial.toUpperCase();
-    loadOrder(initial.toUpperCase()).then(() => startPolling(initial.toUpperCase()));
+    loadOrder(initial.toUpperCase()).then((ok) => {
+      if (ok) startPolling(initial.toUpperCase());
+    });
   }
 
   // Re-render the visible order when the user switches language.
   I.onChange(() => {
-    if (lastOrder && !orderBox.classList.contains('hidden')) render(lastOrder);
+    if (lastOrder && !orderBox.classList.contains('hidden')) {
+      render(lastOrder);
+      markUpdated();
+    }
   });
 })();

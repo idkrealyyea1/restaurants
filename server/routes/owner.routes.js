@@ -52,7 +52,7 @@ router.post('/restaurants/:id/subscription/suspend', requireOwner, owner.suspend
 router.post('/restaurants/:id/subscription/reactivate', requireOwner, owner.reactivateSubscription);
 router.get('/restaurants/:id/subscription/events', requireOwner, owner.listSubscriptionEvents);
 
-// Platform pricing — Restivo $19.99 editable.
+// Platform pricing — editable from the owner panel; all public pages read it.
 router.get('/platform-pricing', requireOwner, owner.getPlatformPricing);
 router.patch('/platform-pricing', requireOwner, owner.updatePlatformPricing);
 

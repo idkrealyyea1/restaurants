@@ -5,12 +5,11 @@
    - Static assets: cache-first.
    - API + uploads: never cached (must stay live/fresh). */
 
-const CACHE = 'restaurants-v21';
+const CACHE = 'restaurants-v23';
 const SHELL = [
   '/',
   '/css/style.css',
-  '/css/restivo.css',
-  '/css/storefront.css',
+  '/css/storefront-live.css',
   '/css/marketing.css',
   '/css/skeleton.css',
   '/fonts/fonts.css',
@@ -18,14 +17,13 @@ const SHELL = [
   '/js/i18n.js',
   '/js/home.js',
   '/js/restaurant.js',
-  '/js/restivo-content.js',
-  '/js/restivo-landing.js',
   '/js/track.js',
   '/js/pwa.js',
   '/js/skeleton.js',
   '/js/site.js',
   '/images/restivo-food-table.jpg',
   '/images/restivo-owner-tablet.jpg',
+  '/images/dish-placeholder.svg',
   '/login.html',
   '/app/',
   '/icons/icon.svg',

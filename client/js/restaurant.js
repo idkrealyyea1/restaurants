@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * Live storefront in the Ordora menu design language (same markup, IDs and
+ * Live storefront in the Restivo menu design language (same markup, IDs and
  * CSS as the /demo/ preview, backed by live API data). SERVER computes all
  * totals at checkout; option prices shown here are display estimates.
  */
@@ -53,30 +53,26 @@
      only additions (checkout needs customer fields the preview never had). */
   var copy = {
     ar: {
-      previewLabel: 'قائمة تجريبية',
-      tableLabel: 'الطاولة 08',
+      menuLabel: 'القائمة',
       share: 'مشاركة',
-      brandNote: 'برغر مشوي. ناس طيبين.',
+      brandNote: 'منيو رقمي',
       order: 'طلبك',
       openNow: 'مفتوح الآن',
       closed: 'مغلق حاليًا',
-      restaurantDescription: 'برغر طازج على الفحم، صوصاتنا الخاصة، وجمعة ما بتنمل.',
-      ratingLabel: 'من 280 تقييم',
-      deliveryTime: '20–30 دقيقة',
-      location: 'يافا، فلسطين',
+      restaurantDescription: 'أطباق طازجة وأسعار واضحة وطلب سهل بدون تطبيق.',
       coverLabel: 'صور المطعم',
       previousCover: 'الصورة السابقة',
       nextCover: 'الصورة التالية',
       showCover: 'عرض الصورة',
-      menuKicker: 'من الشواية، على طول',
-      menuTitle: 'قائمة ريد بن',
-      menuDescription: 'لحم طازج، خبز محمّص، وإضافات تخلّي كل قضمة أحلى.',
+      menuKicker: 'قائمة الطعام',
+      menuTitle: 'اختر أطباقك',
+      menuDescription: 'تصفّح الأصناف، أضف ما يعجبك، وأرسل طلبك مباشرة إلى المطعم.',
       searchLabel: 'ابحث في القائمة',
       searchPlaceholder: 'ابحث عن طبق تحبه',
       categoryLabel: 'أقسام القائمة',
       popularRibbon: 'اختيارات أحبّها ضيوفنا',
-      footerCopyright: '© 2026 Ordora. جميع الحقوق محفوظة.',
-      footerMade: 'صُنع مع Ordora',
+      footerCopyright: '© 2026 Restivo. جميع الحقوق محفوظة.',
+      footerMade: 'صُنع مع Restivo',
       viewOrder: 'عرض الطلب',
       all: 'كل الأصناف',
       bestSeller: 'الأكثر طلبًا',
@@ -106,7 +102,24 @@
       linkCopied: 'تم نسخ رابط القائمة',
       shareError: 'تعذّرت مشاركة الرابط من هذا المتصفح',
       closeOrder: 'إغلاق الطلب',
-      tableService: 'للطاولة 08',
+      tableService: 'الدفع عند الاستلام',
+      itemsCount: '{n} صنف',
+      soldOut: 'غير متوفر',
+      preorderBadge: 'طلب مسبق',
+      pickHint: 'حتى {n} خيارات',
+      noThanks: 'بدون إضافة',
+      freeDeliveryProgress: 'أضف {amount} لتحصل على توصيل مجاني',
+      freeDeliveryReached: 'توصيل مجاني',
+      deliveryUnavailable: 'التوصيل غير متاح لهذا المطعم حاليًا',
+      pickupOnly: 'استلام من المطعم فقط',
+      loadingMenu: 'جارٍ تحميل القائمة…',
+      loadErrorTitle: 'تعذّر تحميل القائمة',
+      retry: 'إعادة المحاولة',
+      emptyMenuTitle: 'القائمة قيد التجهيز',
+      emptyMenuText: 'لم يضف المطعم أطباقًا بعد. حاول مرة أخرى بعد قليل.',
+      reorderAdded: 'أضفنا {n} صنفًا من طلبك السابق',
+      reorderNeedsOptions: 'اختر خيارات الأصناف الأخرى لإضافتها',
+      reorderMissing: 'بعض الأصناف من طلبك السابق لم تعد متاحة',
       currencyLocale: 'ar',
       liveName: 'الاسم',
       liveWhatsapp: 'رقم الواتساب',
@@ -115,7 +128,7 @@
       livePlaceOrder: 'تأكيد الطلب',
       liveSending: 'جارٍ إرسال طلبك…',
       liveOrderSent: 'تم استلام طلبك',
-      liveShowCode: 'أظهر هذا الرمز عند الاستلام:',
+      liveShowCode: 'رمز طلبك:',
       liveTrack: 'تتبع طلبي',
       liveDone: 'تمام',
       liveEnterNameAndWa: 'الرجاء إدخال الاسم ورقم الواتساب',
@@ -125,30 +138,26 @@
       liveNotFound: 'المطعم غير موجود.',
     },
     en: {
-      previewLabel: 'Menu preview',
-      tableLabel: 'Table 08',
+      menuLabel: 'Menu',
       share: 'Share',
-      brandNote: 'Made for good table moments',
+      brandNote: 'Digital menu',
       order: 'Your order',
       openNow: 'Open now',
       closed: 'Currently closed',
-      restaurantDescription: 'Fresh-grilled burgers, house-made sauces, and the kind of company that makes you stay awhile.',
-      ratingLabel: 'from 280 reviews',
-      deliveryTime: '20–30 min',
-      location: 'Jaffa, Palestine',
+      restaurantDescription: 'Fresh food, clear prices, and ordering without an app.',
       coverLabel: 'Restaurant cover photos',
       previousCover: 'Previous cover photo',
       nextCover: 'Next cover photo',
       showCover: 'Show cover photo',
-      menuKicker: 'Straight off the grill',
-      menuTitle: 'The Red Bun menu',
-      menuDescription: 'Fresh beef, toasted buns, and the good stuff in every bite.',
+      menuKicker: 'The menu',
+      menuTitle: 'Choose your dishes',
+      menuDescription: 'Browse the dishes, add what you like, and send your order straight to the restaurant.',
       searchLabel: 'Search the menu',
       searchPlaceholder: 'Find something you love',
       categoryLabel: 'Menu categories',
       popularRibbon: 'Guest favorites',
-      footerCopyright: '© 2026 Ordora. All rights reserved.',
-      footerMade: 'Made with Ordora',
+      footerCopyright: '© 2026 Restivo. All rights reserved.',
+      footerMade: 'Made with Restivo',
       viewOrder: 'View order',
       all: 'Everything',
       bestSeller: 'Guest favorite',
@@ -178,7 +187,24 @@
       linkCopied: 'Menu link copied',
       shareError: 'This browser could not share the menu link',
       closeOrder: 'Close order',
-      tableService: 'For table 08',
+      tableService: 'Pay on pickup',
+      itemsCount: '{n} items',
+      soldOut: 'Sold out',
+      preorderBadge: 'Pre-order',
+      pickHint: 'Choose up to {n}',
+      noThanks: 'No thanks',
+      freeDeliveryProgress: 'Add {amount} for free delivery',
+      freeDeliveryReached: 'Free delivery unlocked',
+      deliveryUnavailable: 'Delivery is not available from this restaurant right now',
+      pickupOnly: 'Pickup only',
+      loadingMenu: 'Loading the menu…',
+      loadErrorTitle: 'The menu could not load',
+      retry: 'Try again',
+      emptyMenuTitle: 'The menu is being prepared',
+      emptyMenuText: 'This restaurant has not published any dishes yet. Please check back soon.',
+      reorderAdded: 'Added {n} item(s) from your last order',
+      reorderNeedsOptions: 'Choose options for the remaining items to add them',
+      reorderMissing: 'Some items from your last order are no longer available',
       currencyLocale: 'en',
       liveName: 'Name',
       liveWhatsapp: 'WhatsApp number',
@@ -212,17 +238,44 @@
     checkoutOpen: false,
     placing: false,
     placedOrder: null,
+    submissionKey: null,
+    checkoutDraft: { name: '', whatsapp: '', address: '', notes: '' },
     previousFocus: null,
     toastTimer: null,
     coverIndex: 0,
     coverTimer: null,
     coverPaused: false,
+    menuLoading: true,
+    menuError: false,
+    menuErrorText: '',
+    menuRetryable: true,
+    languagePinned: false,
   };
   var view = null;
   var dishes = [];
   var categories = [{ id: 'all', label: null, emoji: '🍽️' }];
   var coverSlides = [];
-  var FALLBACK_IMG = '/demo/images/restivo-food-table.jpg';
+  var FALLBACK_IMG = '/images/dish-placeholder.svg';
+  var LANG_STORE_KEY = 'site_lang';
+
+  // Language precedence: explicit ?lang=, then the visitor's saved choice,
+  // then the business default (applied in mapView only when nothing is pinned).
+  try {
+    var queryLanguage = new URLSearchParams(location.search).get('lang');
+    if (queryLanguage === 'ar' || queryLanguage === 'en') {
+      state.language = queryLanguage;
+      state.languagePinned = true;
+    }
+  } catch (_) { /* ignore malformed URLs */ }
+  if (!state.languagePinned) {
+    try {
+      var savedLanguage = localStorage.getItem(LANG_STORE_KEY);
+      if (savedLanguage === 'ar' || savedLanguage === 'en') {
+        state.language = savedLanguage;
+        state.languagePinned = true;
+      }
+    } catch (_) { /* storage may be blocked */ }
+  }
 
   function currency() {
     return (view && view.settings && view.settings.currency) || 'USD';
@@ -269,16 +322,19 @@
   function mapView(data) {
     view = data;
     var settings = data.settings || {};
-    // Honor the business storefront language (settings.storefrontLanguage).
-    if (settings.storefrontLanguage === 'en' || settings.storefrontLanguage === 'ar') {
+    // The business default applies only when the visitor has not chosen a
+    // language (?lang= or the shared site preference).
+    if (!state.languagePinned &&
+      (settings.storefrontLanguage === 'en' || settings.storefrontLanguage === 'ar')) {
       state.language = settings.storefrontLanguage;
     }
+    applyBrandTheme(settings);
     categories = [{ id: 'all', label: null, emoji: '🍽️' }].concat(
       (data.categories || []).map(function (c) {
         return { id: String(c.id), label: c.name, emoji: emojiFor(c.name) };
       })
     );
-    dishes = (data.items || []).filter(function (it) { return it.is_available !== false; }).map(function (it) {
+    dishes = (data.items || []).map(function (it) {
       var imgs = it.images && it.images.length ? it.images : (it.image_path ? [it.image_path] : []);
       return {
         id: String(it.id),
@@ -287,20 +343,39 @@
         description: { ar: it.description || '', en: it.description || '' },
         priceCents: Number(it.price_cents) || 0,
         image: imgs[0] || FALLBACK_IMG,
+        available: it.is_available !== false,
+        preorder: !!it.is_preorder,
+        preorderNote: it.preorder_note || '',
         tag: it.is_popular ? 'bestSeller' : null,
         popular: !!it.is_popular,
         options: (it.options || []).map(function (g) {
+          // Legacy groups only set is_required. Treat them as a one-pick
+          // minimum so the checkout can never submit an empty required group.
+          var minPicks = g.is_required ? Math.max(1, Number(g.min_picks) || 0) : (Number(g.min_picks) || 0);
+          var maxPicks = Math.max(1, Number(g.max_picks) || 1);
+          minPicks = Math.min(minPicks, maxPicks);
           return {
             id: String(g.id),
-            required: !!g.is_required,
+            required: !!g.is_required || minPicks > 0,
+            minPicks: minPicks,
+            maxPicks: maxPicks,
+            pricing: g.pricing === 'replace' ? 'replace' : 'adjust',
             label: { ar: g.name, en: g.name },
             choices: (g.choices || []).filter(function (c) { return c.is_available !== false; }).map(function (c) {
-              return { id: String(c.id), label: { ar: c.name, en: c.name }, extraCents: Number(c.price_cents) || 0 };
+              return {
+                id: String(c.id),
+                label: { ar: c.name, en: c.name },
+                extraCents: Number(c.price_cents) || 0,
+                maxQuantity: Math.max(1, Number(c.max_quantity) || 1),
+              };
             }),
           };
         }).filter(function (g) { return g.choices.length > 0; }),
       };
     });
+    if (!settings.deliveryEnabled && state.fulfillment === 'delivery') {
+      state.fulfillment = 'pickup';
+    }
     var heroes = data.heroImages || [];
     if (heroes.length) {
       coverSlides = heroes.map(function (h) {
@@ -309,15 +384,76 @@
     } else if (settings.coverPath) {
       coverSlides = [{ image: settings.coverPath, alt: { ar: data.name, en: data.name } }];
     } else {
-      coverSlides = [
-        { image: '/demo/images/red-bun-campaign-1.jpg', alt: { ar: data.name, en: data.name } },
-        { image: '/demo/images/red-bun-campaign-2.jpg', alt: { ar: data.name, en: data.name } },
-      ];
+      coverSlides = [{ image: null, initial: String(data.name || '?').trim().charAt(0) }];
     }
-    var logo = $('#restaurantLogo');
-    if (logo && settings.logoPath) logo.src = settings.logoPath;
-    // Drop cart lines for dishes that no longer exist.
-    state.cart = state.cart.filter(function (line) { return getDish(line.dishId); });
+    var logoLink = $('.restaurant-logo-overlap');
+    if (logoLink) {
+      if (settings.logoPath) {
+        logoLink.classList.remove('logo-fallback');
+        logoLink.innerHTML = '<img class="restaurant-logo-image" id="restaurantLogo" src="' +
+          escapeHTML(settings.logoPath) + '" alt="' + escapeHTML(data.name) + '" />';
+      } else {
+        logoLink.classList.add('logo-fallback');
+        logoLink.innerHTML = '<span aria-hidden="true">' +
+          escapeHTML(String(data.name || '?').trim().charAt(0)) + '</span>';
+        logoLink.setAttribute('aria-label', data.name);
+      }
+    }
+    // Drop cart lines for dishes that no longer exist, are sold out, or whose
+    // required option choices disappeared; also forget stale choice ids so the
+    // payload can never carry references the server no longer knows about.
+    sanitizeCart();
+  }
+
+  function sanitizeCart() {
+    var changed = false;
+    state.cart = state.cart.filter(function (line) {
+      var dish = getDish(line.dishId);
+      if (!dish || dish.available === false) {
+        changed = true;
+        return false;
+      }
+      if (!line.selections || typeof line.selections !== 'object') {
+        line.selections = {};
+        changed = true;
+      }
+      var valid = true;
+      dish.options.forEach(function (group) {
+        var raw = line.selections[group.id] || [];
+        var picked = raw.filter(function (choiceId) {
+          return group.choices.some(function (choice) { return choice.id === choiceId; });
+        });
+        if (picked.length !== raw.length) changed = true;
+        if (picked.length) line.selections[group.id] = picked;
+        else delete line.selections[group.id];
+        if (picked.length < group.minPicks || picked.length > group.maxPicks) valid = false;
+      });
+      if (!valid) {
+        changed = true;
+        return false;
+      }
+      return true;
+    });
+    if (changed) saveCart();
+  }
+
+  function applyBrandTheme(settings) {
+    if (!App.theme || typeof App.theme.buildTokens !== 'function') return;
+    // No configured brand colours: keep the neutral Restivo palette instead of
+    // replacing it with the platform's fallback accent.
+    if (!settings.primaryColor && !settings.secondaryColor) return;
+    var tokens = App.theme.buildTokens(settings.primaryColor, settings.secondaryColor);
+    if (!tokens) return;
+    var root = document.documentElement;
+    Object.keys(tokens).forEach(function (name) {
+      root.style.setProperty(name, tokens[name]);
+    });
+    // The storefront stylesheet is built on the coral/teal token pair.
+    root.style.setProperty('--coral', tokens['--primary']);
+    root.style.setProperty('--teal', tokens['--secondary']);
+    root.style.setProperty('--teal-deep', tokens['--secondary-dark']);
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', tokens['--secondary'] || '#1f3439');
   }
 
   /* ------------------------------ cover ---------------------------- */
@@ -338,6 +474,7 @@
   }
   function startCoverAutoplay() {
     window.clearInterval(state.coverTimer);
+    if (coverSlides.length < 2) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     state.coverTimer = window.setInterval(function () {
       if (!state.coverPaused && !document.hidden) showCover(state.coverIndex + 1);
@@ -348,18 +485,31 @@
     var carousel = $('#coverCarousel');
     if (!carousel) return;
     $('#coverTrack').innerHTML = coverSlides.map(function (slide, index) {
+      var media = slide.image
+        ? '<img src="' + escapeHTML(slide.image) + '" alt="' + escapeHTML(localize(slide.alt || '')) + '"' +
+          (index === 0 ? ' fetchpriority="high"' : ' loading="lazy"') + ' />'
+        : '<div class="cover-placeholder" aria-hidden="true"><span>' +
+          escapeHTML(slide.initial || '?') + '</span></div>';
       return '<div class="cover-slide' + (index === 0 ? ' is-active' : '') + '" aria-hidden="' + (index !== 0) + '"' +
         ' aria-roledescription="slide" aria-label="' + (index + 1) + ' / ' + coverSlides.length + '">' +
-        '<img src="' + escapeHTML(slide.image) + '" alt="' + escapeHTML(localize(slide.alt)) + '"' +
-        (index === 0 ? ' fetchpriority="high"' : ' loading="lazy"') + ' /></div>';
+        media + '</div>';
     }).join('');
+    var previous = $('#coverPrevious');
+    var next = $('#coverNext');
+    var pagination = $('#coverPagination');
+    if (previous) previous.hidden = coverSlides.length < 2;
+    if (next) next.hidden = coverSlides.length < 2;
+    if (pagination) pagination.hidden = coverSlides.length < 2;
     $('#coverPagination').innerHTML = coverSlides.map(function (_, index) {
       return '<button class="cover-dot' + (index === 0 ? ' is-active' : '') + '" type="button"' +
         ' data-cover-index="' + index + '" aria-label="' + escapeHTML(getCopy('showCover')) + ' ' + (index + 1) + '"' +
         (index === 0 ? ' aria-current="true"' : '') + '></button>';
     }).join('');
     showCover(0);
-    if (carousel.dataset.wired) return;
+    if (carousel.dataset.wired) {
+      startCoverAutoplay();
+      return;
+    }
     carousel.dataset.wired = '1';
     carousel.addEventListener('click', function (event) {
       var control = event.target.closest('[data-cover-step], [data-cover-index]');
@@ -435,28 +585,66 @@
     var name = localize(dish.name);
     var hasOptions = dish.options.length > 0;
     var quickLabel = hasOptions ? getCopy('options') : getCopy('addToOrder');
+    var available = dish.available !== false;
     var tag = dish.tag
       ? '<span class="dish-tag"><span aria-hidden="true">' + (dish.tag === 'bestSeller' ? '🔥' : '🌿') + '</span>' +
         escapeHTML(getCopy(dish.tag)) + '</span>'
       : '';
-    return '<article class="dish-card dish-row">' +
-      '<button class="dish-photo" type="button" data-open-dish="' + escapeHTML(dish.id) + '" aria-label="' + escapeHTML(name) + '">' +
+    if (!available) {
+      tag = '<span class="dish-tag dish-tag-soldout">' + escapeHTML(getCopy('soldOut')) + '</span>';
+    }
+    var note = dish.preorder
+      ? '<span class="food-markers"><span class="food-dot" aria-hidden="true"></span>' +
+        escapeHTML(getCopy('preorderBadge')) + '</span>'
+      : '<span class="food-markers"><span>' +
+        escapeHTML(hasOptions ? getCopy('options') : getCopy('addToOrder')) + '</span></span>';
+    return '<article class="dish-card dish-row' + (available ? '' : ' is-soldout') + '">' +
+      '<button class="dish-photo" type="button" data-open-dish="' + escapeHTML(dish.id) + '"' +
+      (available ? '' : ' disabled') + ' aria-label="' + escapeHTML(name) + '">' +
       '<img src="' + escapeHTML(dish.image) + '" alt="' + escapeHTML(name) + '" loading="lazy" />' + tag + '</button>' +
-      '<button class="add-quick" type="button" data-quick-add="' + escapeHTML(dish.id) + '" aria-label="' + escapeHTML(quickLabel) + '">' +
-      '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12M4 10h12" /></svg></button>' +
-      '<button class="dish-content" type="button" data-open-dish="' + escapeHTML(dish.id) + '">' +
+      (available
+        ? '<button class="add-quick" type="button" data-quick-add="' + escapeHTML(dish.id) + '" aria-label="' + escapeHTML(quickLabel) + '">' +
+          '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12M4 10h12" /></svg></button>'
+        : '') +
+      '<button class="dish-content" type="button" data-open-dish="' + escapeHTML(dish.id) + '"' +
+      (available ? '' : ' disabled') + '>' +
       '<span class="dish-title-row"><span class="dish-name">' + escapeHTML(name) + '</span>' +
       '<span class="dish-price">' + escapeHTML(money(dish.priceCents)) + '</span></span>' +
       '<span class="dish-description">' + escapeHTML(localize(dish.description)) + '</span>' +
-      '<span class="dish-foot"><span class="food-markers"><span class="food-dot" aria-hidden="true"></span>' +
-      escapeHTML(getCopy('tableService')) + '</span><span>' +
-      escapeHTML(hasOptions ? getCopy('options') : getCopy('addToOrder')) + '</span></span></button></article>';
+      '<span class="dish-foot">' + note + '</span></button></article>';
+  }
+  function menuSkeletonMarkup() {
+    var card = '<div class="dish-card dish-row dish-skeleton" aria-hidden="true">' +
+      '<div class="dish-photo skeleton-block"></div>' +
+      '<div class="dish-content"><span class="skeleton-line skeleton-line-lg"></span>' +
+      '<span class="skeleton-line"></span><span class="skeleton-line skeleton-line-sm"></span></div></div>';
+    return '<div class="dish-grid-loading">' + card + card + card + card + card + card + '</div>';
   }
   function normalizeSearch(value) {
     return String(value || '').trim().toLocaleLowerCase().replace(/[ً-ٰٟ]/g, '');
   }
   function renderMenu() {
     var strip = $('#categoryStrip');
+    var grid = $('#dishGrid');
+    if (!grid) return;
+    if (state.menuLoading) {
+      if (strip) strip.innerHTML = '';
+      grid.setAttribute('aria-busy', 'true');
+      grid.innerHTML = menuSkeletonMarkup();
+      return;
+    }
+    if (state.menuError) {
+      if (strip) strip.innerHTML = '';
+      grid.setAttribute('aria-busy', 'false');
+      grid.innerHTML = '<div class="no-results menu-error"><span class="no-results-mark" aria-hidden="true">!</span>' +
+        '<h3>' + escapeHTML(state.menuRetryable ? getCopy('loadErrorTitle') : (state.menuErrorText || getCopy('liveNotFound'))) + '</h3>' +
+        (state.menuRetryable
+          ? '<p>' + escapeHTML(state.menuErrorText || getCopy('liveLoadError')) + '</p>' +
+            '<button class="btn btn-outline" type="button" data-retry-menu>' +
+            escapeHTML(getCopy('retry')) + '</button>'
+          : '') + '</div>';
+      return;
+    }
     if (strip) strip.innerHTML = categoryMarkup();
     var query = normalizeSearch(state.query);
     var visibleDishes = dishes.filter(function (dish) {
@@ -468,9 +656,13 @@
       ].join(' '));
       return searchable.indexOf(query) !== -1;
     });
-    var grid = $('#dishGrid');
-    if (!grid) return;
     grid.setAttribute('aria-busy', 'false');
+    if (!dishes.length) {
+      grid.innerHTML = '<div class="no-results"><span class="no-results-mark" aria-hidden="true"></span>' +
+        '<h3>' + escapeHTML(getCopy('emptyMenuTitle')) + '</h3>' +
+        '<p>' + escapeHTML(getCopy('emptyMenuText')) + '</p></div>';
+      return;
+    }
     if (!visibleDishes.length) {
       grid.innerHTML = '<div class="no-results"><span class="no-results-mark" aria-hidden="true"></span>' +
         '<h3>' + escapeHTML(getCopy('noResultsTitle')) + '</h3>' +
@@ -517,14 +709,33 @@
     });
     return out;
   }
+  /**
+   * Display the same unit price the server will charge. "replace" groups
+   * substitute the base price; "adjust" groups add to it. Multiple choices
+   * are allowed only when the group's maxPicks is greater than one.
+   */
   function selectedTotalCents(dish, selections) {
-    return dish.priceCents + getSelectedChoices(dish, selections).reduce(function (sum, entry) {
-      return sum + entry.choice.extraCents;
-    }, 0);
+    selections = selections || {};
+    var unit = dish.priceCents;
+    dish.options.forEach(function (group) {
+      var picked = [];
+      (selections[group.id] || []).forEach(function (choiceId) {
+        var choice = null;
+        group.choices.forEach(function (item) { if (item.id === choiceId) choice = item; });
+        if (choice) picked.push(choice);
+      });
+      if (group.pricing === 'replace') {
+        if (picked.length) unit = picked[0].extraCents;
+      } else {
+        picked.forEach(function (choice) { unit += choice.extraCents; });
+      }
+    });
+    return Math.max(0, unit);
   }
   function getModalValidity(dish) {
     return dish.options.every(function (group) {
-      return !group.required || (state.modalSelections[group.id] || []).length > 0;
+      var count = (state.modalSelections[group.id] || []).length;
+      return count >= group.minPicks && count <= group.maxPicks;
     });
   }
 
@@ -554,24 +765,41 @@
   function modalMarkup(dish) {
     var selected = state.modalSelections;
     var optionsMarkup = dish.options.map(function (group) {
-      var isRadio = group.required;
+      var single = group.maxPicks === 1;
+      var optionalSingle = single && group.minPicks === 0;
       var selectedIds = selected[group.id] || [];
       var choices = group.choices.map(function (choice) {
-        var inputType = isRadio ? 'radio' : 'checkbox';
+        var inputType = single ? 'radio' : 'checkbox';
         var checked = selectedIds.indexOf(choice.id) !== -1;
-        var amount = choice.extraCents ? '+ ' + money(choice.extraCents) : '';
+        var amount = group.pricing === 'replace'
+          ? money(choice.extraCents)
+          : (choice.extraCents ? '+ ' + money(choice.extraCents) : '');
         return '<label class="option-choice"><span><input type="' + inputType + '" name="option-' + escapeHTML(group.id) + '"' +
           ' value="' + escapeHTML(choice.id) + '" data-option-choice data-group="' + escapeHTML(group.id) + '"' +
           ' data-choice="' + escapeHTML(choice.id) + '"' + (checked ? ' checked' : '') + ' />' +
           '<span>' + escapeHTML(localize(choice.label)) + '</span></span>' +
           (amount ? '<span class="choice-price">' + escapeHTML(amount) + '</span>' : '') + '</label>';
       }).join('');
-      return '<fieldset class="option-section"><legend class="option-heading"><strong>' +
-        escapeHTML(localize(group.label)) + '</strong>' +
-        '<span class="' + (group.required ? 'required-pill' : 'optional-pill') + '">' +
-        escapeHTML(getCopy(group.required ? 'required' : 'optional')) + '</span></legend>' + choices + '</fieldset>';
+      if (optionalSingle) {
+        // An optional single-pick group needs an explicit way back to "none"
+        // once a radio has been chosen.
+        choices = '<label class="option-choice option-none"><span>' +
+          '<input type="radio" name="option-' + escapeHTML(group.id) + '" value="" data-option-choice' +
+          ' data-group="' + escapeHTML(group.id) + '" data-choice=""' +
+          (selectedIds.length ? '' : ' checked') + ' />' +
+          '<span>' + escapeHTML(getCopy('noThanks')) + '</span></span></label>' + choices;
+      }
+      var hint = group.maxPicks > 1
+        ? '<span class="option-hint">' + escapeHTML(getCopy('pickHint').replace('{n}', group.maxPicks)) + '</span>'
+        : '';
+      var required = group.minPicks > 0 || group.required;
+      return '<fieldset class="option-section" data-option-group="' + escapeHTML(group.id) + '">' +
+        '<legend class="option-heading"><strong>' + escapeHTML(localize(group.label)) + '</strong>' +
+        '<span class="' + (required ? 'required-pill' : 'optional-pill') + '">' +
+        escapeHTML(getCopy(required ? 'required' : 'optional')) + '</span>' + hint + '</legend>' + choices + '</fieldset>';
     }).join('');
-    var selectedPrice = selectedTotalCents(dish, selected) * state.modalQuantity;
+    var unitPrice = selectedTotalCents(dish, selected);
+    var selectedPrice = unitPrice * state.modalQuantity;
     var valid = getModalValidity(dish);
     var title = localize(dish.name);
     return '<div class="modal-backdrop" data-close-modal><section class="dish-modal" role="dialog"' +
@@ -584,7 +812,11 @@
       '<p class="section-kicker">' + escapeHTML(getCopy('options')) + '</p>' +
       '<h2 id="modalTitle">' + escapeHTML(title) + '</h2>' +
       '<p class="modal-description">' + escapeHTML(localize(dish.description)) + '</p>' +
-      '<div class="modal-base-price">' + escapeHTML(money(dish.priceCents)) + '</div>' +
+      (dish.preorder
+        ? '<p class="modal-preorder"><strong>' + escapeHTML(getCopy('preorderBadge')) + '</strong>' +
+          (dish.preorderNote ? ' ' + escapeHTML(dish.preorderNote) : '') + '</p>'
+        : '') +
+      '<div class="modal-base-price" id="modalBasePrice">' + escapeHTML(money(unitPrice)) + '</div>' +
       (optionsMarkup ? '<div class="modal-options">' + optionsMarkup + '</div>' : '') +
       '<div class="modal-actions"><div class="modal-quantity" aria-label="' + escapeHTML(title) + '">' +
       '<button type="button" data-modal-quantity="-1" aria-label="' + escapeHTML(getCopy('decrease')) + '">−</button>' +
@@ -607,16 +839,33 @@
     if (!addButton) return;
     addButton.disabled = !valid;
     addButton.querySelector('span').textContent = valid ? getCopy('addToOrder') : getCopy('chooseOption');
-    $('#modalTotal').textContent = money(selectedTotalCents(dish, state.modalSelections) * state.modalQuantity);
+    var unit = selectedTotalCents(dish, state.modalSelections);
+    $('#modalTotal').textContent = money(unit * state.modalQuantity);
+    var base = $('#modalBasePrice');
+    if (base) base.textContent = money(unit);
+    // At the pick limit, prevent adding another choice until one is removed.
+    dish.options.forEach(function (group) {
+      var picked = state.modalSelections[group.id] || [];
+      var atMax = picked.length >= group.maxPicks;
+      $$('[data-option-choice][data-group="' + group.id + '"]').forEach(function (input) {
+        if (input.type !== 'checkbox') return;
+        input.disabled = atMax && !input.checked;
+      });
+    });
   }
-  function addDishToCart(dishId, selections, quantity) {
+  function addDishToCart(dishId, selections, quantity, silent) {
     var dish = getDish(dishId);
-    if (!dish) return;
+    if (!dish || dish.available === false) return false;
     selections = selections || {};
     quantity = quantity || 1;
-    var orderedIds = getSelectedChoices(dish, selections).map(function (entry) { return entry.choice.id; });
-    orderedIds.sort();
-    var key = dish.id + '|' + orderedIds.join(',');
+    var signature = [];
+    dish.options.forEach(function (group) {
+      (selections[group.id] || []).slice().sort().forEach(function (choiceId) {
+        signature.push(group.id + ':' + choiceId);
+      });
+    });
+    signature.sort();
+    var key = dish.id + '|' + signature.join(',');
     var existing = null;
     state.cart.forEach(function (line) { if (line.key === key) existing = line; });
     if (existing) {
@@ -624,12 +873,15 @@
     } else {
       var copySel = {};
       Object.keys(selections).forEach(function (groupId) { copySel[groupId] = selections[groupId].slice(); });
-      state.cart.push({ key: key, dishId: dish.id, selections: copySel, quantity: quantity });
+      state.cart.push({ key: key, dishId: dish.id, selections: copySel, quantity: Math.min(99, quantity) });
     }
+    state.placedOrder = null;
+    state.submissionKey = null;
     state.checkoutOpen = false;
     saveCart();
     renderCart();
-    toastMsg(getCopy('cartAdded'));
+    if (!silent) toastMsg(getCopy('cartAdded'));
+    return true;
   }
   function cartCount() {
     return state.cart.reduce(function (sum, line) { return sum + line.quantity; }, 0);
@@ -640,10 +892,19 @@
       return dish ? sum + selectedTotalCents(dish, line.selections) * line.quantity : sum;
     }, 0);
   }
-  function deliveryFeeCents() {
+  function freeDeliveryEnabled() {
+    return !!(view && view.settings && view.settings.freeDeliveryEnabled);
+  }
+  function freeDeliveryThresholdCents() {
+    return Math.max(0, Number(view && view.settings && view.settings.freeDeliveryThresholdCents) || 0);
+  }
+  function deliveryFeeCents(subtotal) {
     if (state.fulfillment !== 'delivery') return 0;
+    if (!view || !view.settings || view.settings.deliveryEnabled === false) return 0;
     if (cartCount() === 0) return 0;
-    return Number(view && view.settings && view.settings.deliveryFeeCents) || 0;
+    var sub = typeof subtotal === 'number' ? subtotal : cartSubtotalCents();
+    if (freeDeliveryEnabled() && sub >= freeDeliveryThresholdCents()) return 0;
+    return Number(view.settings.deliveryFeeCents) || 0;
   }
   function orderingBlocked() {
     return !!(view && view.orderingBlocked);
@@ -651,9 +912,17 @@
 
   /* -------------------------------- cart --------------------------- */
   function lineOptionText(dish, selections) {
-    return getSelectedChoices(dish, selections).map(function (entry) {
-      return localize(entry.choice.label);
-    }).join(' · ');
+    var parts = [];
+    dish.options.forEach(function (group) {
+      var names = [];
+      (selections[group.id] || []).forEach(function (choiceId) {
+        group.choices.forEach(function (choice) {
+          if (choice.id === choiceId) names.push(localize(choice.label));
+        });
+      });
+      if (names.length) parts.push(localize(group.label) + ': ' + names.join(', '));
+    });
+    return parts.join(' · ');
   }
   function cartLinesMarkup() {
     return state.cart.map(function (line) {
@@ -678,18 +947,23 @@
   }
   function checkoutFormMarkup() {
     if (!state.checkoutOpen) return '';
+    var draft = state.checkoutDraft || {};
     var delivery = state.fulfillment === 'delivery';
     return '<div class="co-form">' +
       '<label class="co-field"><span>' + escapeHTML(getCopy('liveName')) + '</span>' +
-      '<input id="coName" name="customerName" autocomplete="name" maxlength="80" /></label>' +
+      '<input id="coName" name="customerName" autocomplete="name" maxlength="80" value="' +
+      escapeHTML(draft.name || '') + '" /></label>' +
       '<label class="co-field"><span>' + escapeHTML(getCopy('liveWhatsapp')) + '</span>' +
-      '<input id="coWhatsapp" name="customerWhatsapp" type="tel" autocomplete="tel" maxlength="20" dir="ltr" /></label>' +
+      '<input id="coWhatsapp" name="customerWhatsapp" type="tel" inputmode="tel" autocomplete="tel" maxlength="20" dir="ltr" value="' +
+      escapeHTML(draft.whatsapp || '') + '" /></label>' +
       (delivery
         ? '<label class="co-field"><span>' + escapeHTML(getCopy('liveAddress')) + '</span>' +
-          '<input id="coAddress" name="customerAddress" autocomplete="street-address" maxlength="200" /></label>'
+          '<input id="coAddress" name="customerAddress" autocomplete="street-address" maxlength="200" value="' +
+          escapeHTML(draft.address || '') + '" /></label>'
         : '') +
       '<label class="co-field"><span>' + escapeHTML(getCopy('liveNotes')) + '</span>' +
-      '<input id="coNotes" name="notes" maxlength="400" /></label>' +
+      '<input id="coNotes" name="notes" maxlength="400" value="' +
+      escapeHTML(draft.notes || '') + '" /></label>' +
       '<p class="co-error" id="coError" hidden></p></div>';
   }
   function cartMarkup() {
@@ -708,30 +982,49 @@
     }
     var count = cartCount();
     var subtotal = cartSubtotalCents();
-    var fee = deliveryFeeCents();
+    var fee = deliveryFeeCents(subtotal);
     var isEmpty = count === 0;
     var blocked = orderingBlocked();
+    var deliveryAllowed = !view || !view.settings || view.settings.deliveryEnabled !== false;
+    var fulfillmentMarkup = deliveryAllowed
+      ? '<div class="fulfillment" role="group" aria-label="' + escapeHTML(getCopy('yourOrder')) + '">' +
+        '<button type="button" data-fulfillment="pickup"' +
+        ' class="' + (state.fulfillment === 'pickup' ? 'selected' : '') + '"' +
+        ' aria-pressed="' + (state.fulfillment === 'pickup') + '">' + escapeHTML(getCopy('pickup')) + '</button>' +
+        '<button type="button" data-fulfillment="delivery"' +
+        ' class="' + (state.fulfillment === 'delivery' ? 'selected' : '') + '"' +
+        ' aria-pressed="' + (state.fulfillment === 'delivery') + '">' + escapeHTML(getCopy('delivery')) + '</button></div>'
+      : '<p class="fulfillment-note"><span aria-hidden="true">🥡</span> ' + escapeHTML(getCopy('pickupOnly')) + '</p>';
+    var freeBlock = '';
+    if (!isEmpty && deliveryAllowed && state.fulfillment === 'delivery') {
+      var threshold = freeDeliveryThresholdCents();
+      if (freeDeliveryEnabled() && subtotal >= threshold) {
+        freeBlock = '<p class="free-delivery reached">✓ ' + escapeHTML(getCopy('freeDeliveryReached')) + '</p>';
+      } else if (freeDeliveryEnabled() && threshold > 0) {
+        var remaining = Math.max(0, threshold - subtotal);
+        var percent = Math.min(100, Math.round((subtotal / threshold) * 100));
+        freeBlock = '<div class="free-delivery"><div class="free-delivery-bar" role="progressbar"' +
+          ' aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + percent + '">' +
+          '<span style="width:' + percent + '%"></span></div>' +
+          '<p>' + escapeHTML(getCopy('freeDeliveryProgress').replace('{amount}', money(remaining))) + '</p></div>';
+      }
+    }
     var footnote = blocked ? getCopy('liveBlocked') : getCopy('tableService');
     return '<div class="cart-head"><div><p class="section-kicker">' + escapeHTML(getCopy('order')) + '</p>' +
       '<h2 class="cart-title">' + escapeHTML(getCopy('yourOrder')) + '</h2></div>' +
       '<span class="cart-count">' + count + '</span></div>' +
-      '<div class="fulfillment" role="group" aria-label="' + escapeHTML(getCopy('yourOrder')) + '">' +
-      '<button type="button" data-fulfillment="pickup"' +
-      ' class="' + (state.fulfillment === 'pickup' ? 'selected' : '') + '"' +
-      ' aria-pressed="' + (state.fulfillment === 'pickup') + '">' + escapeHTML(getCopy('pickup')) + '</button>' +
-      '<button type="button" data-fulfillment="delivery"' +
-      ' class="' + (state.fulfillment === 'delivery' ? 'selected' : '') + '"' +
-      ' aria-pressed="' + (state.fulfillment === 'delivery') + '">' + escapeHTML(getCopy('delivery')) + '</button></div>' +
+      fulfillmentMarkup +
       (isEmpty
         ? '<div class="cart-empty"><span class="empty-illustration" aria-hidden="true">' +
           '<svg viewBox="0 0 24 24"><path d="M5 8h14l-1.2 12H6.2L5 8Zm4 0V6a3 3 0 0 1 6 0v2" /></svg></span>' +
           '<strong>' + escapeHTML(getCopy('emptyTitle')) + '</strong><p>' + escapeHTML(getCopy('emptyText')) + '</p></div>'
         : '<div class="cart-lines">' + cartLinesMarkup() + '</div>' +
+          freeBlock +
           '<div class="totals"><div class="total-row"><span>' + escapeHTML(getCopy('subtotal')) + '</span>' +
           '<strong>' + escapeHTML(money(subtotal)) + '</strong></div>' +
-          (state.fulfillment === 'delivery'
+          (deliveryAllowed && state.fulfillment === 'delivery'
             ? '<div class="total-row"><span>' + escapeHTML(getCopy('deliveryFee')) + '</span>' +
-              '<strong>' + escapeHTML(fee ? money(fee) : getCopy('free')) + '</strong></div>'
+              '<strong class="' + (fee ? '' : 'free-value') + '">' + escapeHTML(fee ? money(fee) : getCopy('free')) + '</strong></div>'
             : '') +
           '<div class="total-row grand"><span>' + escapeHTML(getCopy('total')) + '</span>' +
           '<strong>' + escapeHTML(money(subtotal + fee)) + '</strong></div>' +
@@ -744,10 +1037,28 @@
   }
   function renderCart() {
     var panel = $('#desktopCart');
-    if (panel) panel.innerHTML = cartMarkup();
     var headerCount = $('#headerCartCount');
-    if (headerCount) headerCount.textContent = String(cartCount());
+    if (headerCount) headerCount.textContent = String(view ? cartCount() : 0);
     var mobileBar = $('#mobileCartBar');
+    if (!view && (state.menuLoading || state.menuError)) {
+      if (panel) {
+        panel.innerHTML = '<div class="cart-head"><div><p class="section-kicker">' +
+          escapeHTML(getCopy('order')) + '</p><h2 class="cart-title">' +
+          escapeHTML(getCopy('yourOrder')) + '</h2></div></div>' +
+          (state.menuLoading
+            ? '<div class="cart-panel-loading" aria-hidden="true"><span class="skeleton-block"></span>' +
+              '<span class="skeleton-line"></span><span class="skeleton-line skeleton-line-sm"></span></div>'
+            : '<div class="cart-panel-error"><p>' +
+              escapeHTML(state.menuRetryable ? getCopy('loadErrorTitle') : (state.menuErrorText || getCopy('liveNotFound'))) +
+              '</p>' + (state.menuRetryable
+                ? '<button class="btn btn-outline btn-sm" type="button" data-retry-menu>' +
+                  escapeHTML(getCopy('retry')) + '</button>'
+                : '') + '</div>');
+      }
+      if (mobileBar) mobileBar.hidden = true;
+      return;
+    }
+    if (panel) panel.innerHTML = cartMarkup();
     if (mobileBar) {
       mobileBar.hidden = cartCount() === 0;
       mobileBar.setAttribute('aria-expanded', String(state.cartOpen));
@@ -800,6 +1111,8 @@
     } else {
       line.quantity = Math.min(99, line.quantity);
     }
+    state.placedOrder = null;
+    state.submissionKey = null;
     saveCart();
     renderCart();
   }
@@ -819,18 +1132,21 @@
   }
 
   /* ------------------------------ checkout ------------------------- */
-  function cartKey() { return 'ordora_cart_' + slug; }
+  function cartKey() { return 'restivo_cart_' + slug; }
   function saveCart() {
     try { localStorage.setItem(cartKey(), JSON.stringify(state.cart)); } catch (_) { /* ignore */ }
   }
   function loadCart() {
     try {
-      var raw = JSON.parse(localStorage.getItem(cartKey()) || '[]');
+      var current = localStorage.getItem(cartKey());
+      // Keep carts created before the Restivo rename.
+      var raw = JSON.parse(current || localStorage.getItem('ordora_cart_' + slug) || '[]');
       if (!Array.isArray(raw)) return;
       state.cart = raw.filter(function (line) {
         return line && typeof line.key === 'string' && Number.isInteger(line.quantity) &&
           line.quantity > 0 && line.quantity <= 99 && typeof line.dishId === 'string';
       });
+      if (!current && state.cart.length) saveCart();
     } catch (_) { /* ignore */ }
   }
   function coError(message) {
@@ -844,6 +1160,19 @@
     if (window.crypto && typeof window.crypto.randomUUID === 'function') return window.crypto.randomUUID();
     return 'key-' + Date.now() + '-' + Math.floor(Math.random() * 1e9);
   }
+  function readCheckoutDraft(root) {
+    var name = root ? root.querySelector('#coName') : null;
+    var wa = root ? root.querySelector('#coWhatsapp') : null;
+    var address = root ? root.querySelector('#coAddress') : null;
+    var notes = root ? root.querySelector('#coNotes') : null;
+    state.checkoutDraft = {
+      name: name ? name.value : (state.checkoutDraft.name || ''),
+      whatsapp: wa ? wa.value : (state.checkoutDraft.whatsapp || ''),
+      address: address ? address.value : (state.checkoutDraft.address || ''),
+      notes: notes ? notes.value : (state.checkoutDraft.notes || ''),
+    };
+    return state.checkoutDraft;
+  }
   function handleCheckout() {
     if (orderingBlocked() || state.placing || cartCount() === 0) return;
     if (!state.checkoutOpen) {
@@ -854,43 +1183,52 @@
       return;
     }
     var root = state.cartOpen ? $('#cartDrawerRoot') : $('#desktopCart');
-    var name = root ? root.querySelector('#coName') : null;
-    var wa = root ? root.querySelector('#coWhatsapp') : null;
-    var address = root ? root.querySelector('#coAddress') : null;
-    var notes = root ? root.querySelector('#coNotes') : null;
-    var customerName = name ? name.value.trim() : '';
-    var customerWhatsapp = wa ? wa.value.trim() : '';
-    var customerAddress = address ? address.value.trim() : '';
-    if (!customerName || !customerWhatsapp) { coError(getCopy('liveEnterNameAndWa')); return; }
-    if (state.fulfillment === 'delivery' && !customerAddress) { coError(getCopy('liveAddrRequired')); return; }
+    var draft = readCheckoutDraft(root);
+    draft.name = String(draft.name || '').trim();
+    draft.whatsapp = String(draft.whatsapp || '').trim();
+    draft.address = String(draft.address || '').trim();
+    draft.notes = String(draft.notes || '').trim();
+    if (!draft.name || !draft.whatsapp) { coError(getCopy('liveEnterNameAndWa')); return; }
+    if (state.fulfillment === 'delivery' && !draft.address) { coError(getCopy('liveAddrRequired')); return; }
     coError(null);
     state.placing = true;
+    if (!state.submissionKey) state.submissionKey = submitKey();
+    // Re-render immediately so the button shows the sending state, but the
+    // draft values are already saved and come back if the request fails.
     renderCart();
-    api.post('/api/restaurants/' + encodeURIComponent(slug) + '/orders', {
-      customerName: customerName,
-      customerWhatsapp: customerWhatsapp,
-      customerPhone: '',
-      customerAddress: customerAddress,
-      notes: notes ? notes.value.trim() : '',
-      orderType: state.fulfillment,
-      submissionKey: submitKey(),
-      items: state.cart.map(function (line) {
-        var dish = getDish(line.dishId);
-        var selections = [];
-        Object.keys(line.selections || {}).forEach(function (groupId) {
+    var payloadItems = state.cart.filter(function (line) { return getDish(line.dishId); }).map(function (line) {
+      var dish = getDish(line.dishId);
+      var selections = [];
+      dish.options.forEach(function (group) {
+        var choiceIds = (line.selections[group.id] || []).filter(function (choiceId) {
+          return group.choices.some(function (choice) { return choice.id === choiceId; });
+        });
+        if (choiceIds.length) {
           selections.push({
-            groupId: groupId,
-            choices: line.selections[groupId].map(function (choiceId) {
+            groupId: group.id,
+            choices: choiceIds.map(function (choiceId) {
               return { choiceId: choiceId, quantity: 1 };
             }),
           });
-        });
-        return { itemId: dish ? dish.id : line.dishId, quantity: line.quantity, selections: selections };
-      }),
+        }
+      });
+      return { itemId: dish.id, quantity: line.quantity, selections: selections };
+    });
+    api.post('/api/restaurants/' + encodeURIComponent(slug) + '/orders', {
+      customerName: draft.name,
+      customerWhatsapp: draft.whatsapp,
+      customerPhone: '',
+      customerAddress: draft.address,
+      notes: draft.notes,
+      orderType: state.fulfillment,
+      submissionKey: state.submissionKey,
+      items: payloadItems,
     }).then(function (data) {
       state.placing = false;
       state.checkoutOpen = false;
+      state.submissionKey = null;
       state.cart = [];
+      state.checkoutDraft = { name: '', whatsapp: '', address: '', notes: '' };
       saveCart();
       state.placedOrder = (data && data.order) || { code: '' };
       renderCart();
@@ -904,7 +1242,7 @@
   /* ------------------------------- share --------------------------- */
   function shareMenu() {
     var name = view ? view.name : document.title;
-    var shareData = { title: name, text: name, url: window.location.href };
+    var shareData = { title: name, text: name, url: location.origin + location.pathname };
     function done() { toastMsg(getCopy('linkCopied')); }
     if (navigator.share) {
       navigator.share(shareData).catch(function (error) {
@@ -922,29 +1260,112 @@
   }
 
   /* ---------------------------- static copy ------------------------ */
+  function setMetaContent(selector, value) {
+    var element = document.querySelector(selector);
+    if (element && value) element.setAttribute('content', value);
+  }
+  function absoluteUrl(path) {
+    if (!path) return '';
+    try { return new URL(path, location.origin).href; } catch (_) { return path; }
+  }
+  function updateSeo() {
+    var settings = (view && view.settings) || {};
+    var name = view ? view.name : 'Restivo';
+    var description = settings.description || getCopy('restaurantDescription');
+    var title = view
+      ? (state.language === 'ar' ? name + ' — القائمة' : name + ' — Menu')
+      : (state.language === 'ar' ? 'القائمة — Restivo' : 'Menu — Restivo');
+    document.title = title;
+    setMetaContent('meta[name="description"]', description);
+    setMetaContent('meta[property="og:title"]', title);
+    setMetaContent('meta[property="og:description"]', description);
+    setMetaContent('meta[name="twitter:title"]', title);
+    setMetaContent('meta[name="twitter:description"]', description);
+    var canonical = location.origin + location.pathname;
+    setMetaContent('meta[property="og:url"]', canonical);
+    var image = '';
+    if (view && view.heroImages && view.heroImages.length) image = view.heroImages[0].imagePath;
+    else if (settings.coverPath) image = settings.coverPath;
+    if (image) {
+      image = absoluteUrl(image);
+      setMetaContent('meta[property="og:image"]', image);
+      setMetaContent('meta[name="twitter:image"]', image);
+      setMetaContent('meta[name="twitter:card"]', 'summary_large_image');
+    }
+    var canonicalLink = document.querySelector('link[rel="canonical"]');
+    if (!canonicalLink) {
+      canonicalLink = document.createElement('link');
+      canonicalLink.rel = 'canonical';
+      document.head.append(canonicalLink);
+    }
+    canonicalLink.href = canonical;
+  }
+  function updateHeroMeta() {
+    var settings = (view && view.settings) || {};
+    var items = $('#metaItems');
+    if (items) {
+      var available = dishes.filter(function (dish) { return dish.available !== false; }).length;
+      var itemsText = items.querySelector('span:last-child');
+      if (available && itemsText) {
+        items.hidden = false;
+        itemsText.textContent = getCopy('itemsCount').replace('{n}', available);
+      } else {
+        items.hidden = true;
+      }
+    }
+    var address = $('#metaAddress');
+    if (address) {
+      var value = String(settings.address || '').trim();
+      var addressText = address.querySelector('span:last-child');
+      address.hidden = !value;
+      if (value && addressText) addressText.textContent = value;
+    }
+    var delivery = $('#metaDelivery');
+    if (delivery) {
+      var deliveryText = delivery.querySelector('span:last-child');
+      if (!view || settings.deliveryEnabled === false) {
+        delivery.hidden = true;
+      } else {
+        var fee = Number(settings.deliveryFeeCents) || 0;
+        var free = freeDeliveryEnabled() && freeDeliveryThresholdCents() === 0;
+        delivery.hidden = false;
+        if (deliveryText) {
+          deliveryText.textContent = free || fee === 0
+            ? getCopy('freeDeliveryReached')
+            : getCopy('deliveryFee') + ': ' + money(fee);
+        }
+      }
+    }
+  }
   function updateStaticCopy() {
     document.documentElement.lang = state.language;
     document.documentElement.dir = state.language === 'ar' ? 'rtl' : 'ltr';
-    if (view) document.title = view.name;
+    updateSeo();
     $$('[data-copy]').forEach(function (element) {
       element.textContent = getCopy(element.dataset.copy);
     });
     // Live overrides (after the generic pass so real data wins).
-    $('#restaurantName').textContent = view ? view.name : '…';
-    var desc = $('#restaurantName').parentElement.querySelector('.hero-description');
-    if (desc && view && view.settings && view.settings.description) desc.textContent = view.settings.description;
+    var nameElement = $('#restaurantName');
+    if (nameElement) nameElement.textContent = view ? view.name : '…';
+    var description = $('#heroDescription');
+    if (description) {
+      var settings = (view && view.settings) || {};
+      description.textContent = settings.description || getCopy('restaurantDescription');
+    }
     var foot = $('.footer-copyright');
-    if (foot && view) {
+    if (foot) {
       foot.textContent = state.language === 'ar'
-        ? '© 2026 ' + view.name + '. جميع الحقوق محفوظة.'
-        : '© 2026 ' + view.name + '. All rights reserved.';
+        ? '© 2026 ' + (view ? view.name : 'Restivo') + '. جميع الحقوق محفوظة.'
+        : '© 2026 ' + (view ? view.name : 'Restivo') + '. All rights reserved.';
     }
-    var eyebrow = $('#restaurantName').parentElement.querySelector('.eyebrow [data-copy]');
-    if (eyebrow) {
-      var open = !view || view.openNow !== false;
-      eyebrow.textContent = open ? getCopy('openNow') : getCopy('closed');
-      eyebrow.removeAttribute('data-copy');
-    }
+    updateHeroMeta();
+    var statusText = view
+      ? ((view.openNow !== false && !view.orderingBlocked) ? getCopy('openNow') : getCopy('closed'))
+      : null;
+    ['#topbarStatus', '#heroStatus'].forEach(function (selector) {
+      var element = $(selector);
+      if (element && statusText) element.textContent = statusText;
+    });
     var languageButton = $('#languageButton');
     if (languageButton) {
       languageButton.textContent = state.language === 'ar' ? 'EN' : 'عربي';
@@ -968,7 +1389,7 @@
       dot.setAttribute('aria-label', getCopy('showCover') + ' ' + (Number(dot.dataset.coverIndex) + 1));
     });
     $$('.cover-slide img').forEach(function (image, index) {
-      if (coverSlides[index]) image.alt = localize(coverSlides[index].alt);
+      if (coverSlides[index] && coverSlides[index].alt) image.alt = localize(coverSlides[index].alt);
     });
     var search = $('#menuSearch');
     if (search) {
@@ -980,6 +1401,13 @@
   function setLanguage(language) {
     if (language === state.language) return;
     state.language = language;
+    state.languagePinned = true;
+    try { localStorage.setItem(LANG_STORE_KEY, language); } catch (_) { /* ignore */ }
+    try {
+      var url = new URL(location.href);
+      url.searchParams.set('lang', language);
+      history.replaceState(null, '', url.toString());
+    } catch (_) { /* ignore */ }
     updateStaticCopy();
     renderMenu();
     renderCart();
@@ -1016,8 +1444,12 @@
     if (button.hasAttribute('data-close-modal')) { closeDish(); return; }
     if (button.hasAttribute('data-close-cart')) { closeCart(); return; }
     if (button.dataset.fulfillment) {
+      if (button.dataset.fulfillment === 'delivery' &&
+        view && view.settings && view.settings.deliveryEnabled === false) {
+        return;
+      }
+      if (state.fulfillment !== button.dataset.fulfillment) state.submissionKey = null;
       state.fulfillment = button.dataset.fulfillment;
-      state.checkoutOpen = false;
       renderCart();
       return;
     }
@@ -1027,10 +1459,13 @@
     }
     if (button.dataset.removeLine) {
       state.cart = state.cart.filter(function (line) { return line.key !== button.dataset.removeLine; });
+      state.placedOrder = null;
+      state.submissionKey = null;
       saveCart();
       renderCart();
       return;
     }
+    if (button.hasAttribute('data-retry-menu')) { loadMenu(); return; }
     if (button.dataset.modalQuantity) {
       state.modalQuantity = Math.max(1, state.modalQuantity + Number(button.dataset.modalQuantity));
       var qty = $('#modalQuantity');
@@ -1053,9 +1488,18 @@
     }
   });
   document.addEventListener('input', function (event) {
-    if (event.target.id !== 'menuSearch') return;
-    state.query = event.target.value;
-    renderMenu();
+    if (event.target.id === 'menuSearch') {
+      state.query = event.target.value;
+      renderMenu();
+      return;
+    }
+    var draftField = {
+      coName: 'name',
+      coWhatsapp: 'whatsapp',
+      coAddress: 'address',
+      coNotes: 'notes',
+    }[event.target.id];
+    if (draftField) state.checkoutDraft[draftField] = event.target.value;
   });
   document.addEventListener('change', function (event) {
     var input = event.target.closest('[data-option-choice]');
@@ -1067,13 +1511,22 @@
     var groupData = null;
     dish.options.forEach(function (item) { if (item.id === groupId) groupData = item; });
     if (!groupData) return;
-    if (groupData.required) {
-      state.modalSelections[groupId] = input.checked ? [choiceId] : [];
+    if (input.type === 'radio') {
+      state.modalSelections[groupId] = choiceId ? [choiceId] : [];
     } else {
-      var current = state.modalSelections[groupId] || [];
-      state.modalSelections[groupId] = input.checked
-        ? current.concat([choiceId])
-        : current.filter(function (item) { return item !== choiceId; });
+      var current = (state.modalSelections[groupId] || []).slice();
+      if (input.checked) {
+        if (current.length >= groupData.maxPicks) {
+          input.checked = false;
+          toastMsg(getCopy('pickHint').replace('{n}', groupData.maxPicks));
+          return;
+        }
+        if (current.indexOf(choiceId) === -1) current.push(choiceId);
+      } else {
+        current = current.filter(function (item) { return item !== choiceId; });
+      }
+      if (current.length) state.modalSelections[groupId] = current;
+      else delete state.modalSelections[groupId];
     }
     updateModalSummary();
   });
@@ -1105,21 +1558,76 @@
 
   /* --------------------------------- boot -------------------------- */
   loadCart();
-  if (!slug) {
-    $('#dishGrid').innerHTML = '<div class="no-results"><span class="no-results-mark" aria-hidden="true"></span>' +
-      '<h3>' + escapeHTML(getCopy('liveNotFound')) + '</h3></div>';
-  } else {
+  var queryParams = null;
+  try { queryParams = new URLSearchParams(location.search); } catch (_) { queryParams = null; }
+
+  function applyReorder() {
+    if (!queryParams) return;
+    var raw = queryParams.get('reorder');
+    if (!raw || !dishes.length) return;
+    var addedUnits = 0;
+    var needsOptions = 0;
+    var missing = 0;
+    raw.split(',').slice(0, 60).forEach(function (entry) {
+      var bits = entry.split(':');
+      var dish = getDish(bits[0]);
+      var quantity = Math.min(99, Math.max(1, parseInt(bits[1], 10) || 1));
+      if (!dish || dish.available === false) { missing += 1; return; }
+      var requiresChoices = dish.options.some(function (group) { return group.minPicks > 0; });
+      if (requiresChoices) { needsOptions += 1; return; }
+      if (addDishToCart(dish.id, {}, quantity, true)) addedUnits += quantity;
+    });
+    var messages = [];
+    if (addedUnits) messages.push(getCopy('reorderAdded').replace('{n}', addedUnits));
+    if (needsOptions) messages.push(getCopy('reorderNeedsOptions'));
+    if (missing) messages.push(getCopy('reorderMissing'));
+    if (messages.length) toastMsg(messages.join(' · '));
+    // A refresh must not add the same order again.
+    try {
+      var url = new URL(location.href);
+      url.searchParams.delete('reorder');
+      url.searchParams.delete('reorderFrom');
+      history.replaceState(null, '', url.toString());
+    } catch (_) { /* ignore */ }
+  }
+
+  function loadMenu() {
+    state.menuLoading = true;
+    state.menuError = false;
+    state.menuErrorText = '';
+    state.menuRetryable = true;
+    renderMenu();
+    renderCart();
     api.get('/api/restaurants/' + encodeURIComponent(slug) + '/menu').then(function (data) {
       mapView(data);
+      state.menuLoading = false;
       updateStaticCopy();
       initializeCoverCarousel();
       renderMenu();
       renderCart();
       initializeCategoryDock();
+      applyReorder();
     }).catch(function () {
-      $('#dishGrid').innerHTML = '<div class="no-results"><span class="no-results-mark" aria-hidden="true"></span>' +
-        '<h3>' + escapeHTML(getCopy('liveLoadError')) + '</h3></div>';
+      state.menuLoading = false;
+      state.menuError = true;
+      state.menuErrorText = getCopy('liveLoadError');
+      state.menuRetryable = true;
+      updateStaticCopy();
+      renderMenu();
+      renderCart();
     });
+  }
+
+  if (!slug) {
+    state.menuLoading = false;
+    state.menuError = true;
+    state.menuErrorText = getCopy('liveNotFound');
+    state.menuRetryable = false;
+    updateStaticCopy();
+    renderMenu();
+    renderCart();
+  } else {
+    loadMenu();
   }
   updateStaticCopy();
   renderMenu();

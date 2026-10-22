@@ -1,0 +1,374 @@
+/* Live tenant storefront.
+   The demo stylesheet provides the layout and a neutral Restivo base theme;
+   restaurant.js then overrides --coral / --teal with the tenant's colours.
+   Keep demo-only styling (Red Bun art direction) out of this file. */
+
+[hidden] {
+  display: none !important;
+}
+
+.storefront-noscript {
+  position: relative;
+  z-index: 100;
+  padding: 12px 18px;
+  background: #1f3439;
+  color: #fffaf0;
+  font-size: 13px;
+  text-align: center;
+}
+
+/* Platform mark used in the tenant header/footer. */
+.storefront-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--ink);
+  letter-spacing: -0.03em;
+}
+
+.brand-monogram,
+.footer-monogram {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: var(--teal);
+  color: var(--paper);
+  font-family: var(--font-ui);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.brand-word {
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.footer-monogram {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 14px;
+}
+
+/* Neutral cover when a restaurant has not uploaded photography. */
+.cover-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-height: 260px;
+  background:
+    radial-gradient(ellipse at 18% 20%, rgba(255, 255, 255, 0.16), transparent 45%),
+    radial-gradient(ellipse at 82% 76%, rgba(237, 107, 76, 0.28), transparent 46%),
+    linear-gradient(135deg, var(--teal-deep), var(--teal));
+  color: rgba(255, 250, 240, 0.55);
+}
+
+.cover-placeholder span {
+  font-size: clamp(72px, 14vw, 150px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.07em;
+  user-select: none;
+}
+
+.restaurant-logo-overlap.logo-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--paper);
+  color: var(--teal);
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.05em;
+  text-decoration: none;
+}
+
+.category-strip:empty {
+  display: none;
+}
+
+/* ------------------------------ menu states ----------------------------- */
+.dish-grid-loading {
+  display: grid;
+  gap: 12px;
+}
+
+@media (min-width: 760px) {
+  .dish-grid-loading {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.dish-skeleton {
+  pointer-events: none;
+}
+
+.skeleton-block,
+.skeleton-line {
+  display: block;
+  border-radius: 8px;
+  background: linear-gradient(90deg, var(--sand) 20%, #f7f0e3 40%, var(--sand) 60%);
+  background-size: 220% 100%;
+  animation: storefront-shimmer 1.35s ease-in-out infinite;
+}
+
+.skeleton-block {
+  min-height: 104px;
+  border-radius: 12px;
+}
+
+.skeleton-line {
+  height: 10px;
+  margin: 8px 0;
+}
+
+.skeleton-line-lg {
+  width: 62%;
+  height: 13px;
+}
+
+.skeleton-line-sm {
+  width: 38%;
+}
+
+@keyframes storefront-shimmer {
+  0% { background-position: 120% 0; }
+  100% { background-position: -120% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-block,
+  .skeleton-line {
+    animation: none;
+  }
+}
+
+.dish-card.is-soldout {
+  opacity: 0.72;
+}
+
+.dish-card.is-soldout:hover,
+.dish-card.is-soldout:focus-within {
+  transform: none;
+}
+
+.dish-card.is-soldout .dish-photo img {
+  filter: grayscale(0.65);
+}
+
+.dish-card.is-soldout button {
+  cursor: default;
+}
+
+.dish-tag-soldout {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.menu-error .btn,
+.no-results .btn {
+  margin-top: 14px;
+}
+
+/* ------------------------------ options modal --------------------------- */
+.option-heading {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 8px;
+}
+
+.option-hint {
+  width: 100%;
+  margin: 0;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.option-choice input:disabled {
+  cursor: not-allowed;
+}
+
+.option-choice:has(input:disabled) {
+  opacity: 0.42;
+}
+
+.option-none {
+  color: var(--muted);
+}
+
+.modal-preorder {
+  margin: 8px 0 0;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--sand);
+  color: var(--ink);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.modal-preorder strong {
+  color: var(--teal);
+}
+
+/* ------------------------------ checkout form --------------------------- */
+.co-form {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.co-field {
+  display: grid;
+  gap: 4px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.co-field input {
+  width: 100%;
+  min-height: 42px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
+  font-size: 13px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.co-field input:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(39, 97, 95, 0.14);
+  outline: none;
+}
+
+.co-error {
+  margin: 0;
+  color: #b52b36;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.co-code {
+  display: block;
+  color: var(--ink);
+  font-size: 26px;
+  letter-spacing: 2px;
+}
+
+.checkout-demo[disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.co-ghost-btn {
+  min-height: 36px;
+  background: transparent;
+  color: var(--muted);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.co-ghost-btn:hover {
+  background: transparent;
+  transform: none;
+}
+
+/* ------------------------------ delivery / fees ------------------------- */
+.fulfillment-note {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 10px;
+  padding: 8px 10px;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.free-delivery {
+  margin: 4px 0 10px;
+}
+
+.free-delivery-bar {
+  overflow: hidden;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--sand);
+}
+
+.free-delivery-bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--coral);
+  transition: width 0.25s ease;
+}
+
+.free-delivery p,
+.free-delivery.reached {
+  margin: 5px 0 0;
+  color: var(--teal);
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.free-value {
+  color: var(--teal);
+}
+
+/* ------------------------------ loading cart ---------------------------- */
+.cart-panel-loading {
+  display: grid;
+  gap: 10px;
+  padding: 12px 0;
+}
+
+.cart-panel-loading .skeleton-block {
+  min-height: 78px;
+}
+
+.cart-panel-error {
+  padding: 18px 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.cart-panel-error p {
+  margin: 0 0 10px;
+}
+
+/* ------------------------------ small screens --------------------------- */
+@media (max-width: 640px) {
+  .brand-monogram {
+    width: 28px;
+    height: 28px;
+    border-radius: 9px;
+    font-size: 15px;
+  }
+
+  .brand-word {
+    font-size: 17px;
+  }
+
+  .cover-placeholder {
+    min-height: 190px;
+  }
+
+  .co-field input {
+    font-size: 16px; /* Prevent iOS zoom on focus. */
+  }
+}

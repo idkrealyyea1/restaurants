@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 480" role="img" aria-label="Dish placeholder">
+  <rect width="640" height="480" fill="#f8f0df"/>
+  <circle cx="320" cy="240" r="132" fill="#fffaf0" stroke="#e5dcc9" stroke-width="6"/>
+  <circle cx="320" cy="240" r="96" fill="none" stroke="#eee4d2" stroke-width="4"/>
+  <path d="M320 190c0-18 14-30 30-30 10 0 18 4 24 10" fill="none" stroke="#27615f" stroke-width="8" stroke-linecap="round" opacity=".55"/>
+  <path d="M320 214c0-12 10-20 22-20 8 0 14 3 19 8" fill="none" stroke="#27615f" stroke-width="8" stroke-linecap="round" opacity=".35"/>
+  <circle cx="320" cy="262" r="18" fill="#ed6b4c" opacity=".75"/>
+  <path d="M214 322h212" stroke="#e5dcc9" stroke-width="8" stroke-linecap="round"/>
+</svg>

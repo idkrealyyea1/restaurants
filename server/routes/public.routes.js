@@ -6,7 +6,7 @@ const restaurants = require('../services/restaurants.service');
 const ordersService = require('../services/orders.service');
 const bookingsService = require('../services/bookings.service');
 const sse = require('../middleware/sse');
-const { orderLimiter, authLimiter } = require('../middleware/ratelimit');
+const { orderLimiter, trackLimiter } = require('../middleware/ratelimit');
 const { notFound } = require('../utils/errors');
 const { asyncHandler } = require('../utils/errors');
 const v = require('../validators');
@@ -47,7 +47,7 @@ router.post(
     const sub = await restaurants.getSubscription(restaurant.id);
     if (!sub.active) {
       const { forbidden } = require('../utils/errors');
-      throw forbidden('SUBSCRIPTION_EXPIRED', 'Trial finished — this restaurant trial ended. Contact +972567439846');
+      throw forbidden('SUBSCRIPTION_EXPIRED', 'This restaurant is not accepting orders right now. Please try again later.');
     }
 
     const order = await ordersService.createCheckout({ restaurantId: restaurant.id, payload });
@@ -82,7 +82,7 @@ router.post(
     const sub = await restaurants.getSubscription(restaurant.id);
     if (!sub.active) {
       const { forbidden } = require('../utils/errors');
-      throw forbidden('SUBSCRIPTION_EXPIRED', 'Trial finished — this restaurant trial ended. Contact +972567439846');
+      throw forbidden('SUBSCRIPTION_EXPIRED', 'This restaurant is not accepting bookings right now. Please try again later.');
     }
     const booking = await bookingsService.create({ restaurantId: restaurant.id, payload });
     sse.broadcast(restaurant.id, 'booking:new', { bookingId: booking.id, code: booking.code, tablesCount: booking.tables_count, bookedAt: booking.booked_at });
@@ -93,7 +93,7 @@ router.post(
 /** Customer order tracking by public code (rate-limited: codes are enumerable). */
 router.get(
   '/orders/track/:code',
-  authLimiter,
+  trackLimiter,
   asyncHandler(async (req, res) => {
     const code = String(req.params.code).trim();
     if (!/^[A-Za-z0-9]{6,12}$/.test(code)) throw notFound('No order found for this tracking code');

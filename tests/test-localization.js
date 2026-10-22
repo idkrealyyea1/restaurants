@@ -29,9 +29,9 @@ test('api.js formats money and dates with locale', () => {
 
 test('landing honors ?lang= and persists choice', () => {
   const fs = require('fs');
-  const src = fs.readFileSync(require('path').join(__dirname, '..', 'client', 'js', 'restivo-landing.js'), 'utf8');
-  assert.ok(src.includes("URLSearchParams(location.search).get('lang')"));
-  assert.ok(src.includes("localStorage.setItem('restivo-lang'"));
+  const src = fs.readFileSync(require('path').join(__dirname, '..', 'client', 'app.js'), 'utf8');
+  assert.ok(src.includes('URLSearchParams(location.search).get("lang")'));
+  assert.ok(src.includes('localStorage.setItem(LANG_STORE_KEY'));
 });
 
 test('storefront defaults to business storefront language', () => {

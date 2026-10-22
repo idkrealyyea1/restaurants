@@ -44,4 +44,14 @@ const orderLimiter = rateLimit({
   handler: jsonHandler,
 });
 
-module.exports = { globalLimiter, authLimiter, orderLimiter };
+/* Customer order tracking: the page polls every 15s, so this must be far
+   more generous than the login limiter. */
+const trackLimiter = rateLimit({
+  windowMs: config.rateLimits.track.windowMs,
+  limit: config.rateLimits.track.max,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  handler: jsonHandler,
+});
+
+module.exports = { globalLimiter, authLimiter, orderLimiter, trackLimiter };

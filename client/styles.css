@@ -32,6 +32,8 @@ img { display: block; max-width: 100%; }
 .site-header .brand { display: inline-flex; align-items: center; padding: 5px 8px; border-radius: 11px; background: var(--paper-light); transition: transform .2s ease; }
 .brand:hover { transform: translateY(-2px); }
 .brand img { width: 140px; height: auto; object-fit: contain; }
+.brand-text { gap: 9px; color: var(--ink); font-size: 18px; font-weight: 800; letter-spacing: -.04em; }
+.brand-dot { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 8px; background: var(--ink); color: var(--paper); font-size: 15px; font-weight: 900; letter-spacing: 0; }
 .desktop-nav, .header-actions, .mobile-actions { display: flex; align-items: center; }
 .desktop-nav { gap: 30px; font-size: 13px; font-weight: 700; color: rgba(248,240,223,.74); }
 .desktop-nav a, .site-footer nav a { transition: color .2s ease; }
@@ -262,6 +264,7 @@ img { display: block; max-width: 100%; }
 .request-form input:focus { border-color: var(--coral); box-shadow: 0 0 0 3px rgba(237,107,76,.12); }
 .form-submit { min-height: 48px; width: 100%; margin-top: 2px; border-radius: 11px; box-shadow: 4px 4px 0 var(--yellow); }
 .form-note { margin: 0; color: rgba(31,52,57,.5); text-align: center; font-size: 10px; }
+.form-error { margin: 0; padding: 8px 10px; border: 1px solid rgba(190, 45, 35, .25); border-radius: 8px; background: #fff1ef; color: #a4261c; font-size: 11px; line-height: 1.5; text-align: center; }
 .success-state { padding: 36px 34px 40px; text-align: center; }
 .success-icon { width: 62px; height: 62px; display: grid; place-items: center; margin: 0 auto 17px; border-radius: 50%; color: var(--teal); background: #dce8df; }
 .success-state h3 { margin: 0; font-family: "Cairo", sans-serif; font-size: 23px; font-weight: 900; }

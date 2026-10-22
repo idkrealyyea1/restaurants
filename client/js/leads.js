@@ -154,7 +154,7 @@
         <h3>AI Prepared Offer</h3>
         <div class="offer-box">
           <strong>${esc(offer.headline||lead.restaurant_name+' — اطلب أونلاين')}</strong><br>
-          <small class="muted">${esc(offer.sub||'موقع طلب خاص + واتساب + حجز طاولات — $19.99/شهر')}</small>
+          <small class="muted">${esc(offer.sub||'موقع طلب خاص + واتساب + حجز طاولات — باشتراك شهري ثابت')}</small>
           <p class="small" style="white-space:pre-wrap;background:var(--surface);padding:8px;border-radius:8px;margin-top:8px;border:1px solid var(--border)">${esc(msgs.whatsapp||'— بعد Prepare —')}</p>
           <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">
             <button type="button" class="btn btn-sm" id="copy-msg">COPY MESSAGE</button>
@@ -166,7 +166,7 @@
         </div>
       </div>
       <div class="section">
-        <h3>Demo / 7-Day Trial — ${esc(demoStatus)}</h3>
+        <h3>Demo / Trial — ${esc(demoStatus)}</h3>
         ${lead.restaurant_id ? `
           <div class="demo-card">
             <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">

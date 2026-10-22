@@ -144,6 +144,10 @@ async function listOrdersForGroup(deliveryGroupId, { status, limit, offset }) {
     `SELECT o.id, o.code, o.status, o.order_type, o.customer_name, o.customer_whatsapp,
             o.customer_phone, o.customer_address, o.notes,
             o.subtotal_cents, o.delivery_fee_cents, o.total_cents, o.created_at, o.updated_at,
+            COALESCE((
+              SELECT string_agg(oi.quantity || ' × ' || oi.item_name, ', ' ORDER BY oi.id)
+              FROM order_items oi WHERE oi.order_id = o.id
+            ), '') AS items_summary,
             r.name AS restaurant_name, r.slug AS restaurant_slug,
             s.currency, s.timezone
      FROM orders o
@@ -175,7 +179,7 @@ async function orderDeliveredWithinGroup(deliveryGroupId, orderId) {
 async function updateOrderStatus(deliveryGroupId, orderId, nextStatus) {
   if (!['out_for_delivery', 'completed'].includes(nextStatus)) {
     const { badRequest } = require('../utils/errors');
-    throw badRequest('Delivery staff may only mark orders ready/out for delivery or completed');
+    throw badRequest('Delivery staff may only mark orders out for delivery or completed');
   }
   if (!(await orderDeliveredWithinGroup(deliveryGroupId, orderId))) {
     throw notFound('Order not found');
@@ -184,8 +188,9 @@ async function updateOrderStatus(deliveryGroupId, orderId, nextStatus) {
     `UPDATE orders SET status = $2, updated_at = now()
      WHERE id = $1
        AND status <> $2
-       AND status IN ('ready', 'out_for_delivery')
-     RETURNING id, code, status`,
+       AND ((status = 'ready' AND $2 = 'out_for_delivery')
+         OR (status = 'out_for_delivery' AND $2 = 'completed'))
+     RETURNING id, code, status, restaurant_id`,
     [orderId, nextStatus]
   );
   if (!rows[0]) {

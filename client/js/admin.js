@@ -126,19 +126,19 @@
      boots: no data fetches, no live-event stream. */
   async function renderExpiredLock(sub) {
     document.title = I.t('sub_lockTitle');
-    let price = '$8.99';
+    let price = I.t('subPrice');
     try {
       const p = await api.get('/api/pricing');
       const pr = p.pricing || p;
       if (pr && pr.pricing_cents != null) {
         const cur = pr.pricing_currency || 'USD';
         try {
-          price = new Intl.NumberFormat(undefined, { style: 'currency', currency: cur }).format(pr.pricing_cents / 100);
-        } catch (_) { price = '$' + (pr.pricing_cents / 100).toFixed(2); }
+          price = new Intl.NumberFormat(undefined, { style: 'currency', currency: cur }).format(pr.pricing_cents / 100) + ' / ' + (pr.pricing_period || 'month');
+        } catch (_) { price = '$' + (pr.pricing_cents / 100).toFixed(2) + ' / ' + (pr.pricing_period || 'month'); }
       }
-    } catch (_) { /* fallback price stands */ }
+    } catch (_) { /* neutral fallback stands */ }
     const kept = sub.graceUntil ? String(sub.graceUntil).slice(0, 10) : '—';
-    const wa = 'https://wa.me/972567439846?text=' + encodeURIComponent('Reactivate ' + me.username + ' (' + price + '/month)');
+    const wa = 'https://wa.me/972567439846?text=' + encodeURIComponent('Reactivate ' + me.username + ' (' + price + ')');
     document.querySelector('.dash-layout').innerHTML =
       '<main class="dash-main"><div class="container mt-2"><section class="card">' +
       '<h1>' + esc(I.t('sub_lockTitle')) + '</h1>' +
@@ -161,7 +161,7 @@
     const bizType = (info.restaurant && info.restaurant.businessType) || 'restaurant';
     document.getElementById('restaurant-name').textContent =
       info.restaurant.name + (bizType === 'restaurant' ? '' : ' · ' + bizLabel(bizType));
-    document.title = info.restaurant.name + ' — Dashboard';
+    document.title = info.restaurant.name + ' — ' + I.t('dash');
 
     const logo = document.getElementById('brand-logo');
     if (info.settings.logoPath) {
@@ -414,6 +414,9 @@
           esc(o.customer_name) + ' &middot; ' + esc(o.customer_whatsapp) + ' &middot; ' +
           fmtDateTime(o.created_at) + ' &middot; ' + esc(I.t('itemsCount', { n: o.total_units || 0 })) +
         '</div>' +
+        (o.order_type === 'delivery' && o.customer_address
+          ? '<div class="order-meta mt-1"><strong>' + esc(I.t('addrLabel')) + '</strong> ' + esc(o.customer_address) + '</div>'
+          : '') +
         (o.items
           ? '<ul class="order-lines small">' + lines + '</ul>' +
             '<strong>' + esc(I.t('totalW')) + ' ' + fmtMoney(o.total_cents, currency) + '</strong>'

@@ -5,7 +5,9 @@
   <meta name="api-base" content="">
   <meta name="robots" content="noindex, nofollow, noarchive">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Platform owner</title>
+  <title>Platform owner — Restivo</title>
+  <meta name="theme-color" content="#111827">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="stylesheet" href="/fonts/fonts.css">
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/css/skeleton.css">
@@ -38,7 +40,7 @@
       <span class="brand" data-i18n="brand">Restivo</span>
       <span class="spacer"></span>
       <a href="/leads.html" class="btn btn-sm" style="background:var(--ink);color:#fff">المبيعات AI</a>
-      <a id="offers-link" href="/offers.html" class="btn btn-sm" style="background:var(--primary);color:#fff">العروض $19.99</a>
+      <a id="offers-link" href="/leads.html" class="btn btn-sm" style="background:var(--primary);color:#fff" data-i18n="ownerOffersLink">العروض</a>
       <button id="logout-btn" type="button" class="btn btn-outline btn-sm" data-i18n="logout">Log out</button>
       <button id="nav-burger" type="button" class="btn btn-outline btn-sm" aria-label="Menu" aria-expanded="false">☰</button>
     </div>
@@ -46,56 +48,56 @@
 
   <div id="nav-overlay" class="nav-drawer-overlay" hidden></div>
   <nav id="nav-drawer" class="nav-drawer" aria-label="Sections" hidden>
-    <a href="#pricing-card">Pricing</a>
-    <a href="#requests-card">Requests</a>
-    <a href="#staff-card">Staff</a>
-    <a href="#translations-card">Translations</a>
-    <a href="#delivery-card">Delivery</a>
-    <a href="#restaurants-card">Restaurants</a>
+    <a href="#pricing-card" data-i18n="ownerNavPricing">Pricing</a>
+    <a href="#requests-card" data-i18n="ownerNavRequests">Requests</a>
+    <a href="#staff-card" data-i18n="ownerNavStaff">Staff</a>
+    <a href="#translations-card" data-i18n="ownerNavTranslations">Translations</a>
+    <a href="#delivery-card" data-i18n="ownerNavDelivery">Delivery</a>
+    <a href="#restaurants-card" data-i18n="ownerNavRestaurants">Restaurants</a>
   </nav>
 
   <main class="container mt-2">
     <div id="overview-zone"></div>
 
     <section class="card mt-2" id="pricing-card">
-      <h1 class="section-title">Pricing — Restivo</h1>
-      <p class="muted small">Change price that shows on marketing pages. No code deploy needed.</p>
+      <h1 class="section-title" data-i18n="ownerPricingH">Pricing — Restivo</h1>
+      <p class="muted small" data-i18n="ownerPricingDesc">Change the price shown on marketing pages. No deploy needed.</p>
       <form id="pricing-form" class="form-row form-row-3 mb-2" novalidate autocomplete="off">
-        <input id="pricing-price" type="number" min="0" step="0.01" placeholder="$19.99" required>
+        <input id="pricing-price" type="number" min="0" step="0.01" placeholder="0.00" required>
         <select id="pricing-currency"><option value="USD">USD</option><option value="JOD">JOD</option><option value="SAR">SAR</option><option value="EUR">EUR</option></select>
-        <button type="submit" class="btn btn-secondary">Save pricing</button>
+        <button type="submit" class="btn btn-secondary" data-i18n="ownerPricingSave">Save pricing</button>
       </form>
       <div id="pricing-zone" class="muted small"></div>
     </section>
 
     <section class="card mt-2" id="requests-card">
-      <h1 class="section-title">طلبات صفحات جديدة — Restaurant Requests <span id="req-count-badge" class="badge badge-open" style="display:none"></span></h1>
-      <p class="muted small">الناس تملأ النموذج في الصفحة الرئيسية — تظهر هنا. غيّر الحالة أو احذف.</p>
+      <h1 class="section-title"><span data-i18n="ownerRequestsH">New restaurant requests</span> <span id="req-count-badge" class="badge badge-open" style="display:none"></span></h1>
+      <p class="muted small" data-i18n="ownerRequestsDesc">Requests from the homepage form appear here. Change their status or delete them.</p>
       <div class="flex-between mb-1" style="gap:8px">
         <select id="requests-status" style="max-width:200px">
-          <option value="">كل الحالات</option>
+          <option value="" data-i18n="ownerRequestsAll">All statuses</option>
           <option value="pending">pending</option>
           <option value="contacted">contacted</option>
           <option value="approved">approved</option>
           <option value="rejected">rejected</option>
         </select>
-        <button id="requests-refresh" type="button" class="btn btn-outline btn-sm">تحديث</button>
+        <button id="requests-refresh" type="button" class="btn btn-outline btn-sm" data-i18n="ownerRequestsRefresh">Refresh</button>
       </div>
       <div id="requests-zone"></div>
       <div class="flex-between mt-1">
-        <button id="req-prev" type="button" class="btn btn-outline btn-sm">السابق</button>
+        <button id="req-prev" type="button" class="btn btn-outline btn-sm" data-i18n="prev">Prev</button>
         <span id="req-page-info" class="muted small"></span>
-        <button id="req-next" type="button" class="btn btn-outline btn-sm">التالي</button>
+        <button id="req-next" type="button" class="btn btn-outline btn-sm" data-i18n="next">Next</button>
       </div>
     </section>
 
     <section class="card mt-2" id="staff-card">
-      <h1 class="section-title">Platform Staff — Add-only</h1>
-      <p class="muted small">Staff can see everything and create restaurants, but cannot delete and cannot see passwords.</p>
+      <h1 class="section-title" data-i18n="ownerStaffH">Platform team</h1>
+      <p class="muted small" data-i18n="ownerStaffDesc">Platform staff can see everything and create restaurants, but cannot delete or see passwords.</p>
       <form id="staff-form" class="form-row form-row-3 mb-2" novalidate autocomplete="off">
-        <input id="staff-user" type="text" placeholder="Username" maxlength="40" required>
-        <input id="staff-pass" type="password" placeholder="Password (10+ chars)" maxlength="200" required>
-        <button type="submit" class="btn">Add staff</button>
+        <input id="staff-user" type="text" data-i18n-placeholder="ownerStaffUserPh" placeholder="Username" maxlength="40" required>
+        <input id="staff-pass" type="password" data-i18n-placeholder="ownerStaffPassPh" placeholder="Password (10+ chars)" maxlength="200" required>
+        <button type="submit" class="btn" data-i18n="ownerStaffAdd">Add staff</button>
       </form>
       <div id="staff-zone"></div>
     </section>
@@ -111,9 +113,9 @@
     </section>
 
     <section class="card mt-2" id="translations-card">
-      <h1 class="section-title">Translations</h1>
-      <p class="muted small">Override platform strings without a deploy. Search a key, edit the value, save.</p>
-      <input id="tr-search" type="text" placeholder="Search key…" maxlength="80" autocomplete="off" class="mb-2">
+      <h1 class="section-title" data-i18n="ownerTranslationsH">Translations</h1>
+      <p class="muted small" data-i18n="ownerTranslationsDesc">Override platform strings without a deploy. Search a key, edit the value, save.</p>
+      <input id="tr-search" type="text" data-i18n-placeholder="ownerTrSearchPh" placeholder="Search key…" maxlength="80" autocomplete="off" class="mb-2">
       <div id="translations-zone"></div>
     </section>
 

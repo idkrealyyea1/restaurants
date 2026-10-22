@@ -8,6 +8,7 @@
 
   let restaurants = [];
   let searchTerm = '';
+  let loadFailed = false;
 
   function restCard(r) {
     const nm = (I.lang === 'en' && r.nameEn) ? r.nameEn : r.name;
@@ -51,11 +52,22 @@
   function render() {
     const grid = document.getElementById('rest-grid');
     const empty = document.getElementById('rest-empty');
+    if (!grid || !empty) return;
     const list = visible();
 
     grid.innerHTML = list.map(restCard).join('');
-    empty.classList.toggle('hidden', restaurants.length !== 0);
-    empty.textContent = restaurants.length === 0 ? I.t('noRests') : '';
+    empty.classList.toggle('hidden', !loadFailed && list.length > 0);
+    if (loadFailed) {
+      empty.innerHTML = '<strong>' + esc(I.t('directoryLoadError')) + '</strong>' +
+        '<button class="btn btn-outline btn-sm mt-1" type="button" data-retry-directory>' +
+        esc(I.t('retryLoad')) + '</button>';
+    } else if (!restaurants.length) {
+      empty.textContent = I.t('noRests');
+    } else if (!list.length) {
+      empty.textContent = I.t('noRestMatch');
+    } else {
+      empty.textContent = '';
+    }
 
     // Staggered entrance.
     grid.querySelectorAll('.rest-card').forEach((el, i) => {
@@ -77,21 +89,41 @@
     });
   }
 
-  async function boot() {
+  async function load() {
     try {
       const data = await api.get('/api/restaurants');
       restaurants = data.restaurants || [];
+      loadFailed = false;
     } catch (err) {
       restaurants = [];
+      loadFailed = true;
     }
     render();
+  }
 
-    document.getElementById('rest-search').addEventListener('input', (e) => {
-      searchTerm = e.target.value.trim().toLowerCase();
+  function boot() {
+    document.title = I.t('homeRestH') + ' — Restivo';
+    load();
+
+    const search = document.getElementById('rest-search');
+    if (search) {
+      search.addEventListener('input', (e) => {
+        searchTerm = e.target.value.trim().toLowerCase();
+        render();
+      });
+    }
+
+    const empty = document.getElementById('rest-empty');
+    if (empty) {
+      empty.addEventListener('click', (event) => {
+        if (event.target.closest('[data-retry-directory]')) load();
+      });
+    }
+
+    I.onChange(() => {
+      document.title = I.t('homeRestH') + ' — Restivo';
       render();
     });
-
-    I.onChange(render);
   }
 
   boot();

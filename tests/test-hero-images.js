@@ -27,9 +27,16 @@ test('the validator used by the server accepts both writable namespaces', () => 
 
 test('hero carousel markup and two-state fallback exist', () => {
   const fs = require('fs');
-  const js = fs.readFileSync(require('path').join(__dirname, '..', 'client', 'js', 'restaurant.js'), 'utf8');
-  assert.ok(js.includes('hero-carousel'));
+  const path = require('path');
+  const js = fs.readFileSync(path.join(__dirname, '..', 'client', 'js', 'restaurant.js'), 'utf8');
+  const html = fs.readFileSync(path.join(__dirname, '..', 'client', 'restaurant.html'), 'utf8');
+  // Live storefront names the hero gallery "cover": the carousel markup lives in
+  // restaurant.html and is filled from the business hero images API.
+  assert.ok(html.includes('coverCarousel'));
+  assert.ok(html.includes('coverTrack'));
   assert.ok(js.includes('heroImages'));
+  // Two-state fallback: hero images/cover when present, otherwise the initial.
+  assert.ok(js.includes('coverSlides') && js.includes('initial'));
 });
 
 test('hero upload path uses the hero images table and enforces the platform cap', () => {
