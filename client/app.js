@@ -21,7 +21,46 @@ const copy = {
     ] },
     final: { titleA: "منيو يليق بمطعمك.", titleB: "وطلب أسهل لضيوفك.", body: "اعرض أطباقك بوضوح، وخلي ضيوفك يرسلون طلبهم بثقة.", request: "ابدأ بمنيو مطعمك" },
     footer: ["منيو رقمي وطلبات أونلاين", "مصممان لعمل المطاعم اليومي."],
-    modal: { badge: "نبدأ من مطعمك", choiceBadge: "اختر طريقة البداية", choiceTitleA: "كيف تحب أن", choiceTitleB: "تبدأ مع Ordora؟", choiceDescription: "ابدأ بتجربة مجانية، أو اشترك بخطة شهرية واضحة. اختر ما يناسبك الآن.", freeTag: "تجربة مجانية", freeTitle: "ابدأ مجانًا", freeDesc: "أنشئ صفحة مطعمك وجرّب المنيو والطلبات مجانًا.", subscribeTag: "خطة شهرية", subscribeTitle: "اشترك", subscribeDesc: "فعّل اشتراكك الشهري مع فريق Ordora، بدون عمولة على الطلبات.", choiceNote: "يمكنك الانتقال إلى الاشتراك في أي وقت.", back: "رجوع", subscribeBadge: "اشتراك Ordora", subscribeTitleA: "اشترك في Ordora", subscribeTitleB: "لمطعمك.", subscribeDescription: "اترك بياناتك وسنتواصل معك لتأكيد الخطة الشهرية وتفعيل الاشتراك.", subscribeNote: "سنتواصل معك لتأكيد الخطة قبل التفعيل.", subscribeTail: "سنتواصل معك قريبًا لتفعيل اشتراك مطعمك.", subscribeSubmit: "أرسل طلب الاشتراك", subscribeSuccess: "وصلنا طلب الاشتراك.", titleA: "خلّ منيو مطعمك", titleB: "جاهزًا لضيوفك.", description: "اترك بياناتك لنتحدث عن صفحة مطعمك على Ordora.", name: "اسمك", namePlaceholder: "مثال: محمد", restaurant: "اسم المطعم", restaurantPlaceholder: "مثال: مطعم واحة", phone: "رقم واتساب", submit: "أرسل طلبك", sending: "جارٍ الإرسال…", error: "تعذّر إرسال الطلب. حاول مجددًا.", note: "بدون التزام. نود معرفة المزيد عن مطعمك.", success: "وصلنا طلبك.", thanks: "شكرًا", tail: "سنتواصل معك قريبًا لنجهز حضور مطعمك.", done: "تمام" },
+    modal: {
+      badge: "تواصل مع Ordora",
+      choiceBadge: "ابدأ الآن",
+      choiceTitleA: "كيف تحب",
+      choiceTitleB: "أن تبدأ؟",
+      choiceDescription: "ابدأ بتجربة مجانية الآن، أو اطلب اشتراكًا وسنتواصل معك لتفعيله.",
+      freeTag: "تجربة مجانية",
+      freeTitle: "ابدأ مجانًا",
+      freeDesc: "أنشئ صفحتك وجرّب المنيو والطلبات. بدون بطاقة.",
+      subscribeTag: "اشتراك شهري",
+      subscribeTitle: "اشترك",
+      subscribeDesc: "أرسل طلبًا وسنتواصل معك لتأكيد الخطة وتفعيلها.",
+      choiceNote: "لا يوجد دفع الآن.",
+      back: "رجوع إلى الخيارات",
+      subscribeBadge: "طلب اشتراك",
+      subscribeTitleA: "اطلب اشتراك",
+      subscribeTitleB: "مطعمك.",
+      subscribeDescription: "أرسل بياناتك وسنتواصل معك على واتساب لتأكيد الخطة.",
+      subscribeNote: "لا يوجد دفع الآن. سنؤكد الخطة معك على واتساب قبل التفعيل.",
+      subscribeTail: "سنتواصل معك على واتساب لتأكيد الاشتراك وتفعيله.",
+      subscribeSubmit: "أرسل طلب الاشتراك",
+      subscribeSuccess: "وصلنا طلب الاشتراك.",
+      titleA: "أخبرنا عن",
+      titleB: "مطعمك.",
+      description: "أرسل بياناتك وسنتواصل معك على واتساب بخصوص صفحة مطعمك على Ordora.",
+      name: "اسمك",
+      namePlaceholder: "مثال: محمد",
+      restaurant: "اسم المطعم",
+      restaurantPlaceholder: "مثال: مطعم واحة",
+      phone: "رقم واتساب",
+      phonePlaceholder: "+970 59 123 4567",
+      submit: "أرسل الطلب",
+      sending: "جارٍ الإرسال…",
+      error: "تعذّر إرسال الطلب. تحقق من الاتصال وحاول مجددًا.",
+      note: "بدون التزام. سنستخدم رقمك للتواصل بشأن Ordora فقط.",
+      success: "وصلنا طلبك.",
+      thanks: "شكرًا",
+      tail: "سنتواصل معك على واتساب قريبًا.",
+      done: "تمام"
+    },
     phone: { name: "ذا ريد بن", status: "مفتوح الآن", description: "برغر طازج على الفحم، وصوصاتنا الخاصة", location: "يافا، فلسطين", search: "ابحث عن طبقك المفضل", categories: ["الكل", "برغر", "جانبيات", "مشروبات"], featured: "الأكثر طلبًا", burger: "ريد بن الأصلي", burgerDesc: "جبنة شيدر، خس، طماطم وصوصنا الخاص", second: "سموكي هاوس", secondDesc: "برغر مدخن مع جبنة ذائبة", cart: "عرض السلة", count: "2 أصناف", button: "افتح المنيو الكامل" }
   },
   en: {
@@ -46,7 +85,46 @@ const copy = {
     ] },
     final: { titleA: "A menu that fits", titleB: "your restaurant.", body: "Show your dishes clearly and make it easier for guests to send an order.", request: "Start your restaurant menu" },
     footer: ["Digital menus and online ordering", "built for the day-to-day of restaurants."],
-    modal: { badge: "Start with your restaurant", choiceBadge: "Choose how to start", choiceTitleA: "How would you like", choiceTitleB: "to get started?", choiceDescription: "Start with a free trial, or subscribe to a clear monthly plan. Choose what works for you.", freeTag: "Free trial", freeTitle: "Start for free", freeDesc: "Create your restaurant page and try the menu and ordering free.", subscribeTag: "Monthly plan", subscribeTitle: "Subscribe", subscribeDesc: "Activate your monthly Ordora plan with no commission on orders.", choiceNote: "You can switch to a subscription whenever you’re ready.", back: "Back", subscribeBadge: "Ordora subscription", subscribeTitleA: "Subscribe to Ordora", subscribeTitleB: "for your restaurant.", subscribeDescription: "Leave your details and we’ll contact you to confirm your monthly plan and activate it.", subscribeNote: "We’ll confirm the plan with you before activation.", subscribeTail: "We’ll be in touch soon to activate your restaurant subscription.", subscribeSubmit: "Send subscription request", subscribeSuccess: "Subscription request received.", titleA: "Get your restaurant menu", titleB: "ready for guests.", description: "Leave your details to talk with us about an Ordora restaurant page.", name: "Your name", namePlaceholder: "Example: Alex", restaurant: "Restaurant name", restaurantPlaceholder: "Example: Oasis Restaurant", phone: "WhatsApp number", submit: "Send request", sending: "Sending…", error: "We couldn’t send your request. Please try again.", note: "No commitment. Tell us a little about your restaurant.", success: "Request received.", thanks: "Thanks", tail: "We’ll be in touch soon to set up your restaurant presence.", done: "Done" },
+    modal: {
+      badge: "Contact Ordora",
+      choiceBadge: "Get started",
+      choiceTitleA: "How would you like",
+      choiceTitleB: "to start?",
+      choiceDescription: "Start a free trial now, or request a subscription and we’ll contact you to activate it.",
+      freeTag: "Free trial",
+      freeTitle: "Start for free",
+      freeDesc: "Create your page and try the menu and orders. No card needed.",
+      subscribeTag: "Monthly plan",
+      subscribeTitle: "Subscribe",
+      subscribeDesc: "Send a request and we’ll contact you to confirm and activate your plan.",
+      choiceNote: "No payment now.",
+      back: "Back to options",
+      subscribeBadge: "Subscription request",
+      subscribeTitleA: "Request your",
+      subscribeTitleB: "subscription.",
+      subscribeDescription: "Send your details and we’ll contact you on WhatsApp to confirm your plan.",
+      subscribeNote: "No payment now. We’ll confirm the plan with you on WhatsApp before activation.",
+      subscribeTail: "We’ll contact you on WhatsApp to confirm and activate your subscription.",
+      subscribeSubmit: "Send subscription request",
+      subscribeSuccess: "Subscription request received.",
+      titleA: "Tell us about",
+      titleB: "your restaurant.",
+      description: "Send your details and we’ll contact you on WhatsApp about your Ordora restaurant page.",
+      name: "Your name",
+      namePlaceholder: "Example: Alex",
+      restaurant: "Restaurant name",
+      restaurantPlaceholder: "Example: Oasis Restaurant",
+      phone: "WhatsApp number",
+      phonePlaceholder: "+970 59 123 4567",
+      submit: "Send request",
+      sending: "Sending…",
+      error: "We couldn’t send your request. Check your connection and try again.",
+      note: "No commitment. We’ll only use your number to contact you about Ordora.",
+      success: "Request received.",
+      thanks: "Thanks",
+      tail: "We’ll contact you on WhatsApp soon.",
+      done: "Done"
+    },
     phone: { name: "The Red Bun", status: "Open now", description: "Flame-grilled burgers and house-made sauces", location: "Jaffa, Palestine", search: "Find your next favorite", categories: ["All", "Burgers", "Sides", "Drinks"], featured: "BEST SELLER", burger: "The Red Bun", burgerDesc: "Cheddar, lettuce, tomato & house sauce", second: "Smokehouse Stack", secondDesc: "Smoky burger, melty cheese", cart: "View your bag", count: "2 items", button: "Open the full menu" }
   }
 };
@@ -220,6 +298,9 @@ function modalMarkup(t) {
   const tail = subscribing ? m.subscribeTail : m.tail;
   const successTitle = subscribing ? m.subscribeSuccess : m.success;
   const submitLabel = subscribing ? m.subscribeSubmit : m.submit;
+  const noteMarkup = subscribing
+    ? `<p class="form-note form-note-info">${icon("check", 15)}<span>${m.subscribeNote}</span></p>`
+    : `<p class="form-note">${m.note}</p>`;
   let body;
   if (submitted) {
     body = `<div class="success-state"><span class="success-icon">${icon("check", 34)}</span><h3>${successTitle}</h3><p>${m.thanks} ${safe(customerName || (language === "ar" ? "لك" : "there"))}. ${tail}</p><button type="button" class="button button-dark" data-action="close-modal">${m.done}</button></div>`;
@@ -228,16 +309,20 @@ function modalMarkup(t) {
   } else {
     body = `<form class="request-form">
       ${subscribing ? `<button type="button" class="modal-back" data-action="choose-start">${icon("arrow", 15)}${m.back}</button>` : ""}
-      <label>${m.name}<input name="customerName" required placeholder="${m.namePlaceholder}"></label>
-      <label>${m.restaurant}<input name="restaurant" required placeholder="${m.restaurantPlaceholder}"></label>
-      <label>${m.phone}<input name="phone" required type="tel" placeholder="+970 5X XXX XXXX" dir="ltr"></label>
-      <button type="submit" class="button button-coral form-submit">${submitLabel}${icon("arrow", 17)}</button><p class="form-error hidden" role="alert"></p><p class="form-note">${subscribing ? m.subscribeNote : m.note}</p>
+      <label>${m.name}<input name="customerName" autocomplete="name" enterkeyhint="next" required placeholder="${m.namePlaceholder}"></label>
+      <label>${m.restaurant}<input name="restaurant" autocomplete="organization" enterkeyhint="next" required placeholder="${m.restaurantPlaceholder}"></label>
+      <label>${m.phone}<input name="phone" autocomplete="tel" inputmode="tel" enterkeyhint="send" required type="tel" placeholder="${m.phonePlaceholder || "+970 5X XXX XXXX"}" dir="ltr"></label>
+      <button type="submit" class="button button-coral form-submit">${submitLabel}${icon("arrow", 17)}</button>
+      <p class="form-error hidden" role="alert"></p>
+      ${noteMarkup}
     </form>`;
   }
-  return `<div class="modal-backdrop" role="presentation"><section class="request-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-    <button class="modal-close" type="button" data-action="close-modal" aria-label="${m.close || (language === "ar" ? "إغلاق" : "Close")}">${icon("close", 17)}</button>
-    <div class="modal-heading"><span class="eyebrow-pill">${badge}</span><h2 id="modal-title">${titleA}<br>${titleB}</h2><p>${description}</p></div>
-    ${body}
+  return `<div class="modal-backdrop" role="presentation"><section class="request-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-description">
+    <button class="modal-close" type="button" data-action="close-modal" aria-label="${m.close || (language === "ar" ? "إغلاق" : "Close")}">${icon("close", 18)}</button>
+    <div class="modal-scroll">
+      <div class="modal-heading"><span class="eyebrow-pill">${badge}</span><h2 id="modal-title">${titleA}<br>${titleB}</h2><p id="modal-description">${description}</p></div>
+      ${body}
+    </div>
   </section></div>`;
 }
 
@@ -247,6 +332,7 @@ function render() {
   document.documentElement.lang = language;
   document.documentElement.dir = rtl ? "rtl" : "ltr";
   document.title = rtl ? "Ordora — منيو رقمي وطلبات أوضح لمطعمك" : "Ordora — Digital menus and clearer restaurant orders";
+  document.body.classList.toggle("modal-open", modalOpen);
   app.innerHTML = `<div id="top" class="site-shell">
     <header class="site-header"><div class="container header-inner">${logo()}
       <nav class="desktop-nav"><a href="#how-it-works">${t.nav.how}</a><a href="#features">${t.nav.features}</a><a href="#pricing">${t.nav.pricing}</a><a href="#faq">${t.nav.faq}</a></nav>
@@ -294,6 +380,7 @@ app.addEventListener("click", (event) => {
   const action = event.target.closest("[data-action]")?.dataset.action;
   if (!action) return;
   if (action === "start") {
+    mobileOpen = false;
     modalOpen = true;
     submitted = false;
     modalView = "choice";
@@ -301,6 +388,7 @@ app.addEventListener("click", (event) => {
     render();
     document.querySelector(".start-choice")?.focus();
   } else if (action === "request") {
+    mobileOpen = false;
     modalOpen = true;
     submitted = false;
     modalView = "form";

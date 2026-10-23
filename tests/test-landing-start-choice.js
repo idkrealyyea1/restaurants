@@ -31,3 +31,19 @@ test('start choice copy and styling exist in both languages', () => {
   assert.ok(cssSrc.includes('.start-choice-free'), 'free option styles exist');
   assert.ok(cssSrc.includes('.start-choice-subscribe'), 'subscribe option styles exist');
 });
+
+test('choice and request forms are mobile-first', () => {
+  const inputCss = (cssSrc.match(/\.request-form input \{[^}]*\}/) || [''])[0];
+  assert.ok(appSrc.includes('class="modal-scroll"'), 'modal content has an inner scroll area');
+  assert.ok(cssSrc.includes('.modal-scroll'), 'inner scroll area is styled');
+  assert.match(inputCss, /font-size:\s*16px/, 'inputs avoid iOS zoom');
+  assert.ok(cssSrc.includes('.form-note-info'), 'subscription reassurance note is styled');
+  assert.ok(cssSrc.includes('body.modal-open'), 'background scrolling is locked while the modal is open');
+  assert.ok(cssSrc.includes('[dir="ltr"] .button > svg'), 'forward arrows flip in English');
+  assert.ok(cssSrc.includes('.hidden { display: none !important; }'), 'hidden form errors stay hidden');
+  assert.ok(cssSrc.includes('@media (min-width: 560px)'), 'desktop layout is a min-width enhancement');
+  assert.ok(appSrc.includes('autocomplete="name"'), 'name field exposes an autocomplete hint');
+  assert.ok(appSrc.includes('autocomplete="tel"'), 'phone field exposes an autocomplete hint');
+  assert.ok(appSrc.includes('inputmode="tel"'), 'phone field requests a numeric keypad');
+  assert.ok(appSrc.includes('enterkeyhint="send"'), 'phone keyboard has a clear submit action');
+});
