@@ -21,7 +21,7 @@ const copy = {
     ] },
     final: { titleA: "منيو يليق بمطعمك.", titleB: "وطلب أسهل لضيوفك.", body: "اعرض أطباقك بوضوح، وخلي ضيوفك يرسلون طلبهم بثقة.", request: "ابدأ بمنيو مطعمك" },
     footer: ["منيو رقمي وطلبات أونلاين", "مصممان لعمل المطاعم اليومي."],
-    modal: { badge: "نبدأ من مطعمك", titleA: "خلّ منيو مطعمك", titleB: "جاهزًا لضيوفك.", description: "اترك بياناتك لنتحدث عن صفحة مطعمك على Ordora.", name: "اسمك", namePlaceholder: "مثال: محمد", restaurant: "اسم المطعم", restaurantPlaceholder: "مثال: مطعم واحة", phone: "رقم واتساب", submit: "أرسل طلبك", sending: "جارٍ الإرسال…", error: "تعذّر إرسال الطلب. حاول مجددًا.", note: "بدون التزام. نود معرفة المزيد عن مطعمك.", success: "وصلنا طلبك.", thanks: "شكرًا", tail: "سنتواصل معك قريبًا لنجهز حضور مطعمك.", done: "تمام" },
+    modal: { badge: "نبدأ من مطعمك", choiceBadge: "اختر طريقة البداية", choiceTitleA: "كيف تحب أن", choiceTitleB: "تبدأ مع Ordora؟", choiceDescription: "ابدأ بتجربة مجانية، أو اشترك بخطة شهرية واضحة. اختر ما يناسبك الآن.", freeTag: "تجربة مجانية", freeTitle: "ابدأ مجانًا", freeDesc: "أنشئ صفحة مطعمك وجرّب المنيو والطلبات مجانًا.", subscribeTag: "خطة شهرية", subscribeTitle: "اشترك", subscribeDesc: "فعّل اشتراكك الشهري مع فريق Ordora، بدون عمولة على الطلبات.", choiceNote: "يمكنك الانتقال إلى الاشتراك في أي وقت.", back: "رجوع", subscribeBadge: "اشتراك Ordora", subscribeTitleA: "اشترك في Ordora", subscribeTitleB: "لمطعمك.", subscribeDescription: "اترك بياناتك وسنتواصل معك لتأكيد الخطة الشهرية وتفعيل الاشتراك.", subscribeNote: "سنتواصل معك لتأكيد الخطة قبل التفعيل.", subscribeTail: "سنتواصل معك قريبًا لتفعيل اشتراك مطعمك.", subscribeSubmit: "أرسل طلب الاشتراك", subscribeSuccess: "وصلنا طلب الاشتراك.", titleA: "خلّ منيو مطعمك", titleB: "جاهزًا لضيوفك.", description: "اترك بياناتك لنتحدث عن صفحة مطعمك على Ordora.", name: "اسمك", namePlaceholder: "مثال: محمد", restaurant: "اسم المطعم", restaurantPlaceholder: "مثال: مطعم واحة", phone: "رقم واتساب", submit: "أرسل طلبك", sending: "جارٍ الإرسال…", error: "تعذّر إرسال الطلب. حاول مجددًا.", note: "بدون التزام. نود معرفة المزيد عن مطعمك.", success: "وصلنا طلبك.", thanks: "شكرًا", tail: "سنتواصل معك قريبًا لنجهز حضور مطعمك.", done: "تمام" },
     phone: { name: "ذا ريد بن", status: "مفتوح الآن", description: "برغر طازج على الفحم، وصوصاتنا الخاصة", location: "يافا، فلسطين", search: "ابحث عن طبقك المفضل", categories: ["الكل", "برغر", "جانبيات", "مشروبات"], featured: "الأكثر طلبًا", burger: "ريد بن الأصلي", burgerDesc: "جبنة شيدر، خس، طماطم وصوصنا الخاص", second: "سموكي هاوس", secondDesc: "برغر مدخن مع جبنة ذائبة", cart: "عرض السلة", count: "2 أصناف", button: "افتح المنيو الكامل" }
   },
   en: {
@@ -46,7 +46,7 @@ const copy = {
     ] },
     final: { titleA: "A menu that fits", titleB: "your restaurant.", body: "Show your dishes clearly and make it easier for guests to send an order.", request: "Start your restaurant menu" },
     footer: ["Digital menus and online ordering", "built for the day-to-day of restaurants."],
-    modal: { badge: "Start with your restaurant", titleA: "Get your restaurant menu", titleB: "ready for guests.", description: "Leave your details to talk with us about an Ordora restaurant page.", name: "Your name", namePlaceholder: "Example: Alex", restaurant: "Restaurant name", restaurantPlaceholder: "Example: Oasis Restaurant", phone: "WhatsApp number", submit: "Send request", sending: "Sending…", error: "We couldn’t send your request. Please try again.", note: "No commitment. Tell us a little about your restaurant.", success: "Request received.", thanks: "Thanks", tail: "We’ll be in touch soon to set up your restaurant presence.", done: "Done" },
+    modal: { badge: "Start with your restaurant", choiceBadge: "Choose how to start", choiceTitleA: "How would you like", choiceTitleB: "to get started?", choiceDescription: "Start with a free trial, or subscribe to a clear monthly plan. Choose what works for you.", freeTag: "Free trial", freeTitle: "Start for free", freeDesc: "Create your restaurant page and try the menu and ordering free.", subscribeTag: "Monthly plan", subscribeTitle: "Subscribe", subscribeDesc: "Activate your monthly Ordora plan with no commission on orders.", choiceNote: "You can switch to a subscription whenever you’re ready.", back: "Back", subscribeBadge: "Ordora subscription", subscribeTitleA: "Subscribe to Ordora", subscribeTitleB: "for your restaurant.", subscribeDescription: "Leave your details and we’ll contact you to confirm your monthly plan and activate it.", subscribeNote: "We’ll confirm the plan with you before activation.", subscribeTail: "We’ll be in touch soon to activate your restaurant subscription.", subscribeSubmit: "Send subscription request", subscribeSuccess: "Subscription request received.", titleA: "Get your restaurant menu", titleB: "ready for guests.", description: "Leave your details to talk with us about an Ordora restaurant page.", name: "Your name", namePlaceholder: "Example: Alex", restaurant: "Restaurant name", restaurantPlaceholder: "Example: Oasis Restaurant", phone: "WhatsApp number", submit: "Send request", sending: "Sending…", error: "We couldn’t send your request. Please try again.", note: "No commitment. Tell us a little about your restaurant.", success: "Request received.", thanks: "Thanks", tail: "We’ll be in touch soon to set up your restaurant presence.", done: "Done" },
     phone: { name: "The Red Bun", status: "Open now", description: "Flame-grilled burgers and house-made sauces", location: "Jaffa, Palestine", search: "Find your next favorite", categories: ["All", "Burgers", "Sides", "Drinks"], featured: "BEST SELLER", burger: "The Red Bun", burgerDesc: "Cheddar, lettuce, tomato & house sauce", second: "Smokehouse Stack", secondDesc: "Smoky burger, melty cheese", cart: "View your bag", count: "2 items", button: "Open the full menu" }
   }
 };
@@ -63,6 +63,8 @@ try {
 let mobileOpen = false;
 let modalOpen = false;
 let submitted = false;
+let modalView = "form";
+let modalIntent = "request";
 let customerName = "";
 let pricing = null;
 const demoUrl = "./demo/index.html";
@@ -184,17 +186,58 @@ function phonePreview(t) {
   </div>`;
 }
 
+function startChoiceMarkup(m) {
+  return `<div class="start-choice-panel">
+    <a class="start-choice start-choice-free" href="/signup.html">
+      <span class="start-choice-icon">${icon("spark", 21)}</span>
+      <span class="start-choice-copy"><small class="start-choice-tag">${m.freeTag}</small><strong>${m.freeTitle}</strong><span class="start-choice-desc">${m.freeDesc}</span></span>
+      <span class="start-choice-arrow">${icon("arrow", 18)}</span>
+    </a>
+    <button class="start-choice start-choice-subscribe" type="button" data-action="choose-subscribe">
+      <span class="start-choice-icon">${icon("message", 20)}</span>
+      <span class="start-choice-copy"><small class="start-choice-tag">${m.subscribeTag}</small><strong>${m.subscribeTitle}</strong><span class="start-choice-desc">${m.subscribeDesc}</span></span>
+      <span class="start-choice-arrow">${icon("arrow", 18)}</span>
+    </button>
+    <p class="start-choice-note">${m.choiceNote}</p>
+  </div>`;
+}
+
+function resetModalState() {
+  modalOpen = false;
+  submitted = false;
+  modalView = "form";
+  modalIntent = "request";
+}
+
 function modalMarkup(t) {
   const m = t.modal;
-  return `<div class="modal-backdrop" role="presentation"><section class="request-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-    <button class="modal-close" type="button" data-action="close-modal" aria-label="${m.close || (language === "ar" ? "إغلاق" : "Close")}">${icon("close", 17)}</button>
-    <div class="modal-heading"><span class="eyebrow-pill">${m.badge}</span><h2 id="modal-title">${m.titleA}<br>${m.titleB}</h2><p>${m.description}</p></div>
-    ${submitted ? `<div class="success-state"><span class="success-icon">${icon("check", 34)}</span><h3>${m.success}</h3><p>${m.thanks} ${safe(customerName || (language === "ar" ? "لك" : "there"))}. ${m.tail}</p><button type="button" class="button button-dark" data-action="close-modal">${m.done}</button></div>` : `<form class="request-form">
+  const choosing = modalView === "choice";
+  const subscribing = modalIntent === "subscribe";
+  const badge = choosing ? m.choiceBadge : subscribing ? m.subscribeBadge : m.badge;
+  const titleA = choosing ? m.choiceTitleA : subscribing ? m.subscribeTitleA : m.titleA;
+  const titleB = choosing ? m.choiceTitleB : subscribing ? m.subscribeTitleB : m.titleB;
+  const description = choosing ? m.choiceDescription : subscribing ? m.subscribeDescription : m.description;
+  const tail = subscribing ? m.subscribeTail : m.tail;
+  const successTitle = subscribing ? m.subscribeSuccess : m.success;
+  const submitLabel = subscribing ? m.subscribeSubmit : m.submit;
+  let body;
+  if (submitted) {
+    body = `<div class="success-state"><span class="success-icon">${icon("check", 34)}</span><h3>${successTitle}</h3><p>${m.thanks} ${safe(customerName || (language === "ar" ? "لك" : "there"))}. ${tail}</p><button type="button" class="button button-dark" data-action="close-modal">${m.done}</button></div>`;
+  } else if (choosing) {
+    body = startChoiceMarkup(m);
+  } else {
+    body = `<form class="request-form">
+      ${subscribing ? `<button type="button" class="modal-back" data-action="choose-start">${icon("arrow", 15)}${m.back}</button>` : ""}
       <label>${m.name}<input name="customerName" required placeholder="${m.namePlaceholder}"></label>
       <label>${m.restaurant}<input name="restaurant" required placeholder="${m.restaurantPlaceholder}"></label>
       <label>${m.phone}<input name="phone" required type="tel" placeholder="+970 5X XXX XXXX" dir="ltr"></label>
-      <button type="submit" class="button button-coral form-submit">${m.submit}${icon("arrow", 17)}</button><p class="form-error hidden" role="alert"></p><p class="form-note">${m.note}</p>
-    </form>`}
+      <button type="submit" class="button button-coral form-submit">${submitLabel}${icon("arrow", 17)}</button><p class="form-error hidden" role="alert"></p><p class="form-note">${subscribing ? m.subscribeNote : m.note}</p>
+    </form>`;
+  }
+  return `<div class="modal-backdrop" role="presentation"><section class="request-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="modal-close" type="button" data-action="close-modal" aria-label="${m.close || (language === "ar" ? "إغلاق" : "Close")}">${icon("close", 17)}</button>
+    <div class="modal-heading"><span class="eyebrow-pill">${badge}</span><h2 id="modal-title">${titleA}<br>${titleB}</h2><p>${description}</p></div>
+    ${body}
   </section></div>`;
 }
 
@@ -225,9 +268,9 @@ function render() {
       <section class="how-section" id="how-it-works"><div class="container"><div class="section-intro split-intro"><div><span class="section-kicker">${t.how.eyebrow}</span><h2>${t.how.titleA}<br><em>${t.how.titleB}</em></h2></div><p>${t.how.body}</p></div><div class="steps-grid">${t.how.steps.map((step, i) => `<article class="step-card"><div class="step-top"><span>0${i + 1}</span><i>${icon(["scan", "pointer", "message"][i], 21)}</i></div><h3>${step[0]}</h3><p>${step[1]}</p></article>`).join("")}</div></div></section>
       <section class="features-section" id="features"><div class="container"><div class="section-intro feature-intro"><div><span class="section-kicker">${t.features.eyebrow}</span><h2>${t.features.titleA}<br><em>${t.features.titleB}</em></h2></div><p>${t.features.aside}</p></div><div class="features-grid">${t.features.items.map((item, i) => `<article class="feature-card tone-${i + 1}"><div class="feature-top"><span>0${i + 1}</span><i>${icon(item[2], 21)}</i></div><div class="feature-copy"><h3>${item[0]}</h3><p>${item[1]}</p></div></article>`).join("")}</div></div></section>
       <section class="dashboard-section"><div class="container dashboard-grid"><div class="dashboard-copy"><span class="section-kicker">${t.dashboard.eyebrow}</span><h2>${t.dashboard.titleA}<br><em>${t.dashboard.titleB}</em></h2><p>${t.dashboard.body}</p><div class="dashboard-chips">${t.dashboard.chips.map((item) => `<span>${icon("check", 14)}${item}</span>`).join("")}</div></div><div class="dashboard-visual"><div class="dashboard-panel"><div class="panel-heading"><div><small>${t.dashboard.label}</small><b>${t.dashboard.date}</b></div><span>${icon("dashboard", 18)}</span></div><div class="stats-grid"><div><small>${t.dashboard.today}</small><strong>47</strong><em>${t.dashboard.yesterday}</em></div><div><small>${t.dashboard.top}</small><b>${t.dashboard.item}</b><em>${t.dashboard.count}</em></div></div><div class="order-list">${t.dashboard.orders.map((order, i) => `<div><span>${order}</span><b class="${i === 0 ? "order-new" : ""}">${i === 0 ? t.dashboard.fresh : t.dashboard.done}</b></div>`).join("")}</div></div></div></div></section>
-      <section class="pricing-section" id="pricing"><div class="container pricing-grid"><div class="pricing-copy"><span class="section-kicker">${t.pricing.eyebrow}</span><h2>${t.pricing.titleA}<br><em>${t.pricing.titleB}</em></h2><p>${t.pricing.body}</p></div><div class="price-card"><span class="price-label">${t.pricing.label}</span><div class="price"><strong id="livePrice">${planPrice()}</strong><span id="livePricePeriod">${planPeriod()}</span></div><div class="price-divider"></div><div class="price-features">${t.pricing.features.map((item) => `<span><i>${icon("check", 13)}</i>${item}</span>`).join("")}</div><button type="button" class="button button-coral price-cta" data-action="request">${t.pricing.request}${icon("arrow", 16)}</button></div></div></section>
+      <section class="pricing-section" id="pricing"><div class="container pricing-grid"><div class="pricing-copy"><span class="section-kicker">${t.pricing.eyebrow}</span><h2>${t.pricing.titleA}<br><em>${t.pricing.titleB}</em></h2><p>${t.pricing.body}</p></div><div class="price-card"><span class="price-label">${t.pricing.label}</span><div class="price"><strong id="livePrice">${planPrice()}</strong><span id="livePricePeriod">${planPeriod()}</span></div><div class="price-divider"></div><div class="price-features">${t.pricing.features.map((item) => `<span><i>${icon("check", 13)}</i>${item}</span>`).join("")}</div><button type="button" class="button button-coral price-cta" data-action="start">${t.pricing.request}${icon("arrow", 16)}</button></div></div></section>
       <section class="faq-section" id="faq"><div class="container faq-container"><div class="faq-heading"><span class="section-kicker">${t.faq.eyebrow}</span><h2>${t.faq.title}</h2></div><div class="faq-list">${t.faq.items.map((item, i) => `<details class="faq-item"${i === 0 ? " open" : ""}><summary>${item[0]}<span>${icon("plus", 17)}</span></summary><p>${item[1]}</p></details>`).join("")}</div></div></section>
-      <section class="final-section"><span class="final-spark">${icon("spark", 32)}</span><h2>${t.final.titleA}<br>${t.final.titleB}</h2><p>${t.final.body}</p><button type="button" class="button final-button" data-action="request">${t.final.request}${icon("arrow", 17)}</button></section>
+      <section class="final-section"><span class="final-spark">${icon("spark", 32)}</span><h2>${t.final.titleA}<br>${t.final.titleB}</h2><p>${t.final.body}</p><button type="button" class="button final-button" data-action="start">${t.final.request}${icon("arrow", 17)}</button></section>
     </main>
       <footer class="site-footer"><div class="container footer-inner"><div>${logo(true)}<p>${t.footer[0]}<br>${t.footer[1]}</p></div><nav><a href="#features">${t.nav.features}</a><a href="#pricing">${t.nav.pricing}</a><a href="${demoUrl}">${t.hero.demo}</a><span>© Ordora</span></nav></div></footer>
     ${modalOpen ? modalMarkup(t) : ""}
@@ -250,14 +293,34 @@ app.addEventListener("click", (event) => {
   }
   const action = event.target.closest("[data-action]")?.dataset.action;
   if (!action) return;
-  if (action === "request") {
+  if (action === "start") {
     modalOpen = true;
+    submitted = false;
+    modalView = "choice";
+    modalIntent = "start";
+    render();
+    document.querySelector(".start-choice")?.focus();
+  } else if (action === "request") {
+    modalOpen = true;
+    submitted = false;
+    modalView = "form";
+    modalIntent = "request";
+    render();
+    document.querySelector(".request-modal input")?.focus();
+  } else if (action === "choose-subscribe") {
+    modalView = "form";
+    modalIntent = "subscribe";
     submitted = false;
     render();
     document.querySelector(".request-modal input")?.focus();
-  } else if (action === "close-modal") {
-    modalOpen = false;
+  } else if (action === "choose-start") {
+    modalView = "choice";
+    modalIntent = "start";
     submitted = false;
+    render();
+    document.querySelector(".start-choice")?.focus();
+  } else if (action === "close-modal") {
+    resetModalState();
     render();
   } else if (action === "mobile-menu") {
     mobileOpen = !mobileOpen;
@@ -276,6 +339,9 @@ app.addEventListener("submit", async (event) => {
   customerName = String(data.get("customerName") || "").trim();
   const restaurant = String(data.get("restaurant") || "").trim();
   const phone = String(data.get("phone") || "").trim();
+  const notes = modalIntent === "subscribe"
+    ? (language === "ar" ? "طلب اشتراك من الصفحة الرئيسية" : "Subscription request from the landing page")
+    : (language === "ar" ? "طلب من الصفحة الرئيسية" : "Landing page request");
   const original = btn ? btn.innerHTML : "";
   if (btn) {
     btn.disabled = true;
@@ -291,6 +357,7 @@ app.addEventListener("submit", async (event) => {
         restaurantName: restaurant,
         phone,
         whatsapp: phone,
+        notes,
       }),
     });
     const body = await res.json().catch(() => null);
@@ -313,16 +380,14 @@ app.addEventListener("submit", async (event) => {
 
 app.addEventListener("click", (event) => {
   if (event.target.classList.contains("modal-backdrop")) {
-    modalOpen = false;
-    submitted = false;
+    resetModalState();
     render();
   }
 });
 
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape" && modalOpen) {
-    modalOpen = false;
-    submitted = false;
+    resetModalState();
     render();
   }
 });
