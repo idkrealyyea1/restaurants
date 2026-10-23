@@ -260,8 +260,10 @@
 
   /* ----------------------------- modal ------------------------------- */
 
-  function openModal(html) {
-    document.getElementById('modal-box').innerHTML = html;
+  function openModal(html, extraClass) {
+    const box = document.getElementById('modal-box');
+    box.className = 'modal' + (extraClass ? ' ' + extraClass : '');
+    box.innerHTML = html;
     document.getElementById('modal-backdrop').classList.add('open');
   }
   function closeModal() {
@@ -902,39 +904,107 @@
     let currentItem = item || null;
 
     openModal(
-      '<div class="modal-head"><h2 id="item-modal-title">' + esc(isNew ? I.t('newItemH') : I.t('editItemH')) + '</h2>' +
+      '<div class="modal-head item-modal-head"><h2 id="item-modal-title">' + esc(isNew ? I.t('newItemH') : I.t('editItemH')) + '</h2>' +
         '<button type="button" class="modal-close" aria-label="Close">&times;</button></div>' +
-      '<form id="item-form">' +
-        '<div class="field"><label for="it-name">' + esc(I.t('nameReq')) + '</label>' +
-          '<input id="it-name" maxlength="100" required value="' + esc(item ? item.name : '') + '"></div>' +
-        '<div class="field"><label for="it-desc">' + esc(I.t('descL')) + '</label>' +
-          '<textarea id="it-desc" maxlength="500">' + esc(item ? item.description : '') + '</textarea></div>' +
-        '<div class="form-row form-row-2">' +
-          '<div class="field"><label for="it-price">' + esc(I.t('priceReq')) + '</label>' +
-            '<input id="it-price" type="number" min="0" step="0.01" required value="' + (item ? (item.price_cents / 100).toFixed(2) : '') + '"></div>' +
-          '<div class="field"><label for="it-cat">' + esc(I.t('catReq')) + '</label>' +
-            '<select id="it-cat">' +
-              categories.map((c) => '<option value="' + esc(c.id) + '"' +
-                (item && item.category_id === c.id ? ' selected' : '') + '>' + esc(c.name) + '</option>').join('') +
-            '</select></div>' +
+      '<ol class="item-steps" aria-label="' + esc(I.t('itemStepsLabel')) + '">' +
+        '<li><button type="button" class="item-step is-active" data-item-step="details" aria-current="step" aria-controls="item-step-details">' +
+          '<span class="item-step-num">1</span>' +
+          '<span class="item-step-copy"><strong>' + esc(I.t('itemStepDetails')) + '</strong><small>' + esc(I.t('itemStepDetailsHint')) + '</small></span>' +
+        '</button></li>' +
+        '<li><button type="button" class="item-step" data-item-step="options" aria-controls="item-step-options"' + (isNew ? ' disabled' : '') + '>' +
+          '<span class="item-step-num">2</span>' +
+          '<span class="item-step-copy"><strong>' + esc(I.t('itemStepOptions')) + '</strong><small>' + esc(isNew ? I.t('itemStepLockedHint') : I.t('itemStepOptionsHint')) + '</small></span>' +
+        '</button></li>' +
+      '</ol>' +
+      '<div id="item-step-details" class="item-step-panel">' +
+        '<form id="item-form">' +
+          '<div class="field"><label for="it-name">' + esc(I.t('nameReq')) + '</label>' +
+            '<input id="it-name" type="text" maxlength="100" required value="' + esc(item ? item.name : '') + '"></div>' +
+          '<div class="field"><label for="it-desc">' + esc(I.t('descL')) + '</label>' +
+            '<textarea id="it-desc" maxlength="500">' + esc(item ? item.description : '') + '</textarea></div>' +
+          '<div class="form-row form-row-2">' +
+            '<div class="field"><label for="it-price">' + esc(I.t('priceReq')) + '</label>' +
+              '<input id="it-price" type="number" min="0" step="0.01" required value="' + (item ? (item.price_cents / 100).toFixed(2) : '') + '"></div>' +
+            '<div class="field"><label for="it-cat">' + esc(I.t('catReq')) + '</label>' +
+              '<select id="it-cat">' +
+                categories.map((c) => '<option value="' + esc(c.id) + '"' +
+                  (item && item.category_id === c.id ? ' selected' : '') + '>' + esc(c.name) + '</option>').join('') +
+              '</select></div>' +
+          '</div>' +
+          '<div class="checkbox-line mb-1"><input id="it-available" type="checkbox"' + (!item || item.is_available ? ' checked' : '') + '><label for="it-available">' + esc(I.t('availableL')) + '</label></div>' +
+          '<div class="checkbox-line mb-1"><input id="it-popular" type="checkbox"' + (item && item.is_popular ? ' checked' : '') + '><label for="it-popular">' + esc(I.t('popularL')) + '</label></div>' +
+          '<div class="checkbox-line mb-1"><input id="it-preorder" type="checkbox"' + (item && item.is_preorder ? ' checked' : '') + '><label for="it-preorder">' + esc(I.t('preorderAvailableL')) + '</label></div>' +
+          '<div class="field" id="it-prenote-field"' + (item && item.is_preorder ? '' : ' hidden') + '><label for="it-prenote">' + esc(I.t('preorderNoteL')) + '</label>' +
+            '<input id="it-prenote" type="text" maxlength="300" value="' + esc(item ? (item.preorder_note || '') : '') + '" placeholder="' + esc(I.t('preorderNotePh')) + '">' +
+            '<div class="hint">' + esc(I.t('preorderNoteHint')) + '</div></div>' +
+          '<div class="field mt-2"><label for="it-image">' + esc(I.t('imageL')) + '</label>' +
+            (!isNew && item.image_path ? '<img src="' + esc(item.image_path) + '" alt="" class="mb-1" width="120" height="90">' : '') +
+            '<input id="it-image" type="file" accept="image/jpeg,image/png,image/webp">' +
+            '<div class="hint">' + esc(I.t('imgHint')) + '</div>' +
+            '<div id="it-image-progress" class="progress hidden"><div id="it-image-progress-fill" class="progress-fill"></div></div>' +
+          '</div>' +
+          '<button id="it-save" type="submit" class="btn btn-block">' + esc(I.t('itemSaveContinue')) + '</button>' +
+        '</form>' +
+      '</div>' +
+      '<div id="item-step-options" class="item-step-panel" hidden>' +
+        '<div class="item-options-head">' +
+          '<p class="item-options-kicker">' + esc(I.t('itemStepOptions')) + '</p>' +
+          '<h3 id="item-options-title">' + esc(I.t('optTitleFor', { name: currentItem ? currentItem.name : '' })) + '</h3>' +
+          '<p class="hint">' + esc(I.t('optStepDesc')) + '</p>' +
         '</div>' +
-        '<div class="checkbox-line mb-1"><input id="it-available" type="checkbox"' + (!item || item.is_available ? ' checked' : '') + '><label for="it-available">' + esc(I.t('availableL')) + '</label></div>' +
-        '<div class="checkbox-line mb-1"><input id="it-popular" type="checkbox"' + (item && item.is_popular ? ' checked' : '') + '><label for="it-popular">' + esc(I.t('popularL')) + '</label></div>' +
-        '<div class="checkbox-line mb-1"><input id="it-preorder" type="checkbox"' + (item && item.is_preorder ? ' checked' : '') + '><label for="it-preorder">' + esc(I.t('preorderAvailableL')) + '</label></div>' +
-        '<div class="field" id="it-prenote-field"' + (item && item.is_preorder ? '' : ' hidden') + '><label for="it-prenote">' + esc(I.t('preorderNoteL')) + '</label>' +
-          '<input id="it-prenote" maxlength="300" value="' + esc(item ? (item.preorder_note || '') : '') + '" placeholder="' + esc(I.t('preorderNotePh')) + '">' +
-          '<div class="hint">' + esc(I.t('preorderNoteHint')) + '</div></div>' +
-        '<div class="field mt-2"><label for="it-image">' + esc(I.t('imageL')) + '</label>' +
-          (!isNew && item.image_path ? '<img src="' + esc(item.image_path) + '" alt="" class="mb-1" width="120" height="90">' : '') +
-          '<input id="it-image" type="file" accept="image/jpeg,image/png,image/webp">' +
-          '<div class="hint">' + esc(I.t('imgHint')) + '</div>' +
-          '<div id="it-image-progress" class="progress hidden"><div id="it-image-progress-fill" class="progress-fill"></div></div>' +
+        '<div id="item-options"></div>' +
+        '<p class="hint item-options-save-hint">' + esc(I.t('optDoneHint')) + '</p>' +
+        '<div class="item-step-actions">' +
+          '<button type="button" class="btn btn-outline" data-item-step="details">' + esc(I.t('itemOptionsBack')) + '</button>' +
+          '<button type="button" class="btn" id="it-options-done">' + esc(I.t('itemOptionsDone')) + '</button>' +
         '</div>' +
-        '<button id="it-save" type="submit" class="btn btn-block">' + esc(isNew ? I.t('createItemOptionsBtn') : I.t('saveChangesBtn')) + '</button>' +
-      '</form>' +
-      '<div id="item-options" class="mt-2"></div>'
+      '</div>',
+      'modal-wide'
     );
     document.querySelector('.modal-close').addEventListener('click', closeModal);
+
+    const detailsPanel = document.getElementById('item-step-details');
+    const optionsPanel = document.getElementById('item-step-options');
+    const optionsStepBtn = document.querySelector('.item-step[data-item-step="options"]');
+    const stepTabs = Array.from(document.querySelectorAll('.item-step'));
+
+    function enableOptionsStep() {
+      if (!optionsStepBtn) return;
+      optionsStepBtn.disabled = false;
+      const hint = optionsStepBtn.querySelector('small');
+      if (hint) hint.textContent = I.t('itemStepOptionsHint');
+    }
+
+    function setStep(step, opts) {
+      const showOptions = step === 'options';
+      if (showOptions && (!currentItem || isNew)) return;
+      detailsPanel.hidden = showOptions;
+      optionsPanel.hidden = !showOptions;
+      stepTabs.forEach((btn) => {
+        const active = btn.dataset.itemStep === step;
+        btn.classList.toggle('is-active', active);
+        if (active) btn.setAttribute('aria-current', 'step');
+        else btn.removeAttribute('aria-current');
+      });
+      const backdrop = document.getElementById('modal-backdrop');
+      if (backdrop) backdrop.scrollTop = 0;
+      if (showOptions && !(opts && opts.skipLoad)) loadItemOptions(currentItem.id);
+    }
+
+    document.querySelectorAll('[data-item-step]').forEach((btn) => {
+      btn.addEventListener('click', () => setStep(btn.dataset.itemStep));
+    });
+    document.getElementById('it-options-done').addEventListener('click', closeModal);
+
+    const itemForm = document.getElementById('item-form');
+    function markDetailsDirty() {
+      if (isNew || !currentItem || !optionsStepBtn) return;
+      optionsStepBtn.disabled = true;
+      const hint = optionsStepBtn.querySelector('small');
+      if (hint) hint.textContent = I.t('itemStepLockedHint');
+    }
+    itemForm.addEventListener('input', markDetailsDirty);
+    itemForm.addEventListener('change', markDetailsDirty);
 
     const preorderCheck = document.getElementById('it-preorder');
     const prenoteField = document.getElementById('it-prenote-field');
@@ -944,14 +1014,7 @@
     preorderCheck.addEventListener('change', syncPreorderNote);
     syncPreorderNote();
 
-    if (isNew) {
-      const zone = document.getElementById('item-options');
-      if (zone) zone.innerHTML = '<div class="notice notice-warn">' + esc(I.t('optNewItemHint')) + '</div>';
-    } else {
-      loadItemOptions(currentItem.id);
-    }
-
-    document.getElementById('item-form').addEventListener('submit', async (e) => {
+    itemForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const submitBtn = document.getElementById('it-save');
       const priceMajor = parseFloat(document.getElementById('it-price').value);
@@ -970,24 +1033,20 @@
         preorderNote: document.getElementById('it-prenote').value.trim(),
       };
       let createdNow = false;
+      let savedItem = null;
       try {
         submitBtn.disabled = true;
-        let saved;
         if (isNew) {
-          saved = await api.post('/api/admin/items', body);
-          currentItem = saved.item;
+          savedItem = (await api.post('/api/admin/items', body)).item;
+          currentItem = savedItem;
           isNew = false;
           createdNow = true;
           const title = document.getElementById('item-modal-title');
           if (title) title.textContent = I.t('editItemH');
-          submitBtn.textContent = I.t('saveChangesBtn');
-          await loadItemOptions(currentItem.id, I.t('optCreatedHint'));
-          const zone = document.getElementById('item-options');
-          if (zone && zone.scrollIntoView) zone.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          toast(I.t('itemCreated'), 'success');
+          enableOptionsStep();
         } else {
-          saved = await api.patch('/api/admin/items/' + currentItem.id, body);
-          toast(I.t('itemUpdated'), 'success');
+          savedItem = (await api.patch('/api/admin/items/' + currentItem.id, body)).item || currentItem;
+          currentItem = savedItem;
         }
         // Upload image after save so it attaches immediately.
         const fileInput = document.getElementById('it-image');
@@ -1000,7 +1059,7 @@
           if (prog) prog.classList.remove('hidden');
           submitBtn.textContent = I.t('uploadingPct', { p: 0 });
           await api.uploadWithProgress(
-            '/api/admin/images?type=items&itemId=' + encodeURIComponent(saved.item.id),
+            '/api/admin/images?type=items&itemId=' + encodeURIComponent(currentItem.id),
             fd,
             (pct) => {
               if (fill) fill.style.width = pct + '%';
@@ -1011,20 +1070,30 @@
         }
         await reloadInfo();
         loadMenu();
-        if (createdNow) {
-          submitBtn.disabled = false;
-          submitBtn.textContent = I.t('saveChangesBtn');
-          return;
-        }
-        closeModal();
+        const optionsTitle = document.getElementById('item-options-title');
+        if (optionsTitle) optionsTitle.textContent = I.t('optTitleFor', { name: currentItem.name || body.name });
+        setStep('options', { skipLoad: true });
+        await loadItemOptions(currentItem.id, createdNow ? I.t('optCreatedHint') : undefined);
+        submitBtn.disabled = false;
+        submitBtn.textContent = I.t('itemSaveContinue');
+        toast(createdNow ? I.t('itemCreated') : I.t('itemUpdated'), 'success');
       } catch (err) {
-        if (createdNow) {
-          try { await reloadInfo(); } catch (_) { /* item already exists */ }
+        if (savedItem) {
+          currentItem = savedItem;
+          isNew = false;
+          enableOptionsStep();
+          const title = document.getElementById('item-modal-title');
+          if (title) title.textContent = I.t('editItemH');
+          const optionsTitle = document.getElementById('item-options-title');
+          if (optionsTitle) optionsTitle.textContent = I.t('optTitleFor', { name: currentItem.name || body.name });
+          setStep('options', { skipLoad: true });
+          try { await loadItemOptions(currentItem.id, createdNow ? I.t('optCreatedHint') : undefined); } catch (_) { /* options stay retryable */ }
+          try { await reloadInfo(); } catch (_) { /* item already saved */ }
           loadMenu();
         }
         toast(err.message, 'error');
         submitBtn.disabled = false;
-        submitBtn.textContent = isNew ? I.t('createItemOptionsBtn') : I.t('saveChangesBtn');
+        submitBtn.textContent = I.t('itemSaveContinue');
         const prog = document.getElementById('it-image-progress');
         const fill = document.getElementById('it-image-progress-fill');
         if (prog) prog.classList.add('hidden');
@@ -1051,6 +1120,7 @@
   async function loadItemOptions(itemId, notice) {
     const zone = document.getElementById('item-options');
     if (!zone) return;
+    zone.innerHTML = '<p class="hint" role="status">' + esc(I.t('loading')) + '</p>';
     try {
       const d = await api.get('/api/admin/option-groups?menuItemId=' + encodeURIComponent(itemId));
       const groups = d.groups || [];
@@ -1064,48 +1134,85 @@
         const maxPicks = Math.max(1, Number(g.max_picks) || 1);
         const pricingLabel = g.pricing === 'replace' ? I.t('optPricingReplace') : I.t('optPricingAdjust');
         const typeLabel = maxPicks === 1 ? I.t('optTypeSingle') : I.t('optTypeMultiple');
-        return '<div class="card mb-1 option-admin-group">' +
-          '<div class="flex-between option-admin-head"><div><strong>' + esc(g.name) + '</strong>' +
-          '<div class="muted small">' + esc(typeLabel) + ' · ' + esc(pricingLabel) + ' · ' +
-          esc(required ? I.t('optRequired') : I.t('optOptional')) + ' (' + minPicks + '–' + maxPicks + ')</div></div>' +
-          '<button type="button" class="btn btn-danger btn-sm" data-del-group="' + esc(g.id) + '">' + esc(I.t('del')) + '</button></div>' +
-          (choices.length
-            ? '<div class="table-wrap"><table class="data"><tbody>' + choices.map((c) =>
-              '<tr><td>' + esc(c.name) + '</td><td>' + fmtMoney(c.price_cents, currency) +
-              '</td><td class="small muted">×' + c.max_quantity + (c.is_available ? '' : ' · ' + esc(I.t('soldOut'))) + '</td>' +
-              '<td><button type="button" class="btn btn-danger btn-sm" data-del-choice="' + esc(g.id + '|' + c.id) + '">' +
-              esc(I.t('del')) + '</button></td></tr>').join('') + '</tbody></table></div>'
-            : '<p class="hint">' + esc(I.t('optNoChoicesYet')) + '</p>') +
+        const choiceNameId = 'oc-name-' + g.id;
+        const choicePriceId = 'oc-price-' + g.id;
+        const choiceRows = choices.length
+          ? '<div class="option-choice-list">' + choices.map((c) =>
+            '<div class="option-choice-row">' +
+              '<div class="option-choice-name">' + esc(c.name) + '</div>' +
+              '<div class="option-choice-price">' + fmtMoney(c.price_cents, currency) + '</div>' +
+              '<div class="option-choice-meta">×' + esc(c.max_quantity == null ? 1 : c.max_quantity) + (c.is_available ? '' : ' · ' + esc(I.t('soldOut'))) + '</div>' +
+              '<button type="button" class="btn btn-outline btn-sm option-delete-btn" data-del-choice="' + esc(g.id + '|' + c.id) + '" aria-label="' + esc(I.t('optDeleteChoice') + ': ' + c.name) + '">' +
+                esc(I.t('del')) + '</button>' +
+            '</div>').join('') + '</div>'
+          : '<p class="hint option-empty-choices">' + esc(I.t('optNoChoicesYet')) + '</p>';
+        return '<div class="option-group-card">' +
+          '<div class="option-group-head">' +
+            '<div class="option-group-title"><h4>' + esc(g.name) + '</h4>' +
+              '<div class="option-meta">' +
+                '<span class="badge ' + (required ? 'option-badge-required' : '') + '">' + esc(required ? I.t('optRequired') : I.t('optOptional')) + '</span>' +
+                '<span class="badge">' + esc(typeLabel) + '</span>' +
+                '<span class="badge">' + esc(pricingLabel) + '</span>' +
+                '<span class="badge">' + esc(I.t('optMinMax')) + ' ' + minPicks + '–' + maxPicks + '</span>' +
+              '</div>' +
+            '</div>' +
+            '<button type="button" class="btn btn-outline btn-sm option-delete-btn" data-del-group="' + esc(g.id) + '" aria-label="' + esc(I.t('optDeleteGroup') + ': ' + g.name) + '">' +
+              esc(I.t('del')) + '</button>' +
+          '</div>' +
+          choiceRows +
           '<form data-choice-form="' + esc(g.id) + '" class="option-choice-form">' +
-            '<input maxlength="60" required placeholder="' + esc(I.t('optChoiceNamePh')) + '" aria-label="' + esc(I.t('optChoiceName')) + '">' +
-            '<input type="number" min="0" step="0.01" value="0" placeholder="0.00" aria-label="' + esc(I.t('optPrice')) + '" title="' + esc(I.t('optPrice')) + '">' +
-            '<button type="submit" class="btn btn-outline btn-sm">' + esc(I.t('optAddChoice')) + '</button>' +
-          '</form></div>';
+            '<p class="option-choice-form-title">' + esc(I.t('optChoiceFormHint')) + '</p>' +
+            '<div class="option-choice-form-grid">' +
+              '<div class="field"><label for="' + esc(choiceNameId) + '">' + esc(I.t('optChoiceName')) + '</label>' +
+                '<input id="' + esc(choiceNameId) + '" type="text" maxlength="60" required placeholder="' + esc(I.t('optChoiceNamePh')) + '"></div>' +
+              '<div class="field"><label for="' + esc(choicePriceId) + '">' + esc(I.t('optChoicePrice')) + ' <span class="muted">' + esc(currency) + '</span></label>' +
+                '<input id="' + esc(choicePriceId) + '" type="number" min="0" step="0.01" value="0" placeholder="0.00"></div>' +
+              '<button type="submit" class="btn btn-outline">' + esc(I.t('optAddChoice')) + '</button>' +
+            '</div>' +
+          '</form>' +
+        '</div>';
       }).join('');
 
+      const howtoStep = (num, title, desc) => '<div class="option-howto-step">' +
+        '<span class="option-howto-num">' + num + '</span>' +
+        '<div><strong>' + esc(title) + '</strong><small>' + esc(desc) + '</small></div></div>';
+
       zone.innerHTML =
-        (notice ? '<div class="notice notice-ok mb-1">' + esc(notice) + '</div>' : '') +
-        '<div class="flex-between mt-2 option-admin-top"><h3 class="section-title">' + esc(I.t('optGroups')) + '</h3>' +
-          '<span class="muted small">' + esc(I.t('optGroupsHint')) + '</span></div>' +
-        (withChoices.length ? groupCards : '<div class="empty-state card mb-1">' + esc(I.t('optNoGroupsYet')) + '</div>') +
-        '<form id="group-form" class="card option-group-form">' +
-          '<h3>' + esc(I.t('optAddGroup')) + '</h3>' +
-          '<p class="hint">' + esc(I.t('optGroupFormHint')) + '</p>' +
+        (notice ? '<div class="notice notice-ok mb-1" role="status">' + esc(notice) + '</div>' : '') +
+        '<p class="option-howto-title">' + esc(I.t('optHowtoTitle')) + '</p>' +
+        '<div class="option-howto">' +
+          howtoStep(1, I.t('optHowtoGroup'), I.t('optHowtoGroupDesc')) +
+          howtoStep(2, I.t('optHowtoChoices'), I.t('optHowtoChoicesDesc')) +
+          howtoStep(3, I.t('optHowtoRules'), I.t('optHowtoRulesDesc')) +
+        '</div>' +
+        '<div class="option-groups-head"><div><h3 class="option-groups-title">' + esc(I.t('optGroups')) + '</h3>' +
+          '<p class="hint">' + esc(I.t('optGroupsHint')) + '</p></div>' +
+          '<span class="badge">' + esc(I.t('optGroupCount', { n: withChoices.length })) + '</span></div>' +
+        (withChoices.length ? groupCards : '<div class="empty-state card option-empty-state">' + esc(I.t('optNoGroupsYet')) + '</div>') +
+        '<form id="group-form" class="option-group-form">' +
+          '<div class="option-group-form-head"><span class="option-group-form-icon" aria-hidden="true">+</span><div>' +
+            '<h3>' + esc(I.t('optAddGroup')) + '</h3>' +
+            '<p class="hint">' + esc(I.t('optGroupFormHint')) + '</p></div></div>' +
           '<div class="form-row form-row-2">' +
             '<div class="field"><label for="ng-name">' + esc(I.t('optGroupName')) + '</label>' +
-              '<input id="ng-name" maxlength="60" required placeholder="' + esc(I.t('optGroupNamePh')) + '"></div>' +
-            '<div class="field"><label for="ng-pricing">' + esc(I.t('optPricing')) + '</label>' +
-              '<select id="ng-pricing"><option value="adjust">' + esc(I.t('optPricingAdjust')) + '</option><option value="replace">' + esc(I.t('optPricingReplace')) + '</option></select></div>' +
-          '</div>' +
-          '<div class="form-row form-row-2">' +
+              '<input id="ng-name" type="text" maxlength="60" required placeholder="' + esc(I.t('optGroupNamePh')) + '">' +
+              '<div class="hint">' + esc(I.t('optGroupNameHint')) + '</div></div>' +
             '<div class="field"><label for="ng-type">' + esc(I.t('optSelectionType')) + '</label>' +
-              '<select id="ng-type"><option value="single">' + esc(I.t('optTypeSingle')) + '</option><option value="multiple">' + esc(I.t('optTypeMultiple')) + '</option></select></div>' +
+              '<select id="ng-type"><option value="single">' + esc(I.t('optTypeSingle')) + '</option><option value="multiple">' + esc(I.t('optTypeMultiple')) + '</option></select>' +
+              '<div class="hint">' + esc(I.t('optSelectionHint')) + '</div></div>' +
+          '</div>' +
+          '<div class="form-row form-row-2" id="ng-rules-row">' +
             '<div class="field" id="ng-max-field" hidden><label for="ng-max">' + esc(I.t('optMaxChoices')) + '</label>' +
               '<input id="ng-max" type="number" min="1" max="99" value="3"></div>' +
+            '<div class="field" id="ng-pricing-field"><label for="ng-pricing">' + esc(I.t('optPricing')) + '</label>' +
+              '<select id="ng-pricing"><option value="adjust">' + esc(I.t('optPricingAdjust')) + '</option><option value="replace">' + esc(I.t('optPricingReplace')) + '</option></select>' +
+              '<div class="hint">' + esc(I.t('optPricingHint')) + '</div></div>' +
           '</div>' +
-          '<div class="checkbox-line mb-1"><input id="ng-req" type="checkbox"><label for="ng-req">' + esc(I.t('optRequiredGuest')) + '</label></div>' +
-          '<p class="hint">' + esc(I.t('optRequiredHint')) + '</p>' +
-          '<button type="submit" class="btn btn-block">' + esc(I.t('optAddGroup')) + '</button>' +
+          '<label class="option-required-card" for="ng-req">' +
+            '<input id="ng-req" type="checkbox">' +
+            '<span><strong>' + esc(I.t('optRequiredGuest')) + '</strong><small>' + esc(I.t('optRequiredHint')) + '</small></span>' +
+          '</label>' +
+          '<div class="option-form-actions"><button type="submit" class="btn">' + esc(I.t('optAddGroup')) + '</button></div>' +
         '</form>';
 
       zone.querySelectorAll('[data-del-group]').forEach((b) => b.addEventListener('click', async () => {
@@ -1137,10 +1244,12 @@
         const typeSelect = document.getElementById('ng-type');
         const maxField = document.getElementById('ng-max-field');
         const maxInput = document.getElementById('ng-max');
+        const rulesRow = document.getElementById('ng-rules-row');
         const requiredInput = document.getElementById('ng-req');
         const syncType = () => {
           const multiple = typeSelect.value === 'multiple';
           maxField.hidden = !multiple;
+          if (rulesRow) rulesRow.classList.toggle('is-single-rule', !multiple);
           if (!multiple) {
             maxInput.value = '1';
           } else if (maxInput.value === '1' || !maxInput.value) {
@@ -1179,7 +1288,7 @@
         });
       }
     } catch (err) {
-      zone.innerHTML = '<p class="notice notice-error">' + esc(err.message) + '</p>';
+      zone.innerHTML = '<p class="notice notice-error" role="alert">' + esc(err.message) + '</p>';
     }
   }
 
