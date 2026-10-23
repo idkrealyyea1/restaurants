@@ -184,23 +184,4 @@ router.get('/restaurants/:slug/hero-images', asyncHandler(async (req, res) => {
   res.json({ heroImages: images });
 }));
 
-// Public offer preview — shareable without auth (code is unguessable 8 chars)
-router.get(
-  '/offer/:code',
-  asyncHandler(async (req, res) => {
-    const leads = require('../services/leads.service');
-    const lead = await leads.getByCode(String(req.params.code).trim().toUpperCase());
-    // don't expose password hash, only offer_data + public fields
-    res.json({
-      code: lead.code,
-      restaurant_name: lead.restaurant_name,
-      city: lead.city,
-      score: lead.score,
-      score_level: lead.score_level,
-      offer: lead.offer_data,
-      messages: { whatsapp: (lead.messages||{}).whatsapp, instagram: (lead.messages||{}).instagram },
-    });
-  })
-);
-
 module.exports = router;

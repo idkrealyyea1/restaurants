@@ -201,8 +201,6 @@
     } else if (currentRole === 'staff') {
       const sc = document.getElementById('staff-card');
       if (sc) sc.style.display = 'none';
-      const ol = document.getElementById('offers-link');
-      if (ol) ol.style.display = 'none';
       // hide delete buttons (server still blocks)
       document.querySelectorAll('[data-delete],[data-del]').forEach((b) => { b.style.display = 'none'; });
     }

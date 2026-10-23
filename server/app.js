@@ -25,7 +25,6 @@ const deliveryRoutes = require('./routes/delivery.routes');
 const publicRoutes = require('./routes/public.routes');
 const adminRoutes = require('./routes/admin.routes');
 const ownerRoutes = require('./routes/owner.routes');
-const leadsRoutes = require('./routes/leads.routes');
 const siteRoutes = require('./routes/site.routes');
 
 const CLIENT_DIR = path.join(__dirname, '..', 'client');
@@ -149,14 +148,11 @@ function buildApp() {
   app.use(attachUser);
 
   /* ----------------- page routes (vanilla, D1) ----------------- */
-  // express.static (extensions:['html']) already resolves /app, /track, /leads,
+  // express.static (extensions:['html']) already resolves /app, /track,
   // /resources, /login, /owner, /admin, /delivery and friends. Only
   // parameterized pages need explicit routes.
   app.get('/restaurant/:slug', (req, res) => {
     res.sendFile(path.join(CLIENT_DIR, 'restaurant.html'));
-  });
-  app.get('/offer/:code', (req, res) => {
-    res.sendFile(path.join(CLIENT_DIR, 'offer.html'));
   });
 
   /* ------------------------- PWA (manifest/SW) ------------------------- */
@@ -182,7 +178,6 @@ function buildApp() {
   app.use('/api/delivery', deliveryRoutes);
   app.use('/api/admin', adminRoutes);
   app.use('/api/owner', ownerRoutes);
-  app.use('/api/owner/leads', leadsRoutes);
   app.use('/api', publicRoutes);
 
   /* ------------------------- page catch-all ---------------------------- */

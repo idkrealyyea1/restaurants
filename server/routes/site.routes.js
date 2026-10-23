@@ -33,8 +33,6 @@ Disallow: /track
 Disallow: /admin.html
 Disallow: /owner.html
 Disallow: /delivery.html
-Disallow: /leads.html
-Disallow: /offer/
 Sitemap: ${origin.replace(/\/+$/,'')}/sitemap.xml
 `);
 });

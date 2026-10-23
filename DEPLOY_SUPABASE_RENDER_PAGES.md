@@ -33,8 +33,8 @@ Repo changes that enable this stack (Wasmer defaults unchanged):
 | `server/app.js` | CORS headers + preflight **only** when `FRONTEND_URL` is set; session cookie `SameSite=None; Secure` **only** when `COOKIE_SAMESITE=none` |
 | `server/middleware/csrf.js` | Origin allowlist also accepts `FRONTEND_URL` host; everything else still `403 BAD_ORIGIN` |
 | `client/js/api.js`, `client/js/i18n.js` | Prefix `/api/*` + `/uploads/*` with the backend base **only** when configured; `credentials: 'include'` |
-| `client/js/*.js` (restaurant, offer, i18n, site, admin) | Session-carrying requests/EventSource work cross-site |
-| `client/*.html` (21 files) | Empty `<meta name="api-base" content="">` (= same origin; Pages users stamp their Render URL in) |
+| `client/js/*.js` (restaurant, i18n, site, admin) | Session-carrying requests/EventSource work cross-site |
+| `client/*.html` (20 files) | Empty `<meta name="api-base" content="">` (= same origin; Pages users stamp their Render URL in) |
 | `client/_redirects` | Extensionless routes (`/restaurant/:slug`, `/track`, …) for Pages static hosting |
 | `render.yaml` | Render Blueprint (build/start/health check). Migrations run automatically at server boot — Render's pre-deploy commands are paid-only |
 | `scripts/set-api-base.js` (`npm run api-base`) | Cross-platform stamp/clear of the Pages API base (works on Windows, Mac, Linux) |
@@ -212,7 +212,7 @@ works identically on Windows PowerShell, Mac or Linux):
 npm run api-base -- https://restaurants-api.onrender.com
 ```
 
-It rewrites `<meta name="api-base" content="...">` in all 21 HTML files and
+It rewrites `<meta name="api-base" content="...">` in all 20 HTML files and
 prints a count. Re-running the command is safe (idempotent). To undo (back to
 same-origin), run `npm run api-base -- --clear`.
 
@@ -286,7 +286,7 @@ rollback safety net:
 3. Keep the databases separate: Wasmer → its managed Postgres; Render → your
    Supabase project. Never paste the Supabase URI into Wasmer env (and never
    paste Wasmer `DB_*` creds into Render).
-4. The 21 empty `<meta name="api-base" content="">` tags are inert anywhere
+4. The 20 empty `<meta name="api-base" content="">` tags are inert anywhere
    (empty = same origin). Do **not** commit a stamped Render URL to `main`
    without changing `app.yaml` — if you ever stamp for Pages, use the
    Git-connected build command (C3) instead, which stamps only the Pages
