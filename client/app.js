@@ -170,36 +170,26 @@ const planPeriod = () => {
   if (period === "year") return language === "ar" ? "/ سنويًا" : "/ year";
   return language === "ar" ? "/ شهريًا" : "/ month";
 };
-// Live section: real restaurants come only from the public directory (no
-// invented names, no testimonials). The one exception is the showcase card
-// ("دار الحلو"), which is explicitly labelled "مثال تجريبي" and links to a
-// page that itself says it is a fictional demo — it is never presented as
-// a real restaurant. Because the showcase always exists, the section now
-// shows even if the directory API is unreachable; real rows are appended
-// after it whenever they load.
-// The showcase storefront ("دار الحلو") is a clearly labelled fictional demo
-// page (client/showcase.html) that always leads the section, so visitors see
-// a perfect example first. Real API restaurants follow unchanged after it;
-// nothing here removes or alters any real restaurant's data.
+// Social proof from real data only: names and links of restaurants actually
+// returned by the public directory. No invented names, no testimonials.
+// The section stays hidden if the directory is empty or unreachable.
 async function loadLiveRestaurants() {
   const section = document.getElementById("live-restaurants");
   const grid = document.getElementById("liveGrid");
   if (!section || !grid) return;
-  const showcaseCard = `<a class="live-card" href="/showcase.html"><strong>دار الحلو</strong><span>مثال تجريبي · 7 أصناف</span></a>`;
-  let rows = [];
   try {
     const res = await fetch(apiUrl("/api/restaurants?limit=50&offset=0"), { credentials: "include" });
-    if (res.ok) {
-      const data = await res.json();
-      rows = (data.restaurants || []).slice(0, 6);
-    }
-  } catch (_) { /* showcase card still shows without the API */ }
-  grid.innerHTML = showcaseCard + rows.map((r) => {
-    const name = String(r.name || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
-    const slug = encodeURIComponent(r.slug || "");
-    return `<a class="live-card" href="/restaurant?r=${slug}"><strong>${name}</strong><span>${r.item_count != null ? r.item_count : ""}</span></a>`;
-  }).join("");
-  section.hidden = false;
+    if (!res.ok) return;
+    const data = await res.json();
+    const rows = (data.restaurants || []).slice(0, 6);
+    if (!rows.length) return;
+    grid.innerHTML = rows.map((r) => {
+      const name = String(r.name || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+      const slug = encodeURIComponent(r.slug || "");
+      return `<a class="live-card" href="/restaurant?r=${slug}"><strong>${name}</strong><span>${r.item_count != null ? r.item_count : ""}</span></a>`;
+    }).join("");
+    section.hidden = false;
+  } catch (_) { /* section stays hidden */ }
 }
 async function loadPricing() {
   try {
