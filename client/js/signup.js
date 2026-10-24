@@ -89,6 +89,10 @@
     stepEl.innerHTML =
       '<h1>' + esc(I.t('su_accountTitle')) + '</h1>' +
       '<p class="muted small">' + esc(I.t('su_accountDesc')) + '</p>' +
+      // Preview before step 1: owners see the whole road (7 steps) and an
+      // estimated time up front, instead of discovering screens one by one.
+      '<div class="card mt-1"><p><strong>' + esc(I.t('su_previewTitle')) + '</strong></p>' +
+      '<p class="muted small">' + esc(I.t('su_previewList')) + '</p></div>' +
       field('su_email', input('f-email', 'email', draft.email, 'autocomplete="email" required'), 'f-email') +
       field('su_username', input('f-username', 'text', draft.username, 'autocomplete="username" required'), 'f-username') +
       field('su_password', input('f-password', 'password', '', 'autocomplete="new-password" required') +
@@ -218,9 +222,14 @@
     try {
       const st = await api.get('/api/onboarding/state');
       const menu = await api.get('/api/restaurants/' + encodeURIComponent(st.business.slug) + '/menu');
-      const items = (menu.items || []).slice(0, 5).map((i) => esc(i.name)).join(', ') || '—';
-      summary = '<div class="card"><p><strong>' + esc(st.business.name) + '</strong><br><span class="muted small" dir="ltr">/restaurant/' +
+      const allItems = menu.items || [];
+      const items = allItems.slice(0, 5).map((i) => esc(i.name)).join(', ') || '—';
+      summary = '<div class="card"><p><strong>' + esc(st.business.name) + '</strong><br><span class="muted small" dir="ltr">/restaurant?r=' +
         esc(st.business.slug) + '</span></p><p class="muted small">' + items + '</p></div>';
+      // Skipped-product honesty: never present an empty menu as complete.
+      if (allItems.length === 0) {
+        summary += '<p class="muted small" role="status"><strong>' + esc(I.t('su_emptyMenu')) + '</strong></p>';
+      }
     } catch (_) { summary = ''; }
     stepEl.innerHTML =
       '<h1>' + esc(I.t('su_reviewTitle')) + '</h1>' +
@@ -237,9 +246,22 @@
         '" alt="QR" width="220" height="220">';
     } catch (_) { /* QR is a bonus, never a blocker */ }
     const url = payload.storefrontUrl;
+    // Skipped-product honesty: if the menu is still empty, say so plainly
+    // and point at the dashboard, where the empty-menu banner already waits.
+    let emptyNote = '';
+    try {
+      const slug = String(url || '').split('/').filter(Boolean).pop();
+      if (slug) {
+        const menu = await api.get('/api/restaurants/' + encodeURIComponent(slug) + '/menu');
+        if ((menu.items || []).length === 0) {
+          emptyNote = '<p class="muted small" role="status"><strong>' + esc(I.t('su_emptyMenu')) +
+            '</strong> <a href="/admin.html">' + esc(I.t('su_goDashboard')) + '</a></p>';
+        }
+      }
+    } catch (_) { /* menu check is advisory only */ }
     stepEl.innerHTML =
       '<h1>' + esc(I.t('su_doneTitle')) + '</h1>' +
-      '<p class="muted small">' + esc(I.t('su_doneDesc')) + '</p>' + qrImg +
+      '<p class="muted small">' + esc(I.t('su_doneDesc')) + '</p>' + emptyNote + qrImg +
       '<p class="mt-2"><a class="btn btn-primary" href="' + esc(url) + '">' + esc(I.t('su_openStore')) + '</a> ' +
       '<a class="btn btn-outline" href="/admin.html">' + esc(I.t('su_goDashboard')) + '</a></p>' +
       '<p><button id="share-btn" type="button" class="btn btn-outline">' + esc(I.t('su_shareStore')) + '</button></p>';
@@ -275,7 +297,14 @@
         draft.email = document.getElementById('f-email').value.trim();
         draft.username = document.getElementById('f-username').value.trim();
         draft.password = document.getElementById('f-password').value;
-        if (!draft.email || !draft.username || !draft.password) throw new Error(I.t('su_accountDesc'));
+        // Per-field errors: never answer an empty form with a repeated
+        // description — name exactly which fields are missing.
+        const missing = [];
+        if (!draft.email) missing.push(I.t('su_email'));
+        if (!draft.username) missing.push(I.t('su_username'));
+        if (!draft.password) missing.push(I.t('su_password'));
+        if (missing.length) throw new Error(I.t('su_requiredFields', { fields: missing.join('، ') }));
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(draft.email)) throw new Error(I.t('su_emailInvalid'));
         await go('type');
       } else if (screen === 'type') {
         const picked = stepEl.querySelector('input[name="bt"]:checked');
@@ -285,7 +314,7 @@
       } else if (screen === 'info') {
         draft.businessName = document.getElementById('f-bizname').value.trim();
         draft.slug = document.getElementById('f-slug').value.trim();
-        if (draft.businessName.length < 2) throw new Error(I.t('su_bizName'));
+        if (draft.businessName.length < 2) throw new Error(I.t('su_requiredFields', { fields: I.t('su_bizName') }));
         // Going back after signup must not create a second account. The
         // business already exists at this point, so only the first pass posts.
         if (!business) {
@@ -337,7 +366,8 @@
   async function saveProduct() {
     const name = document.getElementById('f-pname').value.trim();
     const price = parseFloat(document.getElementById('f-price').value);
-    if (!name || !(price >= 0)) throw new Error(I.t('su_productDesc'));
+    if (!name) throw new Error(I.t('su_requiredFields', { fields: I.t('su_productName') }));
+    if (!(price >= 0)) throw new Error(I.t('su_priceRequired'));
     let categoryId = document.getElementById('f-cat').value;
     if (categoryId === '__new') {
       const catName = document.getElementById('f-catname').value.trim() || name;
@@ -393,6 +423,21 @@
 
   /* --------------------------------- boot --------------------------------- */
 
+  function hideLoading() {
+    const el = document.getElementById('su-loading');
+    if (el) el.classList.add('hidden');
+  }
+
+  // BLANK-PAGE FIX (Oct 2026): render the account screen SYNCHRONOUSLY
+  // first, before any network call. Previously boot() awaited business
+  // types + session/onboarding state before the first go('account'), so
+  // on a slow/cold API the card stayed empty (header + blank card) until
+  // the user interacted — and skeleton.js hides the skeleton on window
+  // load, leaving a blank page. Now the form is visible immediately; the
+  // session/resume check runs in the background and only switches screens
+  // if it actually finds a resumable session.
+  go('account');
+
   (async function boot() {
     try {
       const t = await api.get('/api/business-types');
@@ -423,10 +468,11 @@
         const nextIdx = Math.min(order.indexOf(st.onboardingStep) + 1, order.length - 1);
         await go(st.onboardingStep === 'done' ? 'review' : order[Math.max(0, nextIdx)] || 'product');
         if (window.App.toast && st.next && st.next.length) window.App.toast(I.t('su_resume', { n: st.next.length }), 'info');
+        hideLoading();
         return;
       }
-    } catch (_) { /* fresh visitor: start at account */ }
-    await go('account');
+    } catch (_) { /* fresh visitor: account screen is already showing */ }
+    hideLoading();
   })();
 
   if (window.I18N && window.I18N.onChange) window.I18N.onChange(async () => {

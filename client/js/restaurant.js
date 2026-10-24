@@ -138,7 +138,7 @@
       reorderMissing: 'بعض الأصناف من طلبك السابق لم تعد متاحة',
       currencyLocale: 'ar',
       liveName: 'الاسم',
-      liveWhatsapp: 'رقم الواتساب',
+      liveWhatsapp: 'رقم الواتساب (اختياري)',
       liveAddress: 'عنوان التوصيل',
       liveNotes: 'ملاحظات (اختياري)',
       livePlaceOrder: 'تأكيد الطلب',
@@ -147,7 +147,10 @@
       liveShowCode: 'رمز طلبك:',
       liveTrack: 'تتبع طلبي',
       liveDone: 'تمام',
-      liveEnterNameAndWa: 'الرجاء إدخال الاسم ورقم الواتساب',
+      liveEnterNameAndWa: 'الرجاء إدخال الاسم',
+      liveEnterName: 'الرجاء إدخال الاسم',
+      liveWhatsappInvalid: 'رقم الواتساب يجب أن يحتوي على 8 إلى 15 رقمًا، أو اتركه فارغًا',
+      liveNoWhatsappNote: 'لم تدخل رقم واتساب، لذلك تابع طلبك من هنا برمز الطلب واحفظه — لن تصلك تحديثات عبر واتساب.',
       liveAddrRequired: 'الرجاء إدخال عنوان التوصيل',
       liveBlocked: 'الطلبات متوقفة مؤقتًا — يمكنك تصفح القائمة.',
       liveLoadError: 'تعذّر تحميل القائمة — تحقق من اتصالك وحاول مجددًا.',
@@ -239,7 +242,7 @@
       reorderMissing: 'Some items from your last order are no longer available',
       currencyLocale: 'en',
       liveName: 'Name',
-      liveWhatsapp: 'WhatsApp number',
+      liveWhatsapp: 'WhatsApp number (optional)',
       liveAddress: 'Delivery address',
       liveNotes: 'Notes (optional)',
       livePlaceOrder: 'Place order',
@@ -248,7 +251,10 @@
       liveShowCode: 'Show this code at pickup:',
       liveTrack: 'Track my order',
       liveDone: 'Done',
-      liveEnterNameAndWa: 'Please enter your name and WhatsApp number',
+      liveEnterNameAndWa: 'Please enter your name',
+      liveEnterName: 'Please enter your name',
+      liveWhatsappInvalid: 'WhatsApp number must contain 8 to 15 digits, or leave it empty',
+      liveNoWhatsappNote: 'You did not add a WhatsApp number, so follow your order here with your order code and keep it safe — no WhatsApp updates will be sent.',
       liveAddrRequired: 'Please enter the delivery address',
       liveBlocked: 'Ordering is paused for now — feel free to browse the menu.',
       liveLoadError: 'Could not load the menu — check your connection and retry.',
@@ -1042,13 +1048,16 @@
       return '<div class="cart-head"><div><p class="section-kicker">' + escapeHTML(getCopy('order')) + '</p>' +
         '<h2 class="cart-title">' + escapeHTML(getCopy('liveOrderSent')) + '</h2></div></div>' +
         '<div class="cart-empty"><strong class="co-code">' + escapeHTML(code) + '</strong>' +
-        '<p>' + escapeHTML(getCopy('liveShowCode')) + '</p></div>' +
+        '<p>' + escapeHTML(getCopy('liveShowCode')) + '</p>' +
+        (state.placedOrder.noWhatsapp
+          ? '<p class="muted small">' + escapeHTML(getCopy('liveNoWhatsappNote')) + '</p>'
+          : '') + '</div>' +
         '<div class="totals"><a class="checkout-demo" style="text-decoration:none"' +
         ' href="/track?code=' + encodeURIComponent(code) + '"><span>' + escapeHTML(getCopy('liveTrack')) + '</span>' +
         '<span>' + escapeHTML(code) + '</span></a>' +
         (state.placedOrder.reorderItems
           ? '<a class="checkout-demo co-ghost-btn" style="text-decoration:none"' +
-            ' href="/restaurant/' + encodeURIComponent(slug) + '?reorder=' + encodeURIComponent(state.placedOrder.reorderItems) +
+            ' href="/restaurant?r=' + encodeURIComponent(slug) + '&reorder=' + encodeURIComponent(state.placedOrder.reorderItems) +
             '&reorderFrom=' + encodeURIComponent(code) + '"><span>' + escapeHTML(getCopy('reorderLabel')) + '</span><span></span></a>'
           : '') +
         '<button class="checkout-demo co-ghost-btn" type="button" data-new-order>' +
@@ -1260,7 +1269,12 @@
     draft.whatsapp = String(draft.whatsapp || '').trim();
     draft.address = String(draft.address || '').trim();
     draft.notes = String(draft.notes || '').trim();
-    if (!draft.name || !draft.whatsapp) { coError(getCopy('liveEnterNameAndWa')); return; }
+    if (!draft.name) { coError(getCopy('liveEnterName')); return; }
+    // WhatsApp is optional: only validate its format when provided.
+    if (draft.whatsapp) {
+      var waDigits = draft.whatsapp.replace(/[^0-9]/g, '');
+      if (waDigits.length < 8 || waDigits.length > 15) { coError(getCopy('liveWhatsappInvalid')); return; }
+    }
     if (state.fulfillment === 'delivery' && !draft.address) { coError(getCopy('liveAddrRequired')); return; }
     coError(null);
     state.placing = true;
@@ -1306,6 +1320,9 @@
       state.checkoutDraft = { name: '', whatsapp: '', address: '', notes: '' };
       saveCart();
       state.placedOrder = (data && data.order) || { code: '' };
+      // Remember whether WhatsApp was omitted so the confirmation screen
+      // can stress the tracking code (no WhatsApp updates can be sent).
+      state.placedOrder.noWhatsapp = !draft.whatsapp;
       state.placedOrder.reorderItems = reorderItems;
       renderCart();
     }).catch(function (err) {
@@ -1318,7 +1335,12 @@
   /* ------------------------------- share --------------------------- */
   function shareMenu() {
     var name = view ? view.name : document.title;
-    var shareData = { title: name, text: name, url: location.origin + location.pathname };
+    // Share the working query form: location.pathname alone is just
+    // /restaurant on the Pages site and would lose the slug.
+    var shareUrl = slug
+      ? location.origin + '/restaurant?r=' + encodeURIComponent(slug)
+      : location.origin + location.pathname;
+    var shareData = { title: name, text: name, url: shareUrl };
     function done() { toastMsg(getCopy('linkCopied')); }
     if (navigator.share) {
       navigator.share(shareData).catch(function (error) {
@@ -1357,7 +1379,12 @@
     setMetaContent('meta[property="og:description"]', description);
     setMetaContent('meta[name="twitter:title"]', title);
     setMetaContent('meta[name="twitter:description"]', description);
-    var canonical = location.origin + location.pathname;
+    // Canonical uses the query form (?r=slug): Cloudflare Pages strips
+    // the slug from /restaurant/<slug> (308 to /restaurant), so the path
+    // form is not a working canonical URL on the Pages site.
+    var canonical = slug
+      ? location.origin + '/restaurant?r=' + encodeURIComponent(slug)
+      : location.origin + location.pathname;
     setMetaContent('meta[property="og:url"]', canonical);
     var image = '';
     if (view && view.heroImages && view.heroImages.length) image = view.heroImages[0].imagePath;
@@ -1466,13 +1493,21 @@
         : '© 2026 ' + (view ? view.name : 'Ordora') + '. All rights reserved.';
     }
     updateHeroMeta();
+    // When there is no restaurant view (not found), the static shell's
+    // "open now" badges must NOT stay visible — they contradict the
+    // not-found message. Hide them (and the hero dot) instead.
     var statusText = view
       ? ((view.openNow !== false && !view.orderingBlocked) ? getCopy('openNow') : getCopy('closed'))
-      : null;
+      : '';
     ['#topbarStatus', '#heroStatus'].forEach(function (selector) {
       var element = $(selector);
-      if (element && statusText) element.textContent = statusText;
+      if (element) {
+        element.textContent = statusText;
+        element.style.display = statusText ? '' : 'none';
+      }
     });
+    var openDot = $('.open-dot');
+    if (openDot) openDot.style.display = view ? '' : 'none';
     var languageButton = $('#languageButton');
     if (languageButton) {
       languageButton.textContent = state.language === 'ar' ? 'EN' : 'عربي';

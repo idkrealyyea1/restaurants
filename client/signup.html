@@ -43,7 +43,18 @@
   <main class="container mt-3">
     <div class="card">
       <div id="su-progress" class="muted small" role="status" aria-live="polite"></div>
-      <div id="su-step"></div>
+      <!-- Static fallback (Oct 2026 blank-page fix): the account form is
+           visible in plain HTML before any JavaScript or API response, so
+           "Start free" never lands on an empty card. signup.js replaces
+           this block immediately on load with the live wizard. -->
+      <div id="su-step">
+        <h1>أنشئ حسابك</h1>
+        <p class="muted small">هذا الحساب سيكون مالك متجرك.</p>
+        <div class="field"><label for="f-email">البريد الإلكتروني</label><input id="f-email" type="email" autocomplete="email" required></div>
+        <div class="field"><label for="f-username">اسم المستخدم</label><input id="f-username" type="text" autocomplete="username" required></div>
+        <div class="field"><label for="f-password">كلمة المرور</label><input id="f-password" type="password" autocomplete="new-password" required><p class="muted small">10 أحرف على الأقل.</p></div>
+      </div>
+      <p id="su-loading" class="muted small" role="status">جارٍ التحقق من جلستك…</p>
       <div id="su-nav" class="flex-between mt-2">
         <button id="su-back" type="button" class="btn btn-outline" data-i18n="su_back">رجوع</button>
         <button id="su-next" type="button" class="btn btn-primary" data-i18n="su_continue">متابعة</button>

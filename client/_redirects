@@ -1,8 +1,16 @@
 # Cloudflare Pages rewrites (same-site, 200 = serve without redirect).
-# Lets extensionless app routes resolve to their HTML files on the static
-# split frontend. Render and Wasmer ignore this file (Express routing).
-/restaurant/*  /restaurant.html  200
-/track  /track.html  200
+# WARNING (Oct 2026, verified live): do NOT add rewrites to .html files
+# here. Pages' own clean-URL handling redirects *.html to its clean form,
+# so a rewrite to an .html file turns into a redirect:
+#  - /restaurant/* -> /restaurant.html became a 308 to /restaurant, which
+#    STRIPPED the slug and broke every directory link (storefront showed
+#    "restaurant not found"). Storefront links therefore use the query
+#    form /restaurant?r=<slug>, which Pages serves directly (200).
+#  - /track -> /track.html became a self-loop (308 /track -> /track).
+#    /track is now served by Pages' native clean URL (track.html) with
+#    NO rule here, exactly like /faq — verify after deploy:
+#    curl -I https://ordora.pages.dev/track  (must be 200, not 308)
+# Render and Wasmer ignore this file (Express routing).
 /app  /app/index.html  200
 /app/*  /app/index.html  200
 /resources  /resources/index.html  200

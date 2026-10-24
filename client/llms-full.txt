@@ -4,7 +4,7 @@
 
 ## The product in one paragraph
 
-A restaurant gets its own public menu page at a clean link of the form /restaurant/<slug>. Guests open it from a link or a QR code in a mobile browser — no app download and no guest account. The page shows the restaurant's logo, cover images in a carousel, an open/closed badge computed from its opening hours, today's hours, and its menu: categories, items with photos, prices, badges, and optional calories, prep time, allergen notes, and a previous price shown struck through with a saving. Guests add items to a cart, choose pickup or delivery, enter a name and WhatsApp number, and send the order. The order appears in the restaurant dashboard, where staff confirm, prepare, and complete it, and it can be shared through WhatsApp. A guest can also track an order by its code and reorder the same items from the confirmation screen or the tracking page.
+A restaurant gets its own public menu page at a clean link of the form /restaurant?r=<slug>. Guests open it from a link or a QR code in a mobile browser — no app download and no guest account. The page shows the restaurant's logo, cover images in a carousel, an open/closed badge computed from its opening hours, today's hours, and its menu: categories, items with photos, prices, badges, and optional calories, prep time, allergen notes, and a previous price shown struck through with a saving. Guests add items to a cart, choose pickup or delivery, enter a name and WhatsApp number, and send the order. The order appears in the restaurant dashboard, where staff confirm, prepare, and complete it, and it can be shared through WhatsApp. A guest can also track an order by its code and reorder the same items from the confirmation screen or the tracking page.
 
 ## Pricing
 

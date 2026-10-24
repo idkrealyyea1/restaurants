@@ -39,12 +39,23 @@
     </noscript>
     <div id="app">
       <!-- Static first content: crawlers and AI readers that do not run
-           JavaScript see this copy; the app replaces #app on load for
-           visitors with JavaScript. Copy matches the JS hero exactly. -->
+           JavaScript see this copy; the app replaces #app wholesale on
+           load for visitors with JavaScript, so no static section below
+           the hero is duplicated (it would flash, then be replaced).
+           The hero, primary CTA, and plan price are all visible here
+           without JavaScript. NOTE: the $4.99 price below must be updated
+           if the plan price changes — the JS pricing card itself is
+           DB-driven via /api/pricing and stays authoritative. -->
       <main style="max-width:960px;margin:0 auto;padding:48px 20px;font-family:system-ui,sans-serif">
         <h1>Ordora — منيو رقمي وطلبات أوضح لمطعمك</h1>
         <p>اعرض أطباقك وأسعارها في منيو يفتحه ضيوفك عبر رابط أو QR، ويتيح لهم إرسال طلباتهم بسهولة — بلا تطبيق أو عمولة.</p>
-        <p>اشتراك شهري واحد يشمل المنيو الرقمي، الطلب أونلاين، ولوحة تحكم المطعم. السعر الحالي على صفحة الأسعار.</p>
+        <p><strong>ابدأ بتجربة مجانية لمدة 7 أيام، بدون بطاقة، ثم اشتراك شهري واحد: 4.99$ شهريًا، بدون عمولة على الطلبات</strong> — يشمل المنيو الرقمي، الطلب أونلاين، ولوحة تحكم المطعم.</p>
+        <div aria-hidden="true" style="margin-top:32px">
+          <div style="height:14px;border-radius:7px;background:#e5dcc9;margin:10px 0;width:90%"></div>
+          <div style="height:14px;border-radius:7px;background:#e5dcc9;margin:10px 0;width:70%"></div>
+          <div style="height:14px;border-radius:7px;background:#e5dcc9;margin:10px 0;width:80%"></div>
+          <p style="color:#71807a;font-size:13px">جارٍ تحميل باقي أقسام الصفحة…</p>
+        </div>
         <ul>
           <li>منيو رقمي برابط خاص لمطعمك ورمز QR</li>
           <li>طلب أونلاين: سلة، استلام أو توصيل، وملخصات طلبات عبر WhatsApp</li>

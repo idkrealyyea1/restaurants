@@ -61,7 +61,7 @@
       e.preventDefault();
       fetch('/api/restaurants').then(r=>r.json()).then(d=>{
         const list = d.restaurants||[];
-        if(list.length && list[0].slug) location.href = '/restaurant/' + encodeURIComponent(list[0].slug);
+        if(list.length && list[0].slug) location.href = '/restaurant?r=' + encodeURIComponent(list[0].slug);
         else location.href = '/app/';
       }).catch(()=> location.href='/app/');
     }

@@ -45,6 +45,10 @@ const copy = {
     total: "الإجمالي",
     continueCheckout: "متابعة الطلب",
     checkoutDemo: "هذه معاينة فقط. لم يتم إرسال أي طلب.",
+    demoBrowseLive: "تصفح مطاعم حقيقية",
+    demoCreateMenu: "أنشئ منيوك الخاص",
+    demoNotes: "ملاحظات للطلب (اختياري)",
+    demoNotesPlaceholder: "مثال: بدون بصل، صوص إضافي…",
     close: "إغلاق",
     options: "اختر الإضافات",
     required: "مطلوب",
@@ -111,6 +115,10 @@ const copy = {
     total: "Total",
     continueCheckout: "Continue to checkout",
     checkoutDemo: "This is only a preview. No order was sent.",
+    demoBrowseLive: "Browse live restaurants",
+    demoCreateMenu: "Create your own menu",
+    demoNotes: "Order notes (optional)",
+    demoNotesPlaceholder: "e.g. no onions, extra sauce…",
     close: "Close",
     options: "Make it yours",
     required: "Required",
@@ -262,6 +270,7 @@ const state = {
   query: "",
   fulfillment: "pickup",
   cart: [],
+  notes: "",
   modalDishId: null,
   modalSelections: {},
   modalQuantity: 1,
@@ -756,10 +765,12 @@ function cartMarkup() {
           <div class="total-row"><span>${escapeHTML(getCopy("subtotal"))}</span><strong>${escapeHTML(formatMoney(subtotal))}</strong></div>
           ${state.fulfillment === "delivery" ? `<div class="total-row"><span>${escapeHTML(getCopy("deliveryFee"))}</span><strong>${deliveryFee ? escapeHTML(formatMoney(deliveryFee)) : escapeHTML(getCopy("free"))}</strong></div>` : ""}
           <div class="total-row grand"><span>${escapeHTML(getCopy("total"))}</span><strong>${escapeHTML(formatMoney(subtotal + deliveryFee))}</strong></div>
+          <label class="demo-notes"><span>${escapeHTML(getCopy("demoNotes"))}</span><input id="demoNotes" type="text" maxlength="400" placeholder="${escapeHTML(getCopy("demoNotesPlaceholder"))}" value="${escapeHTML(state.notes || "")}"></label>
           <button class="checkout-demo" type="button" data-demo-checkout>
             <span>${escapeHTML(getCopy("continueCheckout"))}</span>
             <span>${escapeHTML(formatMoney(subtotal + deliveryFee))}</span>
           </button>
+          <p class="demo-ctas"><a href="/app/">${escapeHTML(getCopy("demoBrowseLive"))}</a><a href="/signup.html">${escapeHTML(getCopy("demoCreateMenu"))}</a></p>
         </div>`}
     <p class="prototype-footnote">${escapeHTML(getCopy("noOrders"))}</p>`;
 }
@@ -945,6 +956,7 @@ document.addEventListener("click", (event) => {
 });
 
 document.addEventListener("input", (event) => {
+  if (event.target.id === "demoNotes") { state.notes = event.target.value; return; }
   if (event.target.id !== "menuSearch") return;
   state.query = event.target.value;
   renderMenu();

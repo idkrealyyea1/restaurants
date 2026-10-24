@@ -278,7 +278,11 @@ function validateHours(bodyRows) {
 
 function validateCheckout(body = {}) {
   const customerName = requireText(body.customerName, { field: 'customerName', min: 2, max: 80 });
-  const customerWhatsapp = cleanPhone(body.customerWhatsapp, { field: 'customerWhatsapp', required: true });
+  // WhatsApp is optional at checkout (UX fix: it was the biggest drop-off
+  // risk). If provided it is validated as before; if omitted it is stored
+  // as '' so the orders.customer_whatsapp NOT NULL column stays satisfied
+  // with no migration, and the order is followed via its tracking code.
+  const customerWhatsapp = cleanPhone(body.customerWhatsapp, { field: 'customerWhatsapp' }) || '';
   const customerPhone = cleanPhone(body.customerPhone, { field: 'customerPhone' });
 
   const orderTypeRaw = body.orderType;

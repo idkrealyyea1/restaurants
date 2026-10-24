@@ -327,7 +327,7 @@ async function qrCode(req, res) {
     const host = req.headers.host;
     base = `${proto}://${host}`;
   }
-  const url = `${base}/restaurant/${restaurant.slug}`;
+  const url = `${base}/restaurant?r=${restaurant.slug}`;
   const svg = await QRCode.toString(url, { type: 'svg', margin: 1, width: 320 });
 
   res.json({ url, svg });

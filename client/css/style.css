@@ -1129,3 +1129,30 @@ body.drawer-open{overflow:hidden}
   .option-form-actions .btn { width: 100%; }
   .item-step-actions .btn { flex: 1 1 100%; }
 }
+
+/* ---------------- mobile admin dashboard (Oct 2026 fix) ----------------
+   Screenshot bug: /admin overflowed horizontally on ~360px phones and a
+   dark sidebar strip clipped the content. Hardening, in order:
+   - overflow-x: clip on body stops any horizontal scroll without
+     creating a scroll container (unlike hidden, it keeps sticky working).
+   - Stat cards stack to one column below 520px so no number is clipped.
+   - The topbar brand truncates instead of pushing logout/burger off-screen;
+     logout and burger never wrap and never shrink.
+   - The mobile nav drawer is visibility-hidden and pointer-events-none
+     when closed (not just translated off-screen), so it can never show
+     as a strip or intercept taps while closed.
+   - Dashboard headings/cards wrap instead of forcing the page wider. */
+body { overflow-x: clip; }
+@media (max-width: 899px) {
+  .dash-main { overflow-wrap: anywhere; }
+  .dash-main .card, .dash-main .stat { min-width: 0; }
+  .topbar-inner { gap: 8px; padding: 8px 12px; }
+  .topbar .brand { min-width: 0; flex-shrink: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 1rem; }
+  #logout-btn, #nav-burger { white-space: nowrap; flex-shrink: 0; }
+  .nav-drawer { visibility: hidden; pointer-events: none; transition: transform .2s ease, visibility 0s linear .2s; }
+  .nav-drawer.open { visibility: visible; pointer-events: auto; transition: transform .2s ease, visibility 0s; }
+}
+@media (max-width: 520px) {
+  .grid-stats { grid-template-columns: 1fr; }
+  .stat .stat-value { font-size: 1.3rem; overflow-wrap: anywhere; }
+}

@@ -193,6 +193,7 @@
     }
     function openDrawer() {
       drawer.hidden = false; overlay.hidden = false;
+      drawer.inert = false;
       requestAnimationFrame(() => drawer.classList.add('open'));
       document.body.classList.add('drawer-open');
       burger.setAttribute('aria-expanded', 'true');
@@ -200,10 +201,14 @@
     function closeDrawer() {
       drawer.classList.remove('open');
       overlay.hidden = true;
+      // Non-interactive the moment closing starts (CSS visibility handles
+      // the visual slide-out); the hidden attribute follows the animation.
+      drawer.inert = true;
       document.body.classList.remove('drawer-open');
       burger.setAttribute('aria-expanded', 'false');
       setTimeout(() => { if (!drawer.classList.contains('open')) drawer.hidden = true; }, 200);
     }
+    drawer.inert = true;
     burger.addEventListener('click', () => (drawer.classList.contains('open') ? closeDrawer() : openDrawer()));
     overlay.addEventListener('click', closeDrawer);
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && drawer.classList.contains('open')) closeDrawer(); });
@@ -413,7 +418,7 @@
           typeBadge + preorderBadge + '</span>' +
         '</div>' +
         '<div class="order-meta mt-1">' +
-          esc(o.customer_name) + ' &middot; ' + esc(o.customer_whatsapp) + ' &middot; ' +
+          esc(o.customer_name) + (o.customer_whatsapp ? ' &middot; ' + esc(o.customer_whatsapp) : '') + ' &middot; ' +
           fmtDateTime(o.created_at) + ' &middot; ' + esc(I.t('itemsCount', { n: o.total_units || 0 })) +
         '</div>' +
         (o.order_type === 'delivery' && o.customer_address

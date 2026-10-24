@@ -1,6 +1,6 @@
 # Ordora
 
-> Ordora is a digital-menu and online-ordering platform for restaurants, cafes, dessert shops, and cake shops. A restaurant gets its own public menu page at a clean link (for example /restaurant/your-slug), which guests open from a link or QR code in a mobile browser — no app download, no guest account. Guests browse the menu, add items to a cart, and send an order for pickup or delivery; orders appear in the restaurant dashboard and can be shared through WhatsApp. Ordora charges one flat monthly subscription and takes no commission on orders.
+> Ordora is a digital-menu and online-ordering platform for restaurants, cafes, dessert shops, and cake shops. A restaurant gets its own public menu page at a clean link (for example /restaurant?r=your-slug), which guests open from a link or QR code in a mobile browser — no app download, no guest account. Guests browse the menu, add items to a cart, and send an order for pickup or delivery; orders appear in the restaurant dashboard and can be shared through WhatsApp. Ordora charges one flat monthly subscription and takes no commission on orders.
 
 ## What Ordora is
 
@@ -20,7 +20,7 @@
 
 ## Key features
 
-- Public menu page per restaurant at /restaurant/<slug>, with logo, cover carousel, opening-hours badge, and item photos.
+- Public menu page per restaurant at /restaurant?r=<slug>, with logo, cover carousel, opening-hours badge, and item photos.
 - Menu management: categories, items, prices, images, availability, popular badge, and position ordering.
 - Item details a restaurant can set: calories, prep time, allergen note, badge (best seller, new, spicy, chef's pick, vegetarian), and a previous price shown struck through with a "save" amount.
 - Cart with pickup or delivery, delivery fee, and a free-delivery progress bar when the restaurant sets a free-delivery threshold.

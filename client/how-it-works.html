@@ -28,8 +28,8 @@
   </script>
   
 <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"HowTo","name":"How Ordora works","description":"Three steps: create your restaurant page, share your menu link or QR code, and receive orders in the dashboard.","step":[
-  {"@type":"HowToStep","name":"Create your restaurant","text":"Create /restaurant/your-slug, add your logo, cover, categories, items, and prices."},
+  {"@context":"https://schema.org","@type":"HowTo","name":"كيف يعمل Ordora","description":"Three steps: create your restaurant page, share your menu link or QR code, and receive orders in the dashboard.","step":[
+  {"@type":"HowToStep","name":"Create your restaurant","text":"أنشئ /restaurant?r=your-slug، وأضف شعارك وغلافك وأقسامك وأصنافك وأسعارك."},
   {"@type":"HowToStep","name":"Share your menu","text":"Share the link or print the QR code for tables and packaging."},
   {"@type":"HowToStep","name":"Receive orders","text":"Customers build a cart and submit; you get an alert in the dashboard and update the order status so customers can track it."}]}
   </script>
@@ -70,7 +70,7 @@
       <span style="flex:1"></span>
       <div class="mk-actions">
         <a class="btn btn-outline btn-sm" href="/login.html">دخول</a>
-        <a class="btn btn-sm" href="/app/" style="background:var(--primary);color:#fff">Get Started</a>
+        <a class="btn btn-sm" href="/signup.html" style="background:var(--primary);color:#fff">ابدأ الآن</a>
         <button id="mk-burger" class="mk-burger" aria-label="Open menu" aria-expanded="false"><span></span></button>
       </div>
     </div>
@@ -93,14 +93,14 @@
       <div class="mk-container">
         <div class="mk-kicker">Ordora</div>
         <h1 class="mk-section-title" style="font-size:clamp(1.9rem,3vw,2.4rem)">How Ordora works</h1>
-        <p class="mk-muted" style="max-width:62ch">Three steps, works on any phone, no customer account needed.</p>
+        <p class="mk-muted" style="max-width:62ch">ثلاث خطوات، تعمل على أي هاتف، دون حاجة لحساب زبون.</p>
       </div>
     </section>
     
     <section class="mk-section" style="background: var(--surface-muted); border-top:1px solid var(--border); border-bottom:1px solid var(--border)">
       <div class="mk-container">
         <div class="mk-steps">
-          <div class="mk-step"><div class="mk-step-num">01</div><h3>Create your restaurant</h3><p class="muted">We create <code>/restaurant/your-slug</code> for you. You add logo, cover, categories, items and prices. Takes ~10 minutes. Images are stored in Postgres, not ephemeral disk.</p><p class="small muted">Tip: start with 8-12 items, add more after your first order.</p></div>
+          <div class="mk-step"><div class="mk-step-num">01</div><h3>Create your restaurant</h3><p class="muted">We create <code dir="ltr">/restaurant?r=your-slug</code> for you. You add logo, cover, categories, items and prices. Takes ~10 minutes. Images are stored in Postgres, not ephemeral disk.</p><p class="small muted">Tip: start with 8-12 items, add more after your first order.</p></div>
           <div class="mk-step"><div class="mk-step-num">02</div><h3>Share your menu</h3><p class="muted">Share the link on Instagram bio, WhatsApp status, Google listing. Print QR for tables and packaging. Use the dashboard's share + QR page.</p><p class="small muted">One link works everywhere — no separate app.</p></div>
           <div class="mk-step"><div class="mk-step-num">03</div><h3>Receive orders</h3><p class="muted">Customer builds cart and submits. You get instant SSE alert in dashboard + organized order with tracking code. Update status so customer can track at <code>/track</code>.</p><p class="small muted">Delivery fee and open hours enforced server-side.</p></div>
         </div>

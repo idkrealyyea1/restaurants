@@ -1,7 +1,7 @@
 const copy = {
   ar: {
     nav: { how: "كيف يعمل", features: "المزايا", pricing: "الاشتراك", faq: "أسئلة شائعة", audience: "حلّ للمطاعم المستقلة", menu: "فتح القائمة", close: "إغلاق", startFree: "ابدأ مجانًا" },
-    hero: { titleA: "منيو رقمي.", titleB: "وطلب أسهل.", description: "اعرض أطباقك وأسعارها في منيو يفتحه ضيوفك عبر رابط أو QR، ويتيح لهم إرسال طلباتهم بسهولة — بلا تطبيق أو عمولة.", request: "تعرّف على Ordora", demo: "جرّب المنيو التجريبي مجانًا" },
+    hero: { titleA: "منيو رقمي.", titleB: "وطلب أسهل.", description: "اعرض أطباقك وأسعارها في منيو يفتحه ضيوفك عبر رابط أو QR، ويتيح لهم إرسال طلباتهم بسهولة — بلا تطبيق أو عمولة. ابدأ بتجربة مجانية لمدة 7 أيام، بدون بطاقة، ثم 4.99 US$ شهريًا.", request: "تعرّف على Ordora", demo: "جرّب المنيو التجريبي مجانًا" },
     ticker: ["بدون عمولة على الطلبات", "لا يحتاج الضيف إلى تطبيق", "منيو بهوية مطعمك", "اشتراك شهري واضح"],
     story: { eyebrow: "من مطبخك إلى شاشة ضيفك", titleA: "منيو يحمل هويتك.", titleB: "وطلب أسهل لضيفك.", body: "اعرض أطباقك بصورها وأسعارها بوضوح، ليختار الضيف ما يحب ويراجع طلبه قبل إرساله. تجمع الصفحة المنيو والطلب في تجربة واحدة.", tag: "أطباقك، كما تحب أن يراها ضيوفك.", owner: "منيو رقمي على جهاز لوحي", note: "مصمم لصاحب المطعم وفريق الخدمة." },
     how: { eyebrow: "من الاختيار إلى الطلب", titleA: "ثلاث خطوات.", titleB: "وطلب يصل بوضوح.", body: "يمسح الضيف رمز QR، يتصفح المنيو ويضيف أطباقه إلى السلة، ثم يرسل ملخص الطلب لفريقك.", steps: [["يمسح", "رمز QR يفتح المنيو"], ["يختار", "يضيف أطباقه إلى السلة"], ["يرسل", "ملخص واضح للمطعم"]] },
@@ -12,7 +12,7 @@ const copy = {
       ["لوحة لمتابعة الطلبات", "تابع الطلبات والأطباق الأكثر اختيارًا من مكان واحد.", "chart"]
     ] },
     dashboard: { eyebrow: "كل طلب، بتفاصيله", titleA: "الطلب يصل", titleB: "جاهزًا للتحضير.", body: "يرتب Ordora الأصناف والكميات والملاحظات في ملخص واحد، ويعرض الطلبات في لوحة مطعمك لتعرف ما يحتاجه فريقك.", chips: ["ملخص واضح", "متابعة الطلبات", "الأكثر طلبًا"], label: "لوحة الطلبات", date: "معاينة لوحة المطعم", today: "طلبات اليوم", yesterday: "خلال هذا اليوم", top: "الأكثر طلبًا", item: "برجر سموكي", count: "١٨ طلب", fresh: "جديد", done: "مكتمل", orders: ["#1042  برجر سموكي × 2", "#1041  ليمون ونعناع × 1", "#1040  وجبة بَسْطة × 3"] },
-    pricing: { eyebrow: "ببساطة", titleA: "خطة واحدة.", titleB: "سعر واضح.", body: "ابدأ بمنيو رقمي وسلة طلب ومتابعة للطلبات — باشتراك شهري واضح ومن دون عمولة على الطلبات.", label: "Ordora للمطاعم", month: "/ شهريًا", features: ["صفحة مطعم بهويتك", "رمز QR قابل للطباعة", "سلة طلب أونلاين", "ملخص جاهز لـ WhatsApp", "لوحة لمتابعة الطلبات", "بدون عمولة"], request: "ابدأ بمنيو مطعمك" },
+    pricing: { eyebrow: "ببساطة", titleA: "خطة واحدة.", titleB: "سعر واضح.", body: "ابدأ بمنيو رقمي وسلة طلب ومتابعة للطلبات — تجربة مجانية لمدة 7 أيام، ثم اشتراك شهري واضح 4.99 US$ شهريًا، ومن دون عمولة على الطلبات.", label: "Ordora للمطاعم", month: "/ شهريًا", features: ["صفحة مطعم بهويتك", "رمز QR قابل للطباعة", "سلة طلب أونلاين", "ملخص جاهز لـ WhatsApp", "لوحة لمتابعة الطلبات", "بدون عمولة"], request: "ابدأ بمنيو مطعمك" },
     live: { eyebrow: "مطاعم حيّة على Ordora", title: "قوائم حقيقية، تعمل الآن.", viewAll: "عرض كل المطاعم", compare: "قارن Ordora مع MenuX" },
     faq: { eyebrow: "قبل أن تبدأ", title: "إجابات قبل الاشتراك.", items: [
       ["هل أحتاج إلى تطبيق خاص؟", "لا. يفتح Ordora في متصفح جوال الضيف مباشرة، من دون تحميل تطبيق أو إنشاء حساب."],
@@ -66,7 +66,7 @@ const copy = {
   },
   en: {
     nav: { how: "How it works", features: "Features", pricing: "Pricing", faq: "FAQ", audience: "For independent restaurants", menu: "Open menu", close: "Close", startFree: "Start for free" },
-    hero: { titleA: "Digital menu.", titleB: "Simpler orders.", description: "Show your dishes and prices in one menu guests can open by link or QR, then send an order—no app download or commission.", request: "Talk to the Ordora team", demo: "Try the sample menu free" },
+    hero: { titleA: "Digital menu.", titleB: "Simpler orders.", description: "Show your dishes and prices in one menu guests can open by link or QR, then send an order—no app download or commission. Start with a 7-day free trial, no card required, then 4.99 US$ per month.", request: "Talk to the Ordora team", demo: "Try the sample menu free" },
     ticker: ["No commission on orders", "No app for guests", "A menu in your brand", "One clear monthly price"],
     story: { eyebrow: "From your kitchen to their screen", titleA: "A menu in your brand.", titleB: "An easier order for guests.", body: "Show every dish with clear photos and prices. Guests can choose what they want and review the order before sending. Your menu and online ordering live in one simple page.", tag: "Your dishes, shown the way you want.", owner: "A digital menu on a tablet", note: "Made for owners and the people serving guests." },
     how: { eyebrow: "From browsing to ordering", titleA: "Three simple steps.", titleB: "One clear order.", body: "Guests scan a QR code, browse the menu, add dishes to their cart, then send an order summary straight to your team.", steps: [["Scan", "A QR code opens the menu"], ["Choose", "Add dishes to the cart"], ["Send", "A clear order summary"]] },
@@ -77,7 +77,7 @@ const copy = {
       ["One place to follow orders", "See incoming orders and your most popular dishes in one dashboard.", "chart"]
     ] },
     dashboard: { eyebrow: "Every order, in detail", titleA: "Orders arrive", titleB: "ready for your team.", body: "Ordora groups dishes, quantities, and notes into one clear summary, then shows incoming orders in your restaurant dashboard.", chips: ["Clear order summary", "Order tracking", "Popular dishes"], label: "Restaurant orders", date: "Dashboard preview", today: "Today’s orders", yesterday: "Since opening", top: "Most ordered", item: "Smoky burger", count: "18 orders", fresh: "New", done: "Complete", orders: ["#1042  Smoky burger × 2", "#1041  Lemon mint × 1", "#1040  Basta meal × 3"] },
-    pricing: { eyebrow: "Simple", titleA: "One plan.", titleB: "One clear price.", body: "Get a branded menu, an online order cart, and a place to follow orders—with one monthly price and no order commissions.", label: "Ordora for restaurants", month: "/ month", features: ["Restaurant page in your brand", "Printable QR code", "Online order cart", "WhatsApp-ready summary", "Order dashboard", "No commission"], request: "Start your restaurant menu" },
+    pricing: { eyebrow: "Simple", titleA: "One plan.", titleB: "One clear price.", body: "Get a branded menu, an online order cart, and a place to follow orders—7-day free trial, then one monthly price of 4.99 US$ and no order commissions.", label: "Ordora for restaurants", month: "/ month", features: ["Restaurant page in your brand", "Printable QR code", "Online order cart", "WhatsApp-ready summary", "Order dashboard", "No commission"], request: "Start your restaurant menu" },
     live: { eyebrow: "Live on Ordora", title: "Real menus, working now.", viewAll: "View all restaurants", compare: "Compare Ordora with MenuX" },
     faq: { eyebrow: "Before you start", title: "Answers before you sign up.", items: [
       ["Do my guests need an app?", "No. Ordora opens in the guest’s mobile browser. There’s nothing to download and no account to create."],
@@ -186,7 +186,7 @@ async function loadLiveRestaurants() {
     grid.innerHTML = rows.map((r) => {
       const name = String(r.name || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
       const slug = encodeURIComponent(r.slug || "");
-      return `<a class="live-card" href="/restaurant/${slug}"><strong>${name}</strong><span>${r.item_count != null ? r.item_count : ""}</span></a>`;
+      return `<a class="live-card" href="/restaurant?r=${slug}"><strong>${name}</strong><span>${r.item_count != null ? r.item_count : ""}</span></a>`;
     }).join("");
     section.hidden = false;
   } catch (_) { /* section stays hidden */ }

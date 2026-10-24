@@ -25,7 +25,7 @@
           '<span>' + esc((nm || '?').trim().charAt(0)) + '</span></div>';
 
     return (
-      '<a class="rest-card" href="/restaurant/' + encodeURIComponent(r.slug) + '">' +
+      '<a class="rest-card" href="/restaurant?r=' + encodeURIComponent(r.slug) + '">' +
         '<div class="rest-cover">' + cover + badge + '</div>' +
         '<div class="rest-body">' +
           (r.logoPath

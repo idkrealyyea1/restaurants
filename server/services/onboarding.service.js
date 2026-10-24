@@ -46,7 +46,7 @@ function snapshotFor(business, { hasProduct }) {
       fulfillmentSet: stepSeen('fulfillment'),
       hoursSet: stepSeen('hours'),
     },
-    storefrontUrl: `/restaurant/${business.slug}`,
+    storefrontUrl: `/restaurant?r=${business.slug}`,
   };
 }
 
@@ -89,7 +89,7 @@ async function complete(restaurantId) {
 }
 
 function finishedPayload(business) {
-  const storeUrl = `/restaurant/${business.slug}`;
+  const storeUrl = `/restaurant?r=${business.slug}`;
   return {
     onboardingStatus: 'completed',
     storefrontUrl: storeUrl,

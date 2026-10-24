@@ -4,7 +4,7 @@
      /app/ (JS app shell), /api/*, /track.html, /delivery.html, and any
      parameterised URL (?lang=, ?reorder=, ?code=). lastmod is the date
      each page was last changed in this repo; update it when a page changes.
-     Restaurant storefronts (/restaurant/<slug>) are intentionally NOT
+     Restaurant storefronts (/restaurant?r=<slug>) are intentionally NOT
      listed here: they are created by restaurants at any time, so a static
      list would go stale. They are reachable from the public directory and
      from each restaurant's own share link. -->

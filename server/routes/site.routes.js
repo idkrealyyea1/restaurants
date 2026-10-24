@@ -8,7 +8,7 @@ const router = express.Router();
 router.get('/r/:slug', (req, res) => {
   const slug = String(req.params.slug).toLowerCase().trim();
   if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug)) return res.status(404).send('Not found');
-  res.redirect(301, '/restaurant/' + encodeURIComponent(slug));
+  res.redirect(301, '/restaurant?r=' + encodeURIComponent(slug));
 });
 
 // robots.txt

@@ -424,7 +424,7 @@
               '</td>' +
               '<td class="small muted">' + fmtDateTime(r.createdAt) + '</td>' +
               '<td><div class="flex-between">' +
-                '<a class="btn btn-outline btn-sm" href="/restaurant/' + encodeURIComponent(r.slug) + '" target="_blank" rel="noopener">' + I.t('bPublic') + '</a>' +
+                '<a class="btn btn-outline btn-sm" href="/restaurant?r=' + encodeURIComponent(r.slug) + '" target="_blank" rel="noopener">' + I.t('bPublic') + '</a>' +
                 '<button type="button" class="btn btn-outline btn-sm" data-manage="' + esc(r.id) + '">' + I.t('bManage') + '</button>' +
                 '<button type="button" class="btn btn-outline btn-sm" data-edit="' + esc(r.id) + '">' + I.t('bEdit') + '</button>' +
                 (r.isActive

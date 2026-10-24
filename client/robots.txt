@@ -21,7 +21,7 @@
 #   /admin/ /owner.html /login.html /signup.html (auth/dashboard flows are
 #   still reachable by humans; they are simply not search content)
 #   /api/ /app/ (the JS app shell; public restaurant pages live at
-#   /restaurant/<slug> and are reachable via the directory and links)
+#   /restaurant?r=<slug> and are reachable via the directory and links)
 #   /delivery.html /track.html (private order-tracking pages)
 
 User-agent: Googlebot

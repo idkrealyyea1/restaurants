@@ -111,8 +111,17 @@
   }
 
   function fmtMoney(cents, currency, locale) {
+    const loc = locale || document.documentElement.lang || '';
+    // Arabic context, USD only: Intl renders USD as "$US 4.99", which
+    // reads oddly next to Arabic copy. Use the plain "4.99 US$" form
+    // (Latin digits, amount first, code after) that the site already
+    // uses as fallback. Other currencies keep Intl rendering (e.g. ILS
+    // keeps its familiar ₪ symbol on storefront prices).
+    if (String(loc).toLowerCase().startsWith('ar') && currency === 'USD') {
+      return ((cents || 0) / 100).toFixed(2) + ' ' + currency;
+    }
     try {
-      return new Intl.NumberFormat(locale || document.documentElement.lang || undefined, { style: 'currency', currency }).format((cents || 0) / 100);
+      return new Intl.NumberFormat(loc || undefined, { style: 'currency', currency }).format((cents || 0) / 100);
     } catch (_) {
       return ((cents || 0) / 100).toFixed(2) + ' ' + currency;
     }

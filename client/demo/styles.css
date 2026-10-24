@@ -3178,3 +3178,25 @@ html[dir="rtl"] .hero-title {
     padding: 23px 12px calc(25px + env(safe-area-inset-bottom));
   }
 }
+/* Demo dead-end CTAs: quiet outline links under the preview checkout
+   button, so a demo visitor always has a next step (live restaurants
+   or signup) without hiding the "preview only" notice. */
+.demo-ctas { display: flex; gap: 8px; margin: 12px 0 0; }
+.demo-ctas a { flex: 1; text-align: center; padding: 10px 6px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); color: var(--ink); text-decoration: none; font-size: 13px; font-weight: 700; }
+.demo-ctas a:hover { border-color: var(--coral); color: var(--coral); }
+
+/* Demo order notes: mirrors the live checkout notes field so the demo
+   matches the real flow (homepage promise: review quantities and notes). */
+.demo-notes { display: block; margin-top: 12px; font-size: 13px; font-weight: 700; }
+.demo-notes input { display: block; width: 100%; margin-top: 6px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); color: var(--ink); font: inherit; }
+
+/* RTL drawer direction: flex-end is the LEFT side in RTL, so the cart
+   drawer used to slide in from the left on Arabic pages. In RTL it must
+   come from the right (the reading start side), with the shadow flipped
+   and the slide animation mirrored. */
+[dir="rtl"] .cart-drawer { justify-content: flex-start; }
+[dir="rtl"] .cart-drawer-inner { box-shadow: 12px 0 40px rgba(19, 39, 40, 0.14); animation-name: drawer-in-rtl; }
+@keyframes drawer-in-rtl {
+  from { transform: translateX(-18px); opacity: 0.7; }
+  to { transform: translateX(0); opacity: 1; }
+}

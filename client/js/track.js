@@ -134,7 +134,7 @@
   function renderActions(order) {
     const zone = document.getElementById('order-actions');
     const reorderItems = order.items.slice(0, 30).map((it) => it.menu_item_id + ':' + it.quantity).join(',');
-    const reorder = '/restaurant/' + encodeURIComponent(order.restaurant_slug) + '?reorder=' +
+    const reorder = '/restaurant?r=' + encodeURIComponent(order.restaurant_slug) + '&reorder=' +
       encodeURIComponent(reorderItems) +
       '&reorderFrom=' + encodeURIComponent(order.code);
 
@@ -149,7 +149,7 @@
     );
     // Share the restaurant menu (not the private order page): copy-link
     // falls back to opening the menu when clipboard access is unavailable.
-    const menuUrl = location.origin + '/restaurant/' + encodeURIComponent(order.restaurant_slug);
+    const menuUrl = location.origin + '/restaurant?r=' + encodeURIComponent(order.restaurant_slug);
     btns.push(
       '<button id="share-menu-btn" type="button" class="btn btn-outline">' + esc(I.t('share')) + '</button>'
     );
