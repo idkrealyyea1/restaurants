@@ -11,7 +11,18 @@
     <meta property="og:title" content="Ordora — منيو رقمي وطلبات أوضح لمطعمك">
     <meta property="og:description" content="منيو رقمي يحمل هوية مطعمك وطلب أونلاين أوضح لضيوفك وفريقك.">
     <meta property="og:type" content="website">
+    <meta property="og:image" content="/icons/icon-512.png">
+    <link rel="canonical" href="https://ordora.pages.dev/">
     <meta name="twitter:card" content="summary_large_image">
+    <meta property="og:url" content="https://ordora.pages.dev/">
+    <meta name="twitter:title" content="Ordora — منيو رقمي وطلبات أوضح لمطعمك">
+    <meta name="twitter:description" content="منيو رقمي يحمل هوية مطعمك وطلب أونلاين أوضح لضيوفك وفريقك.">
+    <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"Organization","name":"Ordora","url":"https://ordora.pages.dev/","logo":"https://ordora.pages.dev/icons/icon-512.png","description":"Digital menu and online ordering for restaurants, cafes, dessert shops, and cake shops. One flat monthly subscription, no commission on orders."}
+    </script>
+    <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Ordora","applicationCategory":"BusinessApplication","operatingSystem":"Web","url":"https://ordora.pages.dev/","description":"Digital menu and online ordering for restaurants: a public menu page per restaurant, QR code, cart ordering, WhatsApp order summaries, and a restaurant dashboard.","offers":{"@type":"Offer","price":"4.99","priceCurrency":"USD"}}
+    </script>
     <link rel="icon" type="image/png" href="./favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,6 +30,36 @@
     <script type="module" src="./app.js"></script>
   </head>
   <body>
-    <div id="app"></div>
+    <noscript>
+      <main style="max-width:720px;margin:48px auto;padding:0 20px;font-family:system-ui,sans-serif;text-align:center">
+        <h1>Ordora — منيو رقمي وطلبات أوضح لمطعمك</h1>
+        <p>منيو رقمي يحمل هوية مطعمك وطلب أونلاين أوضح لضيوفك وفريقك. فعّل JavaScript لاستكشاف Ordora وتجربة المنيو التجريبي.</p>
+        <p><a href="/demo/">جرّب المنيو التجريبي</a></p>
+      </main>
+    </noscript>
+    <div id="app">
+      <!-- Static first content: crawlers and AI readers that do not run
+           JavaScript see this copy; the app replaces #app on load for
+           visitors with JavaScript. Copy matches the JS hero exactly. -->
+      <main style="max-width:960px;margin:0 auto;padding:48px 20px;font-family:system-ui,sans-serif">
+        <h1>Ordora — منيو رقمي وطلبات أوضح لمطعمك</h1>
+        <p>اعرض أطباقك وأسعارها في منيو يفتحه ضيوفك عبر رابط أو QR، ويتيح لهم إرسال طلباتهم بسهولة — بلا تطبيق أو عمولة.</p>
+        <p>اشتراك شهري واحد يشمل المنيو الرقمي، الطلب أونلاين، ولوحة تحكم المطعم. السعر الحالي على صفحة الأسعار.</p>
+        <ul>
+          <li>منيو رقمي برابط خاص لمطعمك ورمز QR</li>
+          <li>طلب أونلاين: سلة، استلام أو توصيل، وملخصات طلبات عبر WhatsApp</li>
+          <li>لوحة تحكم: إدارة القائمة والطلبات وحجوزات الطاولات والإحصاءات</li>
+          <li>هوية مطعمك: شعار، صور غلاف، ألوان، وعملة خاصة بك</li>
+        </ul>
+        <p>
+          <a href="/signup.html">ابدأ مجانًا</a> ·
+          <a href="/demo/">جرّب المنيو التجريبي مجانًا</a> ·
+          <a href="/features.html">المميزات</a> ·
+          <a href="/how-it-works.html">كيف يعمل</a> ·
+          <a href="/pricing.html">الأسعار</a> ·
+          <a href="/faq.html">أسئلة شائعة</a>
+        </p>
+      </main>
+    </div>
   </body>
 </html>

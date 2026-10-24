@@ -6,6 +6,7 @@
 
 const path = require('path');
 const express = require('express');
+const compression = require('compression');
 const helmet = require('helmet');
 const expressSession = require('express-session');
 const pgSession = require('connect-pg-simple');
@@ -59,6 +60,18 @@ function buildApp() {
       referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
     })
   );
+
+  /* --------------------------- compression ----------------------------- */
+  // gzip/brotli for text responses on the Render stack (Cloudflare Pages
+  // compresses on its own). Event streams are never compressed: buffering
+  // them would delay live order notifications.
+  app.use(compression({
+    filter: (req, res) => {
+      const type = String(res.getHeader('Content-Type') || '');
+      if (type.includes('text/event-stream')) return false;
+      return compression.filter(req, res);
+    },
+  }));
 
   /* --------------------------- body parsing ---------------------------- */
   app.use(express.json({ limit: '64kb' }));

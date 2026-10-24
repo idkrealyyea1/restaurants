@@ -32,7 +32,7 @@ async function createRestaurant({ name, slug, maxMenuItems, subscriptionEndsAt, 
     const restaurant = rows[0];
     await client.query(
       'INSERT INTO restaurant_settings (restaurant_id, currency) VALUES ($1, $2)',
-      [restaurant.id, currency || 'USD']
+      [restaurant.id, currency || 'ILS']
     );
     for (let day = 0; day < 7; day++) {
       await client.query(
@@ -193,7 +193,8 @@ async function getPublicView(slug) {
   const items = (
     await query(
       `SELECT id, category_id, name, description, price_cents, image_path,
-              is_available, is_popular, is_preorder, preorder_note
+              is_available, is_popular, is_preorder, preorder_note,
+              calories, prep_minutes, allergen_note, badge, old_price_cents
        FROM menu_items WHERE restaurant_id = $1
        ORDER BY position, created_at`,
       [restaurant.id]
@@ -249,6 +250,7 @@ async function getPublicView(slug) {
       freeDeliveryEnabled: settings.free_delivery_enabled === true,
       freeDeliveryThresholdCents: settings.free_delivery_threshold_cents || 0,
       storefrontLanguage: settings.storefront_language || 'ar',
+      promoText: settings.promo_text || '',
     },
     heroImages: heroImages.map((h) => ({ imagePath: h.image_path, position: h.position, isPrimary: h.is_primary })),
     hours: hours.map((h) => ({
@@ -383,8 +385,12 @@ async function reportSummaryForOwner() {
   return rows.map((r) => ({ ...r, revenue30dCents: Number(r.revenue30dCents), isActive: Boolean(r.isActive) }));
 }
 
-/** Public homepage directory: every active restaurant with showcase data. */
-async function listPublicDirectory() {
+/** Public homepage directory: active restaurants with showcase data.
+ * Paginated — never returns the whole directory in one response.
+ * limit defaults to 50 and is clamped to 1..100; offset defaults to 0. */
+async function listPublicDirectory({ limit = 50, offset = 0 } = {}) {
+  const safeLimit = Math.min(100, Math.max(1, Number.parseInt(limit, 10) || 50));
+  const safeOffset = Math.max(0, Number.parseInt(offset, 10) || 0);
   const rows = (
     await query(
       `SELECT r.id, r.slug, r.name, r.status, r.business_type,
@@ -414,7 +420,9 @@ async function listPublicDirectory() {
              )
            )
          )
-       ORDER BY r.created_at ASC`
+       ORDER BY r.created_at ASC
+       LIMIT $1 OFFSET $2`,
+      [safeLimit, safeOffset]
     )
   ).rows;
 

@@ -12,3 +12,22 @@
   Cache-Control: no-cache
 /manifest.webmanifest
   Cache-Control: no-cache
+
+# Static assets with content-based filenames or rarely-changing uploads:
+# cacheable for a year. Cloudflare Pages serves these with the headers
+# below; HTML pages are intentionally NOT listed here, so new copy and
+# SEO tags are picked up on the next visit without a cache purge.
+# NOTE: only apply this to fingerprinted/immutable files if a build step
+# ever renames them; plain /images/* and /css/* below are versioned by
+# their content in practice (new uploads get new UUID paths), but a
+# same-path image replacement would take up to a year to refresh.
+/images/*
+  Cache-Control: public, max-age=86400
+/icons/*
+  Cache-Control: public, max-age=31536000, immutable
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+/css/*
+  Cache-Control: public, max-age=86400
+/js/*
+  Cache-Control: public, max-age=86400

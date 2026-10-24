@@ -931,6 +931,25 @@
                   (item && item.category_id === c.id ? ' selected' : '') + '>' + esc(c.name) + '</option>').join('') +
               '</select></div>' +
           '</div>' +
+          '<div class="form-row form-row-2">' +
+            '<div class="field"><label for="it-calories">' + esc(I.t('caloriesL')) + '</label>' +
+              '<input id="it-calories" type="number" min="0" value="' + (item && item.calories != null ? item.calories : '') + '"></div>' +
+            '<div class="field"><label for="it-prep">' + esc(I.t('prepL')) + '</label>' +
+              '<input id="it-prep" type="number" min="0" value="' + (item && item.prep_minutes != null ? item.prep_minutes : '') + '"></div>' +
+          '</div>' +
+          '<div class="form-row form-row-2">' +
+            '<div class="field"><label for="it-badge">' + esc(I.t('badgeL')) + '</label>' +
+              '<select id="it-badge">' +
+                '<option value="">' + esc(I.t('badgeNone')) + '</option>' +
+                [['bestSeller', 'bestSeller'], ['new', 'new'], ['spicy', 'spicy'], ['chefPick', 'chefPick'], ['vegetarian', 'vegetarian']].map(function (b) {
+                  return '<option value="' + b[0] + '"' + (item && item.badge === b[0] ? ' selected' : '') + '>' + esc(I.t(b[1])) + '</option>';
+                }).join('') +
+              '</select></div>' +
+            '<div class="field"><label for="it-old-price">' + esc(I.t('oldPriceL')) + '</label>' +
+              '<input id="it-old-price" type="number" min="0" step="0.01" value="' + (item && item.old_price_cents != null ? (item.old_price_cents / 100).toFixed(2) : '') + '"></div>' +
+          '</div>' +
+          '<div class="field"><label for="it-allergen">' + esc(I.t('allergenL')) + '</label>' +
+            '<input id="it-allergen" type="text" maxlength="300" value="' + esc(item ? (item.allergen_note || '') : '') + '"></div>' +
           '<div class="checkbox-line mb-1"><input id="it-available" type="checkbox"' + (!item || item.is_available ? ' checked' : '') + '><label for="it-available">' + esc(I.t('availableL')) + '</label></div>' +
           '<div class="checkbox-line mb-1"><input id="it-popular" type="checkbox"' + (item && item.is_popular ? ' checked' : '') + '><label for="it-popular">' + esc(I.t('popularL')) + '</label></div>' +
           '<div class="checkbox-line mb-1"><input id="it-preorder" type="checkbox"' + (item && item.is_preorder ? ' checked' : '') + '><label for="it-preorder">' + esc(I.t('preorderAvailableL')) + '</label></div>' +
@@ -1022,6 +1041,9 @@
         toast(I.t('invalidPrice'), 'error');
         return;
       }
+      const calVal = document.getElementById('it-calories').value;
+      const prepVal = document.getElementById('it-prep').value;
+      const oldVal = parseFloat(document.getElementById('it-old-price').value);
       const body = {
         categoryId: document.getElementById('it-cat').value,
         name: document.getElementById('it-name').value.trim(),
@@ -1031,6 +1053,11 @@
         isPopular: document.getElementById('it-popular').checked,
         isPreorder: document.getElementById('it-preorder').checked,
         preorderNote: document.getElementById('it-prenote').value.trim(),
+        calories: calVal === '' ? null : Math.max(0, Math.round(Number(calVal))),
+        prepMinutes: prepVal === '' ? null : Math.max(0, Math.round(Number(prepVal))),
+        badge: document.getElementById('it-badge').value || null,
+        oldPriceCents: Number.isFinite(oldVal) ? Math.max(0, Math.round(oldVal * 100)) : null,
+        allergenNote: document.getElementById('it-allergen').value.trim() || null,
       };
       let createdNow = false;
       let savedItem = null;
@@ -1540,6 +1567,7 @@
             '<div class="field"><label for="st-wa">' + esc(I.t('whatsappL2')) + '</label><input id="st-wa" type="tel" value="' + esc(s.whatsapp) + '"></div>' +
           '</div>' +
           '<div class="field"><label for="st-address">' + esc(I.t('addressL')) + '</label><textarea id="st-address" maxlength="300">' + esc(s.address) + '</textarea></div>' +
+          '<div class="field"><label for="st-promo">' + esc(I.t('promoL')) + '</label><input id="st-promo" type="text" maxlength="200" value="' + esc(s.promoText || '') + '" placeholder="' + esc(I.t('promoHint')) + '"></div>' +
           '<div class="form-row form-row-2">' +
             '<div class="field"><label for="st-tz">' + esc(I.t('timezoneL')) + '</label><select id="st-tz">' +
               TIMEZONES.map((tz) => '<option' + (tz === s.timezone ? ' selected' : '') + '>' + tz + '</option>').join('') +
@@ -1701,6 +1729,7 @@
       phone: document.getElementById('st-phone').value,
       whatsapp: document.getElementById('st-wa').value,
       address: document.getElementById('st-address').value,
+      promoText: document.getElementById('st-promo').value,
       timezone: document.getElementById('st-tz').value,
       currency: document.getElementById('st-cur').value,
       primaryColor: document.getElementById('st-color1').value,

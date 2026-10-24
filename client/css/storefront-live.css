@@ -562,3 +562,50 @@
     font-size: 9px;
   }
 }
+
+/* ------------------- MenuX-style richness (optional fields) ----------- */
+/* Only rendered when the restaurant set the field, so existing menus
+   look exactly as before. */
+.dish-old-price {
+  margin-inline-end: 4px;
+  color: #9a8f7a;
+  font-weight: 500;
+}
+.dish-save {
+  color: #b45309;
+  font-size: 10px;
+  font-weight: 700;
+}
+.dish-richness {
+  display: block;
+  margin-top: 4px;
+  color: #718078;
+  font-size: 11px;
+}
+.dish-allergen {
+  display: block;
+  margin-top: 4px;
+  color: #92400e;
+  font-size: 11px;
+}
+/* Storefront promo banner (restaurant-set text only). */
+.promo-banner {
+  margin: 12px 0 0;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+}
+.nutrition-disclaimer {
+  max-width: 720px;
+  margin: 24px auto 0;
+  color: #718078;
+  font-size: 13px;
+}
+.nutrition-disclaimer summary {
+  cursor: pointer;
+  font-weight: 700;
+}

@@ -16,7 +16,7 @@
 
 ## 1. What the product is
 
-A **multi-tenant restaurant ordering SaaS** deployed on **Wasmer Edge**. A single
+A **multi-tenant restaurant ordering SaaS** deployed on **Supabase (Postgres) + Render (API + full-stack frontend) + Cloudflare Pages (optional static frontend)** — Wasmer Edge is only the legacy rollback path (`app.yaml`). A single
 platform hosts many independent restaurants. Each restaurant gets its own
 public storefront (a QR-code/menu page) where customers browse the menu, add
 items to a cart, and place pickup or delivery orders via WhatsApp. Restaurant
@@ -30,8 +30,10 @@ Key product facts:
 - Customers **do not need an account** — they order as guests and track by a
   code. Orders are sent to the restaurant over **WhatsApp** (deep-linked
   `wa.me` link), not email/SMS.
-- The restaurant pays nothing per order in the current build; the operator
-  intends to charge a monthly subscription later (not yet implemented).
+- The restaurant pays nothing per order; instead each restaurant has a
+  monthly subscription (DB-driven pricing via `GET /api/pricing`, subscription
+  migrations 028/029, and a subscription gate that blocks public ordering when
+  expired). See §10 item 2 update below.
 - Images are stored **in the PostgreSQL database** (not disk) because Wasmer
   Edge has an ephemeral filesystem — local disk uploads were being wiped on
   every redeploy.
@@ -276,10 +278,11 @@ from `business_hero_images` (migration 031, max 6 per business).
 1. ~~**Owner panel is English-only**~~ — FIXED: owner panel is now bilingual
    (AR/EN) with the live language toggle; see `I18N.onChange` re-render in
    `owner.js`.
-2. **No subscription / billing enforcement** — the operator wants monthly
-   per-restaurant fees; only the *status display* exists (admin dashboard shows
-   active/expired based on `subscription_ends_at`). Billing, trials, and lockout
-   of expired restaurants are not implemented.
+2. ~~**No subscription / billing enforcement**~~ — SUPERSEDED: subscriptions
+   are implemented (migrations 028/029, `subscriptions` table, DB-driven
+   pricing, trial/grace handling, and a subscription gate blocking public
+   ordering when expired). What is still missing is a paid payment gateway
+   (no Stripe/PSP integration) — billing is arranged outside the platform.
 3. **Lost images** — all pre-DB-backend uploads were wiped; any restaurant still
    referencing them shows letter-tiles until re-uploaded.
 4. **No password recovery / email** — admins get passwords set by owner; no
@@ -289,8 +292,10 @@ from `business_hero_images` (migration 031, max 6 per business).
    JS, but audit the storefront).
 6. **Sessions in Postgres** — fine, but no session expiry/rotation policy coded;
    consider idle timeout.
-7. **`/api/restaurants` directory** returns all active restaurants with no
-   pagination — add `limit/offset` before many tenants exist.
+7. ~~**`/api/restaurants` directory** returns all active restaurants with no
+   pagination~~ — FIXED on branch `astro/fixes-and-menux-features`:
+   `limit`/`offset` (default 50, clamped 1..100) with a homepage Load more
+   button.
 8. **Owner delivery UI lacks edit form** — `PATCH /delivery-groups/:id` exists
    server-side but the owner UI only supports add/delete (name/phone not
    editable in place).
@@ -305,7 +310,7 @@ from `business_hero_images` (migration 031, max 6 per business).
 **High value, low effort**
 - Localize the owner panel (reuse `I.t()` + `data-i18n`) for consistency.
 - Add owner-side **edit** for delivery companies (wire existing `PATCH` route).
-- Paginate `/api/restaurants` directory.
+- Paginate `/api/restaurants` directory. (Done on branch `astro/fixes-and-menux-features`.)
 
 **Revenue / product**
 - **Subscription system**: `restaurants.plan` + `subscription_ends_at`; block

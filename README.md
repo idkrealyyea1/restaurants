@@ -44,6 +44,56 @@ config/index.js         env loading/validation
 tests/                  node:test suite (runs against TEST_DATABASE_URL only)
 ```
 
+## Keeping the Supabase free project alive (read this first)
+
+Supabase pauses free projects after 7 days without activity, and unpausing
+is only possible within 90 days of the pause. **These do NOT count as
+activity and will NOT keep the project alive:**
+
+- Visiting the demo at `/demo/` — it is fully static and never touches
+  the API or the database.
+- Hitting `/api/healthz` — it returns `{ok:true}` without a database
+  query.
+
+**These DO count:**
+
+- Opening a live restaurant menu page (`/restaurant/<slug>`), which
+  loads the menu from the database.
+- Calling `/api/readyz`, which runs `SELECT 1` against the database.
+- Any real order, admin login, or dashboard use.
+
+So a keep-alive check must use a live menu URL or `/api/readyz` — never
+the demo or `/api/healthz`.
+
+## SEO and AI visibility (Cloudflare Pages copy)
+
+The static copy in `client/` ships its own `robots.txt`, `sitemap.xml`,
+`llms.txt`, and `llms-full.txt`. The robots file explicitly allows search
+and AI-search bots (Googlebot, Bingbot, OAI-SearchBot, ChatGPT-User,
+Claude-SearchBot, Claude-User, PerplexityBot) plus training bots
+(GPTBot, ClaudeBot, Google-Extended, CCBot) on public pages only, while
+disallowing `/admin/`, `/api/`, `/app/`, auth pages, and tracking pages
+in every group. Training-bot allowance is a deliberate choice for maximum
+citation surface; to opt out later, add a group disallowing exactly those
+four user-agents. **Shipping the file is not enough:** Cloudflare's
+dashboard AI-bot settings and "Bot Preference Sync" can override it, so
+the owner must check those are not blocking AI crawlers. Marketing pages
+carry absolute canonicals, OG/Twitter tags, and JSON-LD (Organization,
+SoftwareApplication, FAQPage, HowTo, BreadcrumbList). The homepage ships
+static hero copy inside `#app` for crawlers that do not run JavaScript.
+`llms.txt` follows the llmstxt.org proposal — it is a proposal, not a
+confirmed citation lever for any provider. No fake reviews, logos,
+rankings, or "No. 1" claims are made anywhere.
+
+User steps that cannot be done from this repo (do not automate them):
+Google Search Console URL-prefix property for `https://ordora.pages.dev/`
+(HTML file or meta-tag verification — a Domain property via DNS is not
+possible for a `pages.dev` subdomain), then submit the sitemap; Bing
+Webmaster Tools plus IndexNow (host key file, ping on publish; Google
+does not support IndexNow). If a custom domain is bought later, migrate
+with Bulk Redirects and update canonicals/sitemap — never run both hosts
+as canonical in parallel.
+
 ## Environment variables
 
 Copy `.env.example` → `.env` and fill in real values (never commit `.env`):

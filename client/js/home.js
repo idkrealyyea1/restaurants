@@ -9,6 +9,9 @@
   let restaurants = [];
   let searchTerm = '';
   let loadFailed = false;
+  let hasMore = false;
+  let loadingMore = false;
+  const PAGE_SIZE = 50;
 
   function restCard(r) {
     const nm = (I.lang === 'en' && r.nameEn) ? r.nameEn : r.name;
@@ -56,6 +59,20 @@
     const list = visible();
 
     grid.innerHTML = list.map(restCard).join('');
+    // Paginated directory: a Load more button (only when not searching,
+    // since search filters the loaded page only).
+    const existingMore = document.getElementById('rest-load-more');
+    if (existingMore) existingMore.remove();
+    if (hasMore && !searchTerm && !loadFailed) {
+      const more = document.createElement('button');
+      more.id = 'rest-load-more';
+      more.type = 'button';
+      more.className = 'btn btn-outline mt-2';
+      more.textContent = loadingMore ? '…' : I.t('loadMore');
+      more.disabled = loadingMore;
+      more.addEventListener('click', loadMore);
+      grid.after(more);
+    }
     empty.classList.toggle('hidden', !loadFailed && list.length > 0);
     if (loadFailed) {
       empty.innerHTML = '<strong>' + esc(I.t('directoryLoadError')) + '</strong>' +
@@ -91,13 +108,30 @@
 
   async function load() {
     try {
-      const data = await api.get('/api/restaurants');
+      const data = await api.get('/api/restaurants?limit=' + PAGE_SIZE + '&offset=0');
       restaurants = data.restaurants || [];
+      hasMore = !!data.hasMore;
       loadFailed = false;
     } catch (err) {
       restaurants = [];
+      hasMore = false;
       loadFailed = true;
     }
+    render();
+  }
+
+  async function loadMore() {
+    if (loadingMore || !hasMore) return;
+    loadingMore = true;
+    render();
+    try {
+      const data = await api.get('/api/restaurants?limit=' + PAGE_SIZE + '&offset=' + restaurants.length);
+      restaurants = restaurants.concat(data.restaurants || []);
+      hasMore = !!data.hasMore;
+    } catch (err) {
+      // Keep the first page; the button stays so the user can retry.
+    }
+    loadingMore = false;
     render();
   }
 

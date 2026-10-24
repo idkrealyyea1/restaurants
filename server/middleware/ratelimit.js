@@ -36,6 +36,16 @@ const authLimiter = rateLimit({
   handler: jsonHandler,
 });
 
+/* Public signup: one tenant per signup, so 3/hour/IP is generous for a
+   real person and useless for bulk bot creation. */
+const signupLimiter = rateLimit({
+  windowMs: config.rateLimits.signup.windowMs,
+  limit: config.rateLimits.signup.max,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  handler: jsonHandler,
+});
+
 const orderLimiter = rateLimit({
   windowMs: config.rateLimits.order.windowMs,
   limit: config.rateLimits.order.max,
@@ -54,4 +64,4 @@ const trackLimiter = rateLimit({
   handler: jsonHandler,
 });
 
-module.exports = { globalLimiter, authLimiter, orderLimiter, trackLimiter };
+module.exports = { globalLimiter, authLimiter, signupLimiter, orderLimiter, trackLimiter };

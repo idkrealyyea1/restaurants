@@ -92,7 +92,12 @@
       field('su_email', input('f-email', 'email', draft.email, 'autocomplete="email" required'), 'f-email') +
       field('su_username', input('f-username', 'text', draft.username, 'autocomplete="username" required'), 'f-username') +
       field('su_password', input('f-password', 'password', '', 'autocomplete="new-password" required') +
-        '<p class="muted small">' + esc(I.t('su_passwordHint')) + '</p>', 'f-password');
+        '<p class="muted small">' + esc(I.t('su_passwordHint')) + '</p>', 'f-password') +
+      // Honeypot: hidden from sighted users and screen readers; bots that
+      // fill every field trip the server-side check in validateSignup.
+      '<div aria-hidden="true" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden">' +
+      '<label for="f-website">Website</label>' +
+      '<input id="f-website" name="website" type="text" tabindex="-1" autocomplete="off"></div>';
   }
 
   function showType() {
@@ -266,6 +271,7 @@
     nextBtn.disabled = true;
     try {
       if (screen === 'account') {
+        draft.website = (document.getElementById('f-website') || {}).value || '';
         draft.email = document.getElementById('f-email').value.trim();
         draft.username = document.getElementById('f-username').value.trim();
         draft.password = document.getElementById('f-password').value;
@@ -286,6 +292,7 @@
           const res = await api.post('/api/signup', {
             email: draft.email, username: draft.username, password: draft.password,
             businessName: draft.businessName, businessType: draft.businessType,
+            website: draft.website || '',
             ...(draft.slug ? { slug: draft.slug } : {}),
           });
           business = { ...res.business, slug: res.business.slug };

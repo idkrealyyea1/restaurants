@@ -13,6 +13,7 @@ const copy = {
     ] },
     dashboard: { eyebrow: "كل طلب، بتفاصيله", titleA: "الطلب يصل", titleB: "جاهزًا للتحضير.", body: "يرتب Ordora الأصناف والكميات والملاحظات في ملخص واحد، ويعرض الطلبات في لوحة مطعمك لتعرف ما يحتاجه فريقك.", chips: ["ملخص واضح", "متابعة الطلبات", "الأكثر طلبًا"], label: "لوحة الطلبات", date: "معاينة لوحة المطعم", today: "طلبات اليوم", yesterday: "خلال هذا اليوم", top: "الأكثر طلبًا", item: "برجر سموكي", count: "١٨ طلب", fresh: "جديد", done: "مكتمل", orders: ["#1042  برجر سموكي × 2", "#1041  ليمون ونعناع × 1", "#1040  وجبة بَسْطة × 3"] },
     pricing: { eyebrow: "ببساطة", titleA: "خطة واحدة.", titleB: "سعر واضح.", body: "ابدأ بمنيو رقمي وسلة طلب ومتابعة للطلبات — باشتراك شهري واضح ومن دون عمولة على الطلبات.", label: "Ordora للمطاعم", month: "/ شهريًا", features: ["صفحة مطعم بهويتك", "رمز QR قابل للطباعة", "سلة طلب أونلاين", "ملخص جاهز لـ WhatsApp", "لوحة لمتابعة الطلبات", "بدون عمولة"], request: "ابدأ بمنيو مطعمك" },
+    live: { eyebrow: "مطاعم حيّة على Ordora", title: "قوائم حقيقية، تعمل الآن.", viewAll: "عرض كل المطاعم", compare: "قارن Ordora مع MenuX" },
     faq: { eyebrow: "قبل أن تبدأ", title: "إجابات قبل الاشتراك.", items: [
       ["هل أحتاج إلى تطبيق خاص؟", "لا. يفتح Ordora في متصفح جوال الضيف مباشرة، من دون تحميل تطبيق أو إنشاء حساب."],
       ["هل يأخذ Ordora عمولة على الطلبات؟", "لا. الاشتراك الشهري ثابت، ولا توجد عمولة على طلبات مطعمك."],
@@ -77,6 +78,7 @@ const copy = {
     ] },
     dashboard: { eyebrow: "Every order, in detail", titleA: "Orders arrive", titleB: "ready for your team.", body: "Ordora groups dishes, quantities, and notes into one clear summary, then shows incoming orders in your restaurant dashboard.", chips: ["Clear order summary", "Order tracking", "Popular dishes"], label: "Restaurant orders", date: "Dashboard preview", today: "Today’s orders", yesterday: "Since opening", top: "Most ordered", item: "Smoky burger", count: "18 orders", fresh: "New", done: "Complete", orders: ["#1042  Smoky burger × 2", "#1041  Lemon mint × 1", "#1040  Basta meal × 3"] },
     pricing: { eyebrow: "Simple", titleA: "One plan.", titleB: "One clear price.", body: "Get a branded menu, an online order cart, and a place to follow orders—with one monthly price and no order commissions.", label: "Ordora for restaurants", month: "/ month", features: ["Restaurant page in your brand", "Printable QR code", "Online order cart", "WhatsApp-ready summary", "Order dashboard", "No commission"], request: "Start your restaurant menu" },
+    live: { eyebrow: "Live on Ordora", title: "Real menus, working now.", viewAll: "View all restaurants", compare: "Compare Ordora with MenuX" },
     faq: { eyebrow: "Before you start", title: "Answers before you sign up.", items: [
       ["Do my guests need an app?", "No. Ordora opens in the guest’s mobile browser. There’s nothing to download and no account to create."],
       ["Does Ordora charge a commission?", "No. The monthly subscription is flat, with no commission on your restaurant orders."],
@@ -168,6 +170,27 @@ const planPeriod = () => {
   if (period === "year") return language === "ar" ? "/ سنويًا" : "/ year";
   return language === "ar" ? "/ شهريًا" : "/ month";
 };
+// Social proof from real data only: names and links of restaurants actually
+// returned by the public directory. No invented names, no testimonials.
+// The section stays hidden if the directory is empty or unreachable.
+async function loadLiveRestaurants() {
+  const section = document.getElementById("live-restaurants");
+  const grid = document.getElementById("liveGrid");
+  if (!section || !grid) return;
+  try {
+    const res = await fetch(apiUrl("/api/restaurants?limit=50&offset=0"), { credentials: "include" });
+    if (!res.ok) return;
+    const data = await res.json();
+    const rows = (data.restaurants || []).slice(0, 6);
+    if (!rows.length) return;
+    grid.innerHTML = rows.map((r) => {
+      const name = String(r.name || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+      const slug = encodeURIComponent(r.slug || "");
+      return `<a class="live-card" href="/restaurant/${slug}"><strong>${name}</strong><span>${r.item_count != null ? r.item_count : ""}</span></a>`;
+    }).join("");
+    section.hidden = false;
+  } catch (_) { /* section stays hidden */ }
+}
 async function loadPricing() {
   try {
     const res = await fetch(apiUrl("/api/pricing"), { credentials: "include" });
@@ -355,12 +378,16 @@ function render() {
       <section class="features-section" id="features"><div class="container"><div class="section-intro feature-intro"><div><span class="section-kicker">${t.features.eyebrow}</span><h2>${t.features.titleA}<br><em>${t.features.titleB}</em></h2></div><p>${t.features.aside}</p></div><div class="features-grid">${t.features.items.map((item, i) => `<article class="feature-card tone-${i + 1}"><div class="feature-top"><span>0${i + 1}</span><i>${icon(item[2], 21)}</i></div><div class="feature-copy"><h3>${item[0]}</h3><p>${item[1]}</p></div></article>`).join("")}</div></div></section>
       <section class="dashboard-section"><div class="container dashboard-grid"><div class="dashboard-copy"><span class="section-kicker">${t.dashboard.eyebrow}</span><h2>${t.dashboard.titleA}<br><em>${t.dashboard.titleB}</em></h2><p>${t.dashboard.body}</p><div class="dashboard-chips">${t.dashboard.chips.map((item) => `<span>${icon("check", 14)}${item}</span>`).join("")}</div></div><div class="dashboard-visual"><div class="dashboard-panel"><div class="panel-heading"><div><small>${t.dashboard.label}</small><b>${t.dashboard.date}</b></div><span>${icon("dashboard", 18)}</span></div><div class="stats-grid"><div><small>${t.dashboard.today}</small><strong>47</strong><em>${t.dashboard.yesterday}</em></div><div><small>${t.dashboard.top}</small><b>${t.dashboard.item}</b><em>${t.dashboard.count}</em></div></div><div class="order-list">${t.dashboard.orders.map((order, i) => `<div><span>${order}</span><b class="${i === 0 ? "order-new" : ""}">${i === 0 ? t.dashboard.fresh : t.dashboard.done}</b></div>`).join("")}</div></div></div></div></section>
       <section class="pricing-section" id="pricing"><div class="container pricing-grid"><div class="pricing-copy"><span class="section-kicker">${t.pricing.eyebrow}</span><h2>${t.pricing.titleA}<br><em>${t.pricing.titleB}</em></h2><p>${t.pricing.body}</p></div><div class="price-card"><span class="price-label">${t.pricing.label}</span><div class="price"><strong id="livePrice">${planPrice()}</strong><span id="livePricePeriod">${planPeriod()}</span></div><div class="price-divider"></div><div class="price-features">${t.pricing.features.map((item) => `<span><i>${icon("check", 13)}</i>${item}</span>`).join("")}</div><button type="button" class="button button-coral price-cta" data-action="start">${t.pricing.request}${icon("arrow", 16)}</button></div></div></section>
+      <section class="live-section" id="live-restaurants" hidden><div class="container"><div class="section-intro"><div><span class="section-kicker">${t.live.eyebrow}</span><h2>${t.live.title}</h2></div></div><div class="live-grid" id="liveGrid"></div><p><a href="/app/">${t.live.viewAll}</a> · <a href="/ordora-vs-menux.html">${t.live.compare}</a></p></div></section>
       <section class="faq-section" id="faq"><div class="container faq-container"><div class="faq-heading"><span class="section-kicker">${t.faq.eyebrow}</span><h2>${t.faq.title}</h2></div><div class="faq-list">${t.faq.items.map((item, i) => `<details class="faq-item"${i === 0 ? " open" : ""}><summary>${item[0]}<span>${icon("plus", 17)}</span></summary><p>${item[1]}</p></details>`).join("")}</div></div></section>
       <section class="final-section"><span class="final-spark">${icon("spark", 32)}</span><h2>${t.final.titleA}<br>${t.final.titleB}</h2><p>${t.final.body}</p><button type="button" class="button final-button" data-action="start">${t.final.request}${icon("arrow", 17)}</button></section>
     </main>
       <footer class="site-footer"><div class="container footer-inner"><div>${logo(true)}<p>${t.footer[0]}<br>${t.footer[1]}</p></div><nav><a href="#features">${t.nav.features}</a><a href="#pricing">${t.nav.pricing}</a><a href="${demoUrl}">${t.hero.demo}</a><span>© Ordora</span></nav></div></footer>
     ${modalOpen ? modalMarkup(t) : ""}
   </div>`;
+  // Re-fill the live-restaurants section after every re-render (e.g. the
+  // language toggle rebuilds #app). It hides itself when data is absent.
+  loadLiveRestaurants();
 }
 
 app.addEventListener("click", (event) => {
@@ -482,3 +509,4 @@ document.addEventListener("keydown", (event) => {
 
 render();
 loadPricing();
+loadLiveRestaurants();

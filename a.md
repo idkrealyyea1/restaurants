@@ -1,3 +1,12 @@
+> ⚠️ STALE — DO NOT USE AS CURRENT DOCUMENTATION (marked October 2026).
+> This file describes an older build: it says pricing is a fixed $8.99 and
+> the demo is at `/demo.html`, while the current code has DB-driven pricing
+> (`GET /api/pricing`) and the demo at `/demo/index.html`, and subscriptions
+> are implemented (migrations 028/029) with a subscription gate. The current
+> stack is Supabase + Render + Cloudflare Pages (see README.md and
+> DEPLOY_SUPABASE_RENDER_PAGES.md). Kept for history only; delete it once
+> nothing else references it.
+
 # Ordora — What Was Built & How The Website Works (Step-by-Step)
 
 > Generated for `idkrealyyea/restaurants` — this file documents **every single thing** changed, kept, and how the site appears and works from first paint to conversion.

@@ -28,6 +28,7 @@ function toPublicSettings(row) {
     deliveryEnabled: row.delivery_enabled !== false,
     ignoreOpeningHours: row.ignore_opening_hours,
     storefrontLanguage: row.storefront_language || 'ar',
+    promoText: row.promo_text || '',
   };
 }
 
@@ -58,6 +59,7 @@ const FIELD_COLUMNS = {
   deliveryEnabled: 'delivery_enabled',
   ignoreOpeningHours: 'ignore_opening_hours',
   storefrontLanguage: 'storefront_language',
+  promoText: 'promo_text',
 };
 
 async function updateOwned(restaurantId, patch) {

@@ -145,103 +145,103 @@ const dishes = [
   {
     id: "red-bun", category: "burgers", name: { ar: "ريد بن الأصلي", en: "The Red Bun" },
     description: { ar: "لحم بقري مشوي، شيدر ذايب، مخلل مقرمش، وصوص ريد بن داخل خبز بريوش محمّص.", en: "Grilled beef, melted cheddar, crisp pickles, and Red Bun sauce in a toasted brioche bun." },
-    price: 54, image: "images/menu/photo-1568901346375-23c9450c58cd.jpg", tag: "bestSeller", popular: true,
+    price: 54, image: "images/menu/photo-1568901346375-23c9450c58cd.webp", tag: "bestSeller", popular: true,
     options: [{ id: "extras", required: false, label: { ar: "إضافات", en: "Make it extra" }, choices: [{ id: "cheese", label: { ar: "شريحة شيدر إضافية", en: "Extra cheddar" }, extra: 5 }, { id: "patty", label: { ar: "قطعة لحم إضافية", en: "Extra beef patty" }, extra: 18 }, { id: "jalapeno", label: { ar: "هالبينو", en: "Jalapeños" }, extra: 3 }] }],
   },
   {
     id: "smokehouse", category: "burgers", name: { ar: "سموكي هاوس", en: "Smokehouse Stack" },
     description: { ar: "قطعتا لحم، جبنة مدخنة، بصل مكرمل، وصوص باربكيو مدخن.", en: "Two beef patties, smoked cheese, caramelized onions, and smoky house barbecue." },
-    price: 68, image: "images/menu/photo-1550547660-d9450f859349.jpg", tag: "bestSeller", popular: true, options: [],
+    price: 68, image: "images/menu/photo-1550547660-d9450f859349.webp", tag: "bestSeller", popular: true, options: [],
   },
   {
     id: "double-crunch", category: "burgers", name: { ar: "دبل كرنش", en: "Double Crunch" },
     description: { ar: "قطعتا لحم رفيعتان ومقرمشتان، شيدر، خس، وبصل مع صوص برغر كلاسيكي.", en: "Two crispy-edged smash patties, cheddar, lettuce, onion, and classic burger sauce." },
-    price: 62, image: "images/menu/photo-1561758033-d89a9ad46330.jpg", tag: "bestSeller", popular: true, options: [],
+    price: 62, image: "images/menu/photo-1561758033-d89a9ad46330.webp", tag: "bestSeller", popular: true, options: [],
   },
   {
     id: "hot-honey", category: "burgers", name: { ar: "هوت هاني", en: "Hot Honey Chicken" },
     description: { ar: "دجاج مقرمش، عسل حار، سلطة ملفوف، ومخلل بيتنا.", en: "Crispy chicken, a sweet-hot honey glaze, crunchy slaw, and house pickles." },
-    price: 58, image: "images/menu/photo-1606755962773-d324e0a13086.jpg", tag: "spicy", popular: true, options: [],
+    price: 58, image: "images/menu/photo-1606755962773-d324e0a13086.webp", tag: "spicy", popular: true, options: [],
   },
   {
     id: "mushroom-swiss", category: "burgers", name: { ar: "مشروم سويس", en: "Mushroom Swiss" },
     description: { ar: "لحم بقري مشوي، فطر بالزبدة، سويس ذايب، ومايونيز بالثوم.", en: "Grilled beef, buttery mushrooms, melted Swiss, and roasted garlic mayo." },
-    price: 61, image: "images/menu/photo-1571091718767-18b5b1457add.jpg", tag: null, popular: false, options: [],
+    price: 61, image: "images/menu/photo-1571091718767-18b5b1457add.webp", tag: null, popular: false, options: [],
   },
   {
     id: "garden-smash", category: "burgers", name: { ar: "غاردن سماش", en: "Garden Smash" },
     description: { ar: "برغر نباتي محمّر، أفوكادو، طماطم، خس، وصوص أعشاب طازج.", en: "A seared plant-based patty with avocado, tomato, lettuce, and fresh herb sauce." },
-    price: 52, image: "images/menu/photo-1520072959219-c595dc870360.jpg", tag: "vegetarian", popular: false, options: [],
+    price: 52, image: "images/menu/photo-1520072959219-c595dc870360.webp", tag: "vegetarian", popular: false, options: [],
   },
   {
     id: "pepper-jack", category: "burgers", name: { ar: "بيبر جاك", en: "Pepper Jack Heat" },
     description: { ar: "لحم مشوي، جبنة بيبر جاك، هالبينو، وبصل مقرمش وصوص حار.", en: "Grilled beef, pepper jack, jalapeños, crispy onions, and a punchy chili sauce." },
-    price: 59, image: "images/menu/photo-1571091718767-18b5b1457add.jpg", tag: "spicy", popular: false, options: [],
+    price: 59, image: "images/menu/photo-1571091718767-18b5b1457add.webp", tag: "spicy", popular: false, options: [],
   },
   {
     id: "mini-buns", category: "burgers", name: { ar: "ميني بنز", en: "Mini Bun Trio" },
     description: { ar: "ثلاث برغر صغيرة: كلاسيك، باربكيو، ودجاج مقرمش. مثالية للمشاركة.", en: "Three little burgers: classic, barbecue, and crispy chicken. Made for sharing." },
-    price: 64, image: "images/menu/photo-1571091718767-18b5b1457add.jpg", tag: null, popular: false, options: [],
+    price: 64, image: "images/menu/photo-1571091718767-18b5b1457add.webp", tag: null, popular: false, options: [],
   },
   {
     id: "skinny-fries", category: "sides", name: { ar: "بطاطا رفيعة", en: "Skinny Fries" },
     description: { ar: "بطاطا ذهبية مقرمشة، متبّلة بملح ريد بن.", en: "Golden, crispy fries tossed in our Red Bun seasoning." },
-    price: 19, image: "images/menu/photo-1573080496219-bb080dd4f877.jpg", tag: "bestSeller", popular: true, options: [],
+    price: 19, image: "images/menu/photo-1573080496219-bb080dd4f877.webp", tag: "bestSeller", popular: true, options: [],
   },
   {
     id: "loaded-fries", category: "sides", name: { ar: "لودد فرايز", en: "Loaded Red Fries" },
     description: { ar: "بطاطا ساخنة مع شيدر ذايب، صوص برغر، وبصل أخضر.", en: "Hot fries loaded with melted cheddar, burger sauce, and green onion." },
-    price: 32, image: "images/menu/photo-1630384060421-cb20d0e0649d.jpg", tag: null, popular: false, options: [],
+    price: 32, image: "images/menu/photo-1630384060421-cb20d0e0649d.webp", tag: null, popular: false, options: [],
   },
   {
     id: "onion-rings", category: "sides", name: { ar: "حلقات بصل", en: "Crispy Onion Rings" },
     description: { ar: "حلقات بصل مغلّفة ومقلية حتى تصير ذهبية، مع صوص الرانش.", en: "Golden beer-battered onion rings served with house ranch." },
-    price: 24, image: "images/menu/photo-1639024471283-03518883512d.jpg", tag: null, popular: false, options: [],
+    price: 24, image: "images/menu/photo-1639024471283-03518883512d.webp", tag: null, popular: false, options: [],
   },
   {
     id: "mac-bites", category: "sides", name: { ar: "ماك آند تشيز بايتس", en: "Mac & Cheese Bites" },
     description: { ar: "كرات مكرونة وجبنة مقرمشة مع صوص طماطم حار.", en: "Crispy mac-and-cheese bites with a little spicy tomato dip." },
-    price: 28, image: "images/menu/photo-1541592106381-b31e9677c0e5.jpg", tag: null, popular: false, options: [],
+    price: 28, image: "images/menu/photo-1541592106381-b31e9677c0e5.webp", tag: null, popular: false, options: [],
   },
   {
     id: "classic-shake", category: "drinks", name: { ar: "ميلك شيك فانيلا", en: "Vanilla Milkshake" },
     description: { ar: "آيس كريم فانيلا مخفوق بالحليب ومغطّى بكريمة طازجة.", en: "Vanilla bean ice cream blended thick and finished with whipped cream." },
-    price: 25, image: "images/menu/photo-1572490122747-3968b75cc699.jpg", tag: "bestSeller", popular: true, options: [],
+    price: 25, image: "images/menu/photo-1572490122747-3968b75cc699.webp", tag: "bestSeller", popular: true, options: [],
   },
   {
     id: "chocolate-shake", category: "drinks", name: { ar: "ميلك شيك شوكولاتة", en: "Chocolate Milkshake" },
     description: { ar: "شوكولاتة غنية، آيس كريم، ورشة كاكاو.", en: "Rich chocolate, thick ice cream, and a dusting of cocoa." },
-    price: 27, image: "images/menu/photo-1577805947697-89e18249d767.jpg", tag: null, popular: false, options: [],
+    price: 27, image: "images/menu/photo-1577805947697-89e18249d767.webp", tag: null, popular: false, options: [],
   },
   {
     id: "house-lemonade", category: "drinks", name: { ar: "ليمونادة الدار", en: "House Lemonade" },
     description: { ar: "ليمون طازج، نعنع أخضر، وثلج كثير.", en: "Fresh-squeezed lemon, garden mint, and plenty of ice." },
-    price: 18, image: "images/menu/house-lemonade.jpg", tag: "vegetarian", popular: false, options: [],
+    price: 18, image: "images/menu/house-lemonade.webp", tag: "vegetarian", popular: false, options: [],
   },
   {
     id: "cola", category: "drinks", name: { ar: "كولا باردة", en: "Ice-Cold Cola" },
     description: { ar: "كولا باردة جداً مع الثلج والليمون.", en: "An ice-cold cola with plenty of ice and a wedge of lemon." },
-    price: 12, image: "images/menu/photo-1554866585-cd94860890b7.jpg", tag: null, popular: false, options: [],
+    price: 12, image: "images/menu/photo-1554866585-cd94860890b7.webp", tag: null, popular: false, options: [],
   },
   {
     id: "brownie", category: "sweets", name: { ar: "براوني دافئ", en: "Warm Fudge Brownie" },
     description: { ar: "براوني شوكولاتة طري، يُقدّم دافئاً مع آيس كريم فانيلا.", en: "A fudgy chocolate brownie served warm with a scoop of vanilla ice cream." },
-    price: 28, image: "images/menu/photo-1606313564200-e75d5e30476c.jpg", tag: "bestSeller", popular: true, options: [],
+    price: 28, image: "images/menu/photo-1606313564200-e75d5e30476c.webp", tag: "bestSeller", popular: true, options: [],
   },
   {
     id: "cookie-skillet", category: "sweets", name: { ar: "كوكي سكيليت", en: "Cookie Skillet" },
     description: { ar: "كوكيز شوكولاتة طازج بالفرن في مقلاة صغيرة مع آيس كريم.", en: "A warm chocolate-chip cookie baked in its own skillet with ice cream." },
-    price: 31, image: "images/menu/photo-1499636136210-6f4ee915583e.jpg", tag: null, popular: false, options: [],
+    price: 31, image: "images/menu/photo-1499636136210-6f4ee915583e.webp", tag: null, popular: false, options: [],
   },
   {
     id: "soft-serve", category: "sweets", name: { ar: "سوفت سيرف", en: "Soft-Serve Cone" },
     description: { ar: "آيس كريم فانيلا ناعم، مع اختيارك من صوص الشوكولاتة أو الكراميل.", en: "Swirls of soft vanilla ice cream with your choice of chocolate or caramel sauce." },
-    price: 16, image: "images/menu/photo-1563805042-7684c019e1cb.jpg", tag: null, popular: false, options: [],
+    price: 16, image: "images/menu/photo-1563805042-7684c019e1cb.webp", tag: null, popular: false, options: [],
   },
   {
     id: "red-velvet", category: "sweets", name: { ar: "ريد فلفت بايت", en: "Red Velvet Bite" },
     description: { ar: "كعكة ريد فلفت بطبقات من كريمة الجبنة الناعمة.", en: "A tender red velvet cake layered with smooth cream-cheese frosting." },
-    price: 25, image: "images/menu/photo-1586788680434-30d324b2d46f.jpg", tag: null, popular: false, options: [],
+    price: 25, image: "images/menu/photo-1586788680434-30d324b2d46f.webp", tag: null, popular: false, options: [],
   },
 ];
 
@@ -995,7 +995,7 @@ document.addEventListener("error", (event) => {
   if (!(image instanceof HTMLImageElement) || image.dataset.fallback === "true") return;
   if (!image.matches(".dish-photo img, .modal-image img, .cover-slide img")) return;
   image.dataset.fallback = "true";
-  image.src = "./images/ordora-food-table.jpg";
+  image.src = "../images/ordora-food-table.jpg";
 }, true);
 
 updateStaticCopy();

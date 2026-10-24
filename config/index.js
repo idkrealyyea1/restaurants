@@ -82,10 +82,24 @@ function resolveDbConfig() {
     const url = process.env.DATABASE_URL;
     // Managed Postgres (Supabase / Neon / Render) mandates TLS; a local dev
     // database does not. The legacy DB_* path below is untouched.
-    const local = /@(localhost|127\.0\.0\.1|::1)([:/]|$)/.test(url) || /[?&]sslmode=disable/.test(url);
-    return local
-      ? { connectionString: url }
-      : { connectionString: url, ssl: { rejectUnauthorized: false } };
+    // sslmode is honoured: require/verify-ca/verify-full all mean "verify".
+    // sslmode=disable is honoured ONLY for localhost — a non-local URL
+    // asking to disable TLS is refused rather than silently downgraded.
+    const isLocal = /@(localhost|127\.0\.0\.1|::1)([:/]|$)/.test(url);
+    if (isLocal) return { connectionString: url };
+    if (/[?&]sslmode=disable/.test(url)) {
+      throw new Error('Refusing DATABASE_URL with sslmode=disable for a non-local host. Remove sslmode=disable or use ALLOW_INSECURE_DB_SSL=true for a legacy private-CA endpoint.');
+    }
+    // Default: verify the server certificate (sslmode=require/verify-ca/
+    // verify-full in the URL are honoured as "verify"). Only the explicit
+    // legacy override below disables verification, for a private-CA
+    // endpoint (e.g. the old Wasmer private CA) — never use it for a
+    // public managed Postgres host.
+    const insecure = process.env.ALLOW_INSECURE_DB_SSL === 'true';
+    return {
+      connectionString: url,
+      ssl: insecure ? { rejectUnauthorized: false } : { rejectUnauthorized: true },
+    };
   }
   if (process.env.DB_HOST && process.env.DB_NAME) {
     // Legacy Wasmer Edge managed Postgres: TLS is mandatory and the
@@ -155,6 +169,9 @@ const config = Object.freeze({
   rateLimits: {
     global: { windowMs: intEnv('RATE_LIMIT_WINDOW_MS', 15 * 60 * 1000), max: intEnv('RATE_LIMIT_MAX', 300) },
     auth: { windowMs: intEnv('AUTH_RATE_WINDOW_MS', 15 * 60 * 1000), max: intEnv('AUTH_RATE_MAX', 10) },
+    // Public signup creates a whole tenant, so it gets its own much
+    // tighter limiter than login: a real person signs up once.
+    signup: { windowMs: intEnv('SIGNUP_RATE_WINDOW_MS', 60 * 60 * 1000), max: intEnv('SIGNUP_RATE_MAX', 3) },
     order: { windowMs: intEnv('ORDER_RATE_WINDOW_MS', 60 * 60 * 1000), max: intEnv('ORDER_RATE_MAX', 20) },
     // Order tracking is polled every 15s by the customer page, so it needs a
     // much higher ceiling than login while still making code enumeration

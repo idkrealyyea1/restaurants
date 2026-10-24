@@ -76,6 +76,20 @@
       viewOrder: 'عرض الطلب',
       all: 'كل الأصناف',
       bestSeller: 'الأكثر طلبًا',
+      new: 'جديد',
+      spicy: 'حار',
+      chefPick: 'اختيار الشيف',
+      vegetarian: 'نباتي',
+      calories: '{n} سعرة حرارية',
+      prepTime: 'وقت التحضير: {n} دقيقة',
+      saveX: 'وفّر {amount}',
+      allergenLabel: 'قد يحتوي على مسببات حساسية',
+      todayHours: 'اليوم: {hours}',
+      closedToday: 'مغلق اليوم',
+      mapsLink: 'خرائط Google',
+      disclaimerTitle: 'ملاحظة غذائية',
+      disclaimerText: 'السعرات وأوقات التحضير المذكورة تقديرية وقد تختلف حسب طريقة التحضير. إذا كان لديك حساسية غذائية، اسأل المطعم قبل الطلب. يحتاج البالغون عادةً إلى نحو 2000 سعرة حرارية يوميًا، ويختلف الاحتياج حسب العمر والنشاط والحالة الصحية.',
+      reorderLabel: 'إعادة الطلب',
       noResultsTitle: 'لم نجد هذا الطبق',
       noResultsText: 'جرّب كلمة أخرى أو اختر قسمًا مختلفًا.',
       yourOrder: 'طلبك',
@@ -163,6 +177,20 @@
       viewOrder: 'View order',
       all: 'Everything',
       bestSeller: 'Guest favorite',
+      new: 'New',
+      spicy: 'Spicy',
+      chefPick: 'Chef’s pick',
+      vegetarian: 'Vegetarian',
+      calories: '{n} kcal',
+      prepTime: 'Prep time: {n} min',
+      saveX: 'Save {amount}',
+      allergenLabel: 'May contain allergens',
+      todayHours: 'Today: {hours}',
+      closedToday: 'Closed today',
+      mapsLink: 'Google Maps',
+      disclaimerTitle: 'Nutrition note',
+      disclaimerText: 'Calories and prep times shown are estimates and may vary by preparation. If you have a food allergy, ask the restaurant before ordering. Adults typically need around 2000 kcal a day; needs vary by age, activity, and health.',
+      reorderLabel: 'Reorder',
       noResultsTitle: 'No dishes found',
       noResultsText: 'Try a different search or browse another category.',
       yourOrder: 'Your order',
@@ -282,7 +310,7 @@
   }
 
   function currency() {
-    return (view && view.settings && view.settings.currency) || 'USD';
+    return (view && view.settings && view.settings.currency) || 'ILS';
   }
   function money(cents) {
     if (App.fmtMoney) {
@@ -350,8 +378,12 @@
         available: it.is_available !== false,
         preorder: !!it.is_preorder,
         preorderNote: it.preorder_note || '',
-        tag: it.is_popular ? 'bestSeller' : null,
+        tag: it.badge || (it.is_popular ? 'bestSeller' : null),
         popular: !!it.is_popular,
+        calories: it.calories === null || it.calories === undefined ? null : Number(it.calories),
+        prepMinutes: it.prep_minutes === null || it.prep_minutes === undefined ? null : Number(it.prep_minutes),
+        allergenNote: it.allergen_note || '',
+        oldPriceCents: it.old_price_cents === null || it.old_price_cents === undefined ? null : Number(it.old_price_cents),
         options: (it.options || []).map(function (g) {
           // Legacy groups only set is_required. Treat them as a one-pick
           // minimum so the checkout can never submit an empty required group.
@@ -625,8 +657,20 @@
       '<button class="dish-content" type="button" data-open-dish="' + escapeHTML(dish.id) + '"' +
       (available ? '' : ' disabled') + '>' +
       '<span class="dish-title-row"><span class="dish-name">' + escapeHTML(name) + '</span>' +
-      '<span class="dish-price">' + escapeHTML(money(dish.priceCents)) + '</span></span>' +
-      '<span class="dish-description">' + escapeHTML(localize(dish.description)) + '</span>' + preorder +
+      (dish.oldPriceCents && dish.oldPriceCents > dish.priceCents
+        ? '<span class="dish-price"><s class="dish-old-price">' + escapeHTML(money(dish.oldPriceCents)) + '</s> ' +
+          escapeHTML(money(dish.priceCents)) + ' <span class="dish-save">' +
+          escapeHTML(getCopy('saveX').replace('{amount}', money(dish.oldPriceCents - dish.priceCents))) + '</span></span>'
+        : '<span class="dish-price">' + escapeHTML(money(dish.priceCents)) + '</span>') + '</span>' +
+      '<span class="dish-description">' + escapeHTML(localize(dish.description)) + '</span>' +
+      ((dish.calories !== null && dish.calories !== undefined) || (dish.prepMinutes !== null && dish.prepMinutes !== undefined)
+        ? '<span class="dish-richness">' + [
+            (dish.calories !== null && dish.calories !== undefined) ? escapeHTML(getCopy('calories').replace('{n}', dish.calories)) : '',
+            (dish.prepMinutes !== null && dish.prepMinutes !== undefined) ? escapeHTML(getCopy('prepTime').replace('{n}', dish.prepMinutes)) : '',
+          ].filter(Boolean).join(' · ') + '</span>'
+        : '') +
+      (dish.allergenNote ? '<span class="dish-allergen">⚠ ' + escapeHTML(getCopy('allergenLabel')) + ': ' + escapeHTML(dish.allergenNote) + '</span>' : '') +
+      preorder +
       '<span class="dish-foot">' + note + '</span></button></article>';
   }
   function menuSkeletonMarkup() {
@@ -1002,6 +1046,11 @@
         '<div class="totals"><a class="checkout-demo" style="text-decoration:none"' +
         ' href="/track?code=' + encodeURIComponent(code) + '"><span>' + escapeHTML(getCopy('liveTrack')) + '</span>' +
         '<span>' + escapeHTML(code) + '</span></a>' +
+        (state.placedOrder.reorderItems
+          ? '<a class="checkout-demo co-ghost-btn" style="text-decoration:none"' +
+            ' href="/restaurant/' + encodeURIComponent(slug) + '?reorder=' + encodeURIComponent(state.placedOrder.reorderItems) +
+            '&reorderFrom=' + encodeURIComponent(code) + '"><span>' + escapeHTML(getCopy('reorderLabel')) + '</span><span></span></a>'
+          : '') +
         '<button class="checkout-demo co-ghost-btn" type="button" data-new-order>' +
         '<span>' + escapeHTML(getCopy('liveDone')) + '</span><span></span></button></div>';
     }
@@ -1237,6 +1286,9 @@
       });
       return { itemId: dish.id, quantity: line.quantity, selections: selections };
     });
+    // Snapshot the cart for the confirmation screen's reorder link: the
+    // checkout response carries no items, and the cart is cleared below.
+    var reorderItems = payloadItems.map(function (p) { return p.itemId + ':' + p.quantity; }).join(',');
     api.post('/api/restaurants/' + encodeURIComponent(slug) + '/orders', {
       customerName: draft.name,
       customerWhatsapp: draft.whatsapp,
@@ -1254,6 +1306,7 @@
       state.checkoutDraft = { name: '', whatsapp: '', address: '', notes: '' };
       saveCart();
       state.placedOrder = (data && data.order) || { code: '' };
+      state.placedOrder.reorderItems = reorderItems;
       renderCart();
     }).catch(function (err) {
       state.placing = false;
@@ -1358,6 +1411,37 @@
             : getCopy('deliveryFee') + ': ' + money(fee);
         }
       }
+    }
+    // Today's opening hours (visitor-local weekday; day 0 = Sunday matches
+    // the server's day_of_week). Hidden when the restaurant has no hours.
+    var hoursEl = $('#metaHours');
+    if (hoursEl) {
+      var todayRow = (view && view.hours) ? view.hours.find(function (h) { return h.day === new Date().getDay(); }) : null;
+      var hoursText = hoursEl.querySelector('span:last-child');
+      hoursEl.hidden = !todayRow;
+      if (todayRow && hoursText) {
+        hoursText.textContent = todayRow.closed
+          ? getCopy('closedToday')
+          : getCopy('todayHours').replace('{hours}', todayRow.opensAt + '–' + todayRow.closesAt);
+      }
+    }
+    // Google Maps link built only from the restaurant's real name/address.
+    var mapsEl = $('#metaMaps');
+    if (mapsEl) {
+      var query = [view ? view.name : '', settings.address || ''].filter(Boolean).join(' ').trim();
+      mapsEl.hidden = !query;
+      if (query) {
+        mapsEl.href = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(query);
+        var mapsText = mapsEl.querySelector('span:last-child');
+        if (mapsText) mapsText.textContent = getCopy('mapsLink');
+      }
+    }
+    // Promo banner: only when the restaurant set promo text.
+    var promoEl = $('#promoBanner');
+    if (promoEl) {
+      var promo = String(settings.promoText || '').trim();
+      promoEl.hidden = !promo;
+      if (promo) promoEl.textContent = promo;
     }
   }
   function updateStaticCopy() {

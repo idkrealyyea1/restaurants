@@ -1,0 +1,48 @@
+# Ordora
+
+> Ordora is a digital-menu and online-ordering platform for restaurants, cafes, dessert shops, and cake shops. A restaurant gets its own public menu page at a clean link (for example /restaurant/your-slug), which guests open from a link or QR code in a mobile browser — no app download, no guest account. Guests browse the menu, add items to a cart, and send an order for pickup or delivery; orders appear in the restaurant dashboard and can be shared through WhatsApp. Ordora charges one flat monthly subscription and takes no commission on orders.
+
+## What Ordora is
+
+- [Ordora home](https://ordora.pages.dev/): Digital menu and simpler ordering for independent restaurants.
+- [Features](https://ordora.pages.dev/features.html): Digital menu, QR code menu, online ordering, WhatsApp ordering, restaurant dashboard, order management, table bookings, analytics.
+- [How it works](https://ordora.pages.dev/how-it-works.html): Create the restaurant page, share the menu link or QR code, receive orders in the dashboard.
+- [Pricing](https://ordora.pages.dev/pricing.html): One monthly plan. The current price is shown on the pricing page; it was $4.99 per month when this file was written (October 2026).
+- [FAQ](https://ordora.pages.dev/faq.html): Common questions about apps, commissions, ordering, branding, and starting.
+- [Ordora vs MenuX](https://ordora.pages.dev/ordora-vs-menux.html): Honest, dated price comparison with MenuX.
+
+## Who it is for
+
+- [Restaurants](https://ordora.pages.dev/for-restaurants.html): A full digital menu with online ordering.
+- [Cafes](https://ordora.pages.dev/for-cafes.html): A QR menu and online ordering for cafes.
+- [Dessert shops](https://ordora.pages.dev/for-dessert-shops.html): An online menu for dessert shops.
+- [Cake shops](https://ordora.pages.dev/for-cake-shops.html): A digital menu with pre-orders for cake shops.
+
+## Key features
+
+- Public menu page per restaurant at /restaurant/<slug>, with logo, cover carousel, opening-hours badge, and item photos.
+- Menu management: categories, items, prices, images, availability, popular badge, and position ordering.
+- Item details a restaurant can set: calories, prep time, allergen note, badge (best seller, new, spicy, chef's pick, vegetarian), and a previous price shown struck through with a "save" amount.
+- Cart with pickup or delivery, delivery fee, and a free-delivery progress bar when the restaurant sets a free-delivery threshold.
+- Optional promo banner shown on the menu only when the restaurant sets promo text.
+- Table bookings with confirmation or cancellation, and a public order-tracking page by order code.
+- Share link and copy link per menu; a Google Maps link built from the restaurant's real name and address.
+- Dashboard analytics: orders, revenue, and top items.
+- No commission on orders. No card-payment gateway in this plan.
+
+## Pricing and how it differs from MenuX
+
+- Ordora: one plan, currently $4.99 per month, and online ordering is included in that plan.
+- MenuX: a free tier that is a display menu only (no ordering), a Basic tier at $9.9 per month without ordering, and ordering starting at the Excellence tier at $14.9 per month, as listed on MenuX's public pricing page when visited on 24 October 2026. MenuX prices can change; compare the live pricing pages before choosing.
+- Ordora does not include a booking app, a promotions app, multi-branch management, or multiple admin roles in this plan; MenuX offers some of those at its higher tiers.
+
+## Try it
+
+- [Demo menu](https://ordora.pages.dev/demo/): A sample restaurant menu to browse and try ordering from.
+- [Live restaurants](https://ordora.pages.dev/app/): The public directory of restaurants on Ordora.
+- [Contact](https://ordora.pages.dev/contact.html): Request your own restaurant page.
+- [Guides](https://ordora.pages.dev/resources/): Guides for digital menus, QR ordering, and online ordering.
+
+## Optional
+
+- [Full details](https://ordora.pages.dev/llms-full.txt): Longer factual summary of Ordora, including the setup steps and the limits of the current plan.

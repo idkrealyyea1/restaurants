@@ -162,7 +162,27 @@ function validateItemCreate(body = {}) {
       body.position === undefined || body.position === null || body.position === ''
         ? undefined
         : toIntInRange(body.position, 'position', { min: 0, max: 99999 }),
+    calories: body.calories === undefined || body.calories === null || body.calories === ''
+      ? null
+      : toIntInRange(body.calories, 'calories', { min: 0, max: 100000 }),
+    prepMinutes: body.prepMinutes === undefined || body.prepMinutes === null || body.prepMinutes === ''
+      ? null
+      : toIntInRange(body.prepMinutes, 'prepMinutes', { min: 0, max: 10080 }),
+    allergenNote: body.allergenNote === undefined ? null : cleanText(body.allergenNote, { field: 'allergenNote', max: 300 }) || null,
+    badge: body.badge === undefined || body.badge === null || body.badge === ''
+      ? null
+      : validateBadge(body.badge),
+    oldPriceCents: body.oldPriceCents === undefined || body.oldPriceCents === null || body.oldPriceCents === ''
+      ? null
+      : toIntInRange(body.oldPriceCents, 'oldPriceCents', { min: 0, max: 10000000 }),
   };
+}
+
+const ITEM_BADGES = ['bestSeller', 'new', 'spicy', 'chefPick', 'vegetarian'];
+function validateBadge(value) {
+  const badge = String(value).trim();
+  if (!ITEM_BADGES.includes(badge)) throw badRequest('badge is invalid', [{ field: 'badge' }]);
+  return badge;
 }
 
 function validateItemUpdate(body = {}) {
@@ -177,6 +197,11 @@ function validateItemUpdate(body = {}) {
   if (body.isPreorder !== undefined) patch.isPreorder = toBool(body.isPreorder, 'isPreorder');
   if (body.preorderNote !== undefined) patch.preorderNote = cleanText(body.preorderNote, { field: 'preorderNote', max: 300 }) || '';
   if (body.position !== undefined) patch.position = toIntInRange(body.position, 'position', { min: 0, max: 99999 });
+  if (body.calories !== undefined) patch.calories = body.calories === null || body.calories === '' ? null : toIntInRange(body.calories, 'calories', { min: 0, max: 100000 });
+  if (body.prepMinutes !== undefined) patch.prepMinutes = body.prepMinutes === null || body.prepMinutes === '' ? null : toIntInRange(body.prepMinutes, 'prepMinutes', { min: 0, max: 10080 });
+  if (body.allergenNote !== undefined) patch.allergenNote = cleanText(body.allergenNote, { field: 'allergenNote', max: 300 }) || null;
+  if (body.badge !== undefined) patch.badge = body.badge === null || body.badge === '' ? null : validateBadge(body.badge);
+  if (body.oldPriceCents !== undefined) patch.oldPriceCents = body.oldPriceCents === null || body.oldPriceCents === '' ? null : toIntInRange(body.oldPriceCents, 'oldPriceCents', { min: 0, max: 10000000 });
   if (Object.keys(patch).length === 0) throw badRequest('No updatable fields provided');
   return patch;
 }
@@ -222,6 +247,7 @@ function validateSettingsUpdate(body = {}) {
   if (body.ignoreOpeningHours !== undefined) patch.ignoreOpeningHours = toBool(body.ignoreOpeningHours, 'ignoreOpeningHours');
   if (body.deliveryEnabled !== undefined) patch.deliveryEnabled = toBool(body.deliveryEnabled, 'deliveryEnabled');
   if (body.storefrontLanguage !== undefined) patch.storefrontLanguage = validateLocale(body.storefrontLanguage);
+  if (body.promoText !== undefined) patch.promoText = cleanText(body.promoText, { field: 'promoText', max: 200 }) || '';
   if (Object.keys(patch).length === 0) throw badRequest('No updatable fields provided');
   return patch;
 }
@@ -578,6 +604,13 @@ function validateSignupType(value) {
 
 function validateSignup(body = {}) {
   if (typeof body !== 'object' || body === null) throw badRequest('Invalid signup data');
+  // Honeypot: the signup form renders a hidden "website" field that real
+  // users never fill. Any non-empty value is an automated submission.
+  for (const field of ['website', 'hp', 'companyWebsite']) {
+    if (typeof body[field] === 'string' && body[field].trim() !== '') {
+      throw badRequest('Invalid signup data');
+    }
+  }
   // Mass-assignment guard: plan/capability/tenant claims are never read.
   for (const f of ['plan', 'capabilities', 'restaurant_id', 'restaurantId', 'owner_id', 'ownerId', 'role']) {
     if (body[f] !== undefined) throw badRequest(`Field not allowed: ${f}`, [{ field: f }]);

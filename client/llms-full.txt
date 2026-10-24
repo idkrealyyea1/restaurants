@@ -1,0 +1,53 @@
+# Ordora — full summary
+
+> Ordora is a digital-menu and online-ordering platform for restaurants, cafes, dessert shops, and cake shops. This file states only what the platform does, what it costs, and what it does not do. It contains no customer names, testimonials, ratings, or usage numbers, because none are published here.
+
+## The product in one paragraph
+
+A restaurant gets its own public menu page at a clean link of the form /restaurant/<slug>. Guests open it from a link or a QR code in a mobile browser — no app download and no guest account. The page shows the restaurant's logo, cover images in a carousel, an open/closed badge computed from its opening hours, today's hours, and its menu: categories, items with photos, prices, badges, and optional calories, prep time, allergen notes, and a previous price shown struck through with a saving. Guests add items to a cart, choose pickup or delivery, enter a name and WhatsApp number, and send the order. The order appears in the restaurant dashboard, where staff confirm, prepare, and complete it, and it can be shared through WhatsApp. A guest can also track an order by its code and reorder the same items from the confirmation screen or the tracking page.
+
+## Pricing
+
+- One monthly plan. The current price is shown on https://ordora.pages.dev/pricing.html; it was $4.99 per month when this file was written (October 2026).
+- No commission is taken from a restaurant's orders.
+- A free trial is offered; the pricing page and signup page state its current terms.
+
+## Comparison with MenuX (as of 24 October 2026, re-check before deciding)
+
+- MenuX's free tier is a display menu only (15 items, 5 sections) with no ordering, no table management, and no removal of MenuX branding.
+- MenuX Basic is $9.9 per month (or $99 per year) and still does not include ordering.
+- MenuX Excellence is $14.9 per month (or $149 per year) and is the first tier with ordering through the menu and table management.
+- MenuX Comprehensive is $19.9 per month (or $199 per year) and adds a booking app, a promotions app, and removal of MenuX branding, with 10 admin accounts.
+- Ordora's single $4.99 per month plan includes ordering. Ordora does not match MenuX's booking app, promotions app, multi-admin accounts, or multi-language menu display in this plan.
+- Full comparison: https://ordora.pages.dev/ordora-vs-menux.html
+
+## Setup steps (HowTo)
+
+1. Create a restaurant account and choose a slug (the public link).
+2. Add categories and items with names, prices, and photos; set availability and opening hours.
+3. Set branding: logo, cover images, colors, currency, delivery fee, and an optional promo banner.
+4. Share the menu link or print the QR code for tables.
+5. Receive orders in the dashboard and update their status; share summaries through WhatsApp.
+
+## What Ordora does not do in this plan
+
+- No card-payment gateway: ordering is a menu-and-order flow and payment is arranged with the restaurant.
+- No booking app or promotions app as separate products (table bookings exist in the dashboard).
+- No multi-branch management and no multiple admin roles.
+- No transfer of orders to third-party delivery fleets.
+
+## Pages
+
+- Home: https://ordora.pages.dev/
+- Features: https://ordora.pages.dev/features.html
+- How it works: https://ordora.pages.dev/how-it-works.html
+- Pricing: https://ordora.pages.dev/pricing.html
+- FAQ: https://ordora.pages.dev/faq.html
+- Restaurants: https://ordora.pages.dev/for-restaurants.html
+- Cafes: https://ordora.pages.dev/for-cafes.html
+- Dessert shops: https://ordora.pages.dev/for-dessert-shops.html
+- Cake shops: https://ordora.pages.dev/for-cake-shops.html
+- Guides: https://ordora.pages.dev/resources/
+- Demo menu: https://ordora.pages.dev/demo/
+- Contact: https://ordora.pages.dev/contact.html
+- Sitemap: https://ordora.pages.dev/sitemap.xml

@@ -13,11 +13,22 @@ const v = require('../validators');
 
 const router = express.Router();
 
-/** Public homepage directory of all active restaurants. */
+/** Public homepage directory of active restaurants (paginated).
+ * Query: ?limit= (default 50, clamped 1..100) &offset= (default 0).
+ * hasMore is true when a full page was returned, i.e. another page
+ * may exist — clients should request offset+limit to find out. */
 router.get(
   '/restaurants',
   asyncHandler(async (req, res) => {
-    res.json({ restaurants: await restaurants.listPublicDirectory() });
+    const limit = Number.parseInt(req.query.limit, 10);
+    const offset = Number.parseInt(req.query.offset, 10);
+    const rows = await restaurants.listPublicDirectory({
+      limit: Number.isFinite(limit) ? limit : 50,
+      offset: Number.isFinite(offset) ? offset : 0,
+    });
+    const safeLimit = Math.min(100, Math.max(1, Number.isFinite(limit) ? limit : 50));
+    const safeOffset = Math.max(0, Number.isFinite(offset) ? offset : 0);
+    res.json({ restaurants: rows, limit: safeLimit, offset: safeOffset, hasMore: rows.length === safeLimit });
   })
 );
 

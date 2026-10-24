@@ -10,7 +10,12 @@
     <meta property="og:type" content="website" />
     <meta property="og:title" content="القائمة — Ordora" />
     <meta property="og:description" content="تصفّح قائمة المطعم وأرسل طلبك مباشرة." />
+    <meta property="og:url" content="https://ordora.pages.dev/" />
+    <meta property="og:image" content="/icons/icon-512.png" />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="القائمة — Ordora" />
+    <meta name="twitter:description" content="تصفّح قائمة المطعم وأرسل طلبك مباشرة." />
+    <meta name="twitter:image" content="/icons/icon-512.png" />
     <title>القائمة — Ordora</title>
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/icons/icon-192.png" />
@@ -92,7 +97,10 @@
                 <span class="meta-item" id="metaItems" hidden><span class="meta-emoji" aria-hidden="true">🍽️</span><span></span></span>
                 <span class="meta-item" id="metaAddress" hidden><span class="meta-emoji" aria-hidden="true">📍</span><span></span></span>
                 <span class="meta-item" id="metaDelivery" hidden><span class="meta-emoji" aria-hidden="true">🚚</span><span></span></span>
+                <span class="meta-item" id="metaHours" hidden><span class="meta-emoji" aria-hidden="true">🕐</span><span></span></span>
+                <a class="meta-item" id="metaMaps" href="#" target="_blank" rel="noopener" hidden><span class="meta-emoji" aria-hidden="true">🗺️</span><span>خرائط Google</span></a>
               </div>
+              <p class="promo-banner" id="promoBanner" hidden></p>
             </div>
           </div>
         </section>
@@ -119,6 +127,11 @@
           <aside class="cart-panel desktop-cart" id="desktopCart" aria-label="Your order"></aside>
         </div>
       </main>
+
+      <details class="nutrition-disclaimer" id="nutritionDisclaimer">
+        <summary data-copy="disclaimerTitle">ملاحظة غذائية</summary>
+        <p data-copy="disclaimerText">السعرات وأوقات التحضير المذكورة تقديرية وقد تختلف حسب طريقة التحضير. إذا كان لديك حساسية غذائية، اسأل المطعم قبل الطلب.</p>
+      </details>
 
       <footer class="footer-note" id="menuFooter">
         <img class="footer-logo" src="/images/ordora-mark.png" alt="Ordora" />

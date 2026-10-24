@@ -1,0 +1,160 @@
+# Ordora robots.txt — shipped with the Cloudflare Pages copy.
+# Purpose: replace Cloudflare's managed robots file (which can carry
+# Disallow rules for known AI crawlers) with an explicit allow for search
+# and AI-search bots on PUBLIC pages only.
+#
+# Bot groups, in deliberate order:
+#  - Search + AI-search bots: allowed on public pages. Private paths are
+#    disallowed inside EVERY group below, never via a blanket rule.
+#  - Training bots (GPTBot, ClaudeBot, Google-Extended, CCBot): allowed
+#    too, for maximum citation surface. This is a CHOICE, not an accident:
+#    if the owner later wants to opt out of training use, add a group with
+#    Disallow: / for exactly those four user-agents and nothing else.
+#  - No blanket "User-agent: * / Disallow: /" rule exists anywhere here.
+#
+# ALSO CHECK (user step, not done by shipping this file): Cloudflare
+# dashboard → AI / Bot settings and "Bot Preference Sync" can override
+# this file for AI crawlers. Verify AI bots are not blocked there, or this
+# file alone will not open the door.
+#
+# Private paths disallowed in every group (never indexed, never crawled):
+#   /admin/ /owner.html /login.html /signup.html (auth/dashboard flows are
+#   still reachable by humans; they are simply not search content)
+#   /api/ /app/ (the JS app shell; public restaurant pages live at
+#   /restaurant/<slug> and are reachable via the directory and links)
+#   /delivery.html /track.html (private order-tracking pages)
+
+User-agent: Googlebot
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /app/
+Disallow: /owner.html
+Disallow: /login.html
+Disallow: /signup.html
+Disallow: /delivery.html
+Disallow: /track.html
+
+User-agent: Bingbot
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /app/
+Disallow: /owner.html
+Disallow: /login.html
+Disallow: /signup.html
+Disallow: /delivery.html
+Disallow: /track.html
+
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /app/
+Disallow: /owner.html
+Disallow: /login.html
+Disallow: /signup.html
+Disallow: /delivery.html
+Disallow: /track.html
+
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /app/
+Disallow: /owner.html
+Disallow: /login.html
+Disallow: /signup.html
+Disallow: /delivery.html
+Disallow: /track.html
+
+User-agent: Claude-SearchBot
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /app/
+Disallow: /owner.html
+Disallow: /login.html
+Disallow: /signup.html
+Disallow: /delivery.html
+Disallow: /track.html
+
+User-agent: Claude-User
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /app/
+Disallow: /owner.html
+Disallow: /login.html
+Disallow: /signup.html
+Disallow: /delivery.html
+Disallow: /track.html
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /app/
+Disallow: /owner.html
+Disallow: /login.html
+Disallow: /signup.html
+Disallow: /delivery.html
+Disallow: /track.html
+
+# Training bots — allowed by choice (see header note).
+User-agent: GPTBot
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /app/
+Disallow: /owner.html
+Disallow: /login.html
+Disallow: /signup.html
+Disallow: /delivery.html
+Disallow: /track.html
+
+User-agent: ClaudeBot
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /app/
+Disallow: /owner.html
+Disallow: /login.html
+Disallow: /signup.html
+Disallow: /delivery.html
+Disallow: /track.html
+
+User-agent: Google-Extended
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /app/
+Disallow: /owner.html
+Disallow: /login.html
+Disallow: /signup.html
+Disallow: /delivery.html
+Disallow: /track.html
+
+User-agent: CCBot
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /app/
+Disallow: /owner.html
+Disallow: /login.html
+Disallow: /signup.html
+Disallow: /delivery.html
+Disallow: /track.html
+
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /app/
+Disallow: /owner.html
+Disallow: /login.html
+Disallow: /signup.html
+Disallow: /delivery.html
+Disallow: /track.html
+
+Sitemap: https://ordora.pages.dev/sitemap.xml

@@ -13,6 +13,7 @@ async function listOwned(restaurantId) {
     `SELECT m.id, m.category_id, c.name AS category_name, m.name, m.description,
             m.price_cents, m.image_path, m.is_available, m.is_popular, m.position,
             m.is_preorder, m.preorder_note,
+            m.calories, m.prep_minutes, m.allergen_note, m.badge, m.old_price_cents,
             m.created_at, m.updated_at
      FROM menu_items m
      JOIN categories c ON c.id = m.category_id
@@ -31,7 +32,8 @@ async function listOwned(restaurantId) {
 async function getOwned(restaurantId, itemId) {
   const { rows } = await query(
     `SELECT id, category_id, name, description, price_cents, image_path,
-            is_available, is_popular, position, is_preorder, preorder_note
+            is_available, is_popular, position, is_preorder, preorder_note,
+            calories, prep_minutes, allergen_note, badge, old_price_cents
      FROM menu_items WHERE id = $1 AND restaurant_id = $2`,
     [itemId, restaurantId]
   );
@@ -83,10 +85,10 @@ async function createOwned(restaurantId, data) {
     }
 
     const { rows } = await client.query(
-      `INSERT INTO menu_items (restaurant_id, category_id, name, description, price_cents, image_path, is_available, is_popular, position, is_preorder, preorder_note)
+      `INSERT INTO menu_items (restaurant_id, category_id, name, description, price_cents, image_path, is_available, is_popular, position, is_preorder, preorder_note, calories, prep_minutes, allergen_note, badge, old_price_cents)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8,
-               COALESCE($9, (SELECT COALESCE(MAX(position), 0) + 1 FROM menu_items WHERE restaurant_id = $1)), $10, $11)
-       RETURNING id, category_id, name, description, price_cents, image_path, is_available, is_popular, position, is_preorder, preorder_note`,
+               COALESCE($9, (SELECT COALESCE(MAX(position), 0) + 1 FROM menu_items WHERE restaurant_id = $1)), $10, $11, $12, $13, $14, $15, $16)
+       RETURNING id, category_id, name, description, price_cents, image_path, is_available, is_popular, position, is_preorder, preorder_note, calories, prep_minutes, allergen_note, badge, old_price_cents`,
       [
         restaurantId,
         data.categoryId,
@@ -99,6 +101,11 @@ async function createOwned(restaurantId, data) {
         data.position === undefined ? null : data.position,
         data.isPreorder === undefined ? false : data.isPreorder,
         data.preorderNote === undefined ? '' : data.preorderNote,
+        data.calories === undefined ? null : data.calories,
+        data.prepMinutes === undefined ? null : data.prepMinutes,
+        data.allergenNote === undefined ? null : data.allergenNote,
+        data.badge === undefined ? null : data.badge,
+        data.oldPriceCents === undefined ? null : data.oldPriceCents,
       ]
     );
     return rows[0];
@@ -122,6 +129,11 @@ async function updateOwned(restaurantId, itemId, patch) {
     position: 'position',
     isPreorder: 'is_preorder',
     preorderNote: 'preorder_note',
+    calories: 'calories',
+    prepMinutes: 'prep_minutes',
+    allergenNote: 'allergen_note',
+    badge: 'badge',
+    oldPriceCents: 'old_price_cents',
   };
   for (const [key, col] of Object.entries(map)) {
     if (patch[key] !== undefined) {
@@ -134,7 +146,7 @@ async function updateOwned(restaurantId, itemId, patch) {
   const { rows } = await query(
     `UPDATE menu_items SET ${sets.join(', ')}
      WHERE id = $1 AND restaurant_id = $2
-     RETURNING id, category_id, name, description, price_cents, image_path, is_available, is_popular, position, is_preorder, preorder_note`,
+     RETURNING id, category_id, name, description, price_cents, image_path, is_available, is_popular, position, is_preorder, preorder_note, calories, prep_minutes, allergen_note, badge, old_price_cents`,
     params
   );
   if (!rows[0]) throw notFound('Menu item not found');

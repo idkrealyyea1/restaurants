@@ -147,7 +147,25 @@
     btns.push(
       '<a class="btn btn-outline" href="' + esc(reorder) + '">' + esc(I.t('reorder')) + '</a>'
     );
+    // Share the restaurant menu (not the private order page): copy-link
+    // falls back to opening the menu when clipboard access is unavailable.
+    const menuUrl = location.origin + '/restaurant/' + encodeURIComponent(order.restaurant_slug);
+    btns.push(
+      '<button id="share-menu-btn" type="button" class="btn btn-outline">' + esc(I.t('share')) + '</button>'
+    );
     zone.innerHTML = '<div class="flex-between mt-2" style="gap:8px;justify-content:flex-end">' + btns.join('') + '</div>';
+    const shareBtn = document.getElementById('share-menu-btn');
+    if (shareBtn) {
+      shareBtn.addEventListener('click', async () => {
+        try {
+          if (navigator.share) { await navigator.share({ title: order.restaurant_name || 'Ordora', url: menuUrl }); return; }
+          await navigator.clipboard.writeText(menuUrl);
+          shareBtn.textContent = I.t('linkCopied');
+        } catch (_) {
+          location.href = menuUrl;
+        }
+      });
+    }
 
     const cancelBtn = document.getElementById('cancel-order-btn');
     if (cancelBtn) {

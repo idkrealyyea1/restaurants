@@ -15,6 +15,12 @@ const { pool } = require('../../server/db/pool');
 const DEMO_SLUG = 'burger-house';
 
 async function seedDemo() {
+  // Hard guard: the demo restaurant ships with a known slug and a
+  // well-known admin pattern. It must never run against production data,
+  // even if someone sets the password env var there by mistake.
+  if (String(process.env.NODE_ENV || '').toLowerCase() === 'production') {
+    throw new Error('Refusing to seed demo data in production (NODE_ENV=production).');
+  }
   const password = process.env.SEED_DEMO_PASSWORD;
   if (!password || password.length < 10) {
     throw new Error('SEED_DEMO_PASSWORD must be set (min 10 characters).');
