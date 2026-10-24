@@ -35,7 +35,10 @@
       if(offlineBar) offlineBar.classList.remove('show');
       if(retryBox) retryBox.classList.remove('show');
       if(isSlow() && offlineBar){
-        offlineBar.textContent = 'Slow connection — loading may take longer';
+        // Site is Arabic-first: use Arabic when the page language is Arabic.
+        offlineBar.textContent = (document.documentElement.lang || 'ar').startsWith('ar')
+          ? 'اتصال بطيء — قد يستغرق التحميل وقتًا أطول'
+          : 'Slow connection — loading may take longer';
         offlineBar.classList.add('show');
         setTimeout(()=> offlineBar.classList.remove('show'), 4000);
       }
