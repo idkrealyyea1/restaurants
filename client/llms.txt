@@ -46,3 +46,17 @@
 ## Optional
 
 - [Full details](https://ordora.pages.dev/llms-full.txt): Longer factual summary of Ordora, including the setup steps and the limits of the current plan.
+
+## ملخص بالعربية
+
+Ordora منصة منيو رقمي وطلب أونلاين للمطاعم والمقاهي ومحلات الحلويات والكيك، بواجهة عربية. يحصل كل مطعم على صفحة قائمة عامة برابط ورمز QR يفتحها الضيوف من المتصفح دون تحميل تطبيق، ويطلبون استلامًا أو توصيلًا، وتظهر الطلبات في لوحة تحكم المطعم مع ملخصات عبر واتساب. اشتراك شهري واحد ثابت: 4.99$ شهريًا، مع تجربة مجانية لمدة 7 أيام بدون بطاقة عند التسجيل، وبدون عمولة على الطلبات.
+
+- [الرئيسية](https://ordora.pages.dev/)
+- [المميزات](https://ordora.pages.dev/features.html)
+- [الأسعار](https://ordora.pages.dev/pricing.html)
+- [الأسئلة الشائعة](https://ordora.pages.dev/faq.html)
+- [عن Ordora](https://ordora.pages.dev/ordora-vs-menux.html)
+- [للمطاعم](https://ordora.pages.dev/for-restaurants.html)
+- [للمقاهي](https://ordora.pages.dev/for-cafes.html)
+- [لمحلات الحلويات](https://ordora.pages.dev/for-dessert-shops.html)
+- [لمحلات الكيك](https://ordora.pages.dev/for-cake-shops.html)

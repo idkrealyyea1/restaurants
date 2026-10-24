@@ -11,6 +11,11 @@
 #    if the owner later wants to opt out of training use, add a group with
 #    Disallow: / for exactly those four user-agents and nothing else.
 #  - No blanket "User-agent: * / Disallow: /" rule exists anywhere here.
+#  - Added 2026-10-24: Applebot (Apple search), meta-webindexer (Meta AI
+#    search), DuckAssistBot (DuckDuckGo AI answers) — same public-pages
+#    allow, same private-path disallows. These three are search/indexing
+#    tokens, not training tokens; training-vs-search remains a separate
+#    choice (see the training note above).
 #
 # ALSO CHECK (user step, not done by shipping this file): Cloudflare
 # dashboard → AI / Bot settings and "Bot Preference Sync" can override
@@ -136,6 +141,39 @@ Disallow: /delivery.html
 Disallow: /track.html
 
 User-agent: CCBot
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /app/
+Disallow: /owner.html
+Disallow: /login.html
+Disallow: /signup.html
+Disallow: /delivery.html
+Disallow: /track.html
+
+User-agent: Applebot
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /app/
+Disallow: /owner.html
+Disallow: /login.html
+Disallow: /signup.html
+Disallow: /delivery.html
+Disallow: /track.html
+
+User-agent: meta-webindexer
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /app/
+Disallow: /owner.html
+Disallow: /login.html
+Disallow: /signup.html
+Disallow: /delivery.html
+Disallow: /track.html
+
+User-agent: DuckAssistBot
 Allow: /
 Disallow: /admin/
 Disallow: /api/
