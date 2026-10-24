@@ -165,6 +165,9 @@
 
     const logo = document.getElementById('brand-logo');
     if (info.settings.logoPath) {
+      // A missing/broken logo file must never show as a broken-image icon
+      // in the top bar — hide it and fall back to the restaurant name.
+      logo.onerror = () => logo.classList.add('hidden');
       logo.src = info.settings.logoPath;
       logo.classList.remove('hidden');
     }

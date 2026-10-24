@@ -1156,3 +1156,19 @@ body { overflow-x: clip; }
   .grid-stats { grid-template-columns: 1fr; }
   .stat .stat-value { font-size: 1.3rem; overflow-wrap: anywhere; }
 }
+/* Admin top bar on narrow phones (Oct 2026): the bar holds logo +
+   name + open badge + spacer + logout + burger + the i18n-injected
+   language toggle — seven items that overflow ~360px in browsers with
+   weak flex-shrink support, pushing page content off the inline-start
+   edge (the clipped headings in the screenshots). On small screens the
+   language toggle is hidden (dashboard language can still be switched
+   on wider screens), the brand is capped so it ellipsises, and the
+   logo shrinks — so the bar always fits without clipping. */
+@media (max-width: 640px) {
+  .topbar-inner { min-width: 0; }
+  .topbar-inner #lang-toggle { display: none; }
+  .topbar .brand { max-width: 130px; }
+  .logo-sm { width: 32px; height: 32px; flex-shrink: 0; }
+  #open-badge { flex-shrink: 0; white-space: nowrap; }
+  #logout-btn { padding-inline: 10px; }
+}

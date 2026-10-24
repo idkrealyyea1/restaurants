@@ -250,9 +250,19 @@ img { display: block; max-width: 100%; }
 .final-section > p { max-width: 440px; margin: 16px auto 0; color: rgba(255,244,228,.8); font-size: 14px; line-height: 1.9; }
 .final-button { margin-top: 24px; color: var(--ink); background: var(--paper); box-shadow: 5px 5px 0 var(--ink); }
 .site-footer { padding: 35px 0; color: var(--paper); background: var(--ink); }
-.footer-inner { display: flex; align-items: end; justify-content: space-between; gap: 28px; }
-.brand-light { padding: 7px; background: #fffaf4; box-shadow: 4px 4px 0 var(--yellow); }
-.brand-light img { width: 126px; }
+/* Footer mobile fix (Oct 2026): the row never wrapped and its children
+   never shrank, so on narrow phones the logo block was pushed off the
+   inline-end edge and its lockup (which has opaque pixels right up to
+   its edges) was clipped. Now the row wraps, children can shrink, the
+   logo never exceeds its column, and on small screens the footer stacks. */
+.footer-inner { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 28px; }
+.footer-inner > div { min-width: 0; }
+.brand-light { padding: 7px; max-width: 100%; background: #fffaf4; box-shadow: 4px 4px 0 var(--yellow); }
+.brand-light img { width: 126px; max-width: 100%; height: auto; }
+@media (max-width: 640px) {
+  .footer-inner { flex-direction: column; align-items: flex-start; gap: 18px; }
+  .site-footer nav { gap: 14px; }
+}
 .footer-inner > div > p { margin: 13px 0 0; color: rgba(248,240,223,.5); font-size: 10px; line-height: 1.8; }
 .site-footer nav { display: flex; flex-wrap: wrap; align-items: center; gap: 23px; color: rgba(248,240,223,.63); font-size: 10px; font-weight: 800; }
 .site-footer nav span { color: rgba(248,240,223,.3); }
