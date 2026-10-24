@@ -53,6 +53,9 @@ img { display: block; max-width: 100%; }
 .mobile-actions { display: none; align-items: center; gap: 8px; }
 .menu-button { width: 42px; height: 42px; display: grid; place-items: center; border: 1px solid rgba(248,240,223,.2); border-radius: 50%; color: var(--paper); background: rgba(248,240,223,.1); cursor: pointer; }
 .mobile-menu { margin: 0 24px; padding: 12px; border: 1px solid rgba(31,52,57,.1); border-radius: 18px; color: var(--ink); background: var(--paper); box-shadow: 0 20px 50px rgba(0,0,0,.2); }
+/* Desktop nav returns above 760px (see the max-width:760px block below), so
+   a menu opened on a phone must never stay visible on a wide window. */
+@media (min-width: 761px) { .mobile-menu { display: none; } }
 .mobile-menu nav { display: grid; gap: 3px; }
 .mobile-menu a, .mobile-menu button { padding: 13px 14px; border: 0; border-radius: 11px; background: transparent; text-align: start; font-weight: 700; cursor: pointer; }
 .mobile-menu .mobile-demo { color: var(--paper); background: var(--coral); }

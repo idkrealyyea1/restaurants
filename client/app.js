@@ -391,6 +391,20 @@ function render() {
 }
 
 app.addEventListener("click", (event) => {
+  // Any link inside the mobile menu closes it. The menu element is removed
+  // directly (and the toggle button reset) instead of re-rendering, so the
+  // default anchor behaviour — hash scroll or page navigation — still runs.
+  const menuLink = event.target.closest(".mobile-menu a");
+  if (menuLink) {
+    mobileOpen = false;
+    document.querySelector(".mobile-menu")?.remove();
+    const menuButton = document.querySelector('[data-action="mobile-menu"]');
+    if (menuButton) {
+      menuButton.setAttribute("aria-expanded", "false");
+      menuButton.setAttribute("aria-label", copy[language].nav.menu);
+      menuButton.innerHTML = icon("menu", 21);
+    }
+  }
   const languageButton = event.target.closest("[data-language]");
   if (languageButton) {
     language = languageButton.dataset.language;
@@ -502,7 +516,21 @@ app.addEventListener("click", (event) => {
 
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape" && modalOpen) {
+    // Modals keep precedence: Escape closes the modal, not the menu.
     resetModalState();
+    render();
+  } else if (event.key === "Escape" && mobileOpen) {
+    mobileOpen = false;
+    render();
+  }
+});
+
+// If the menu was opened on a phone and the window is then widened past the
+// breakpoint where the desktop nav returns, close it for good (the CSS rule
+// below also hides it at desktop width, so it never lingers on screen).
+window.addEventListener("resize", () => {
+  if (window.innerWidth > 760 && mobileOpen) {
+    mobileOpen = false;
     render();
   }
 });

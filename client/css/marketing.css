@@ -33,6 +33,7 @@
 .mk-burger span::after { position: absolute; top: 6px; left: 0; }
 .mk-drawer { display: none; position: fixed; inset: 68px 0 0; background: var(--surface); border-top: 1px solid var(--border); z-index: 44; padding: 18px; overflow: auto; }
 .mk-drawer.open { display: block; }
+.mk-drawer-close { display: block; margin-inline-start: auto; width: 40px; height: 40px; border: 0; border-radius: 50%; background: var(--ink); color: #f8f0df; font-size: 1rem; line-height: 1; cursor: pointer; }
 .mk-drawer a { display: block; padding: 14px 6px; border-bottom: 1px solid var(--border); font-weight: 700; font-family: var(--font-ui); color: var(--ink); }
 
 /* ---------- hero ---------- */

@@ -10,12 +10,24 @@
   const burger=document.getElementById('mk-burger');
   const drawer=document.getElementById('mk-drawer');
   if(burger && drawer){
+    function closeDrawer(){
+      drawer.classList.remove('open');
+      burger.setAttribute('aria-expanded','false');
+    }
     burger.addEventListener('click',()=>{
       const open=drawer.classList.toggle('open');
       burger.setAttribute('aria-expanded', open ? 'true':'false');
     });
     drawer.addEventListener('click',(e)=>{
-      if(e.target.tagName==='A') drawer.classList.remove('open');
+      // Links and the close button close, and so does a tap on the
+      // drawer's empty area (the tap target is the drawer itself).
+      if(e.target.closest('a,button') || e.target===drawer) closeDrawer();
+    });
+    document.addEventListener('keydown',(e)=>{
+      if(e.key==='Escape' && drawer.classList.contains('open')) closeDrawer();
+    });
+    window.addEventListener('resize',()=>{
+      if(window.innerWidth>=900) closeDrawer();
     });
   }
   // One pricing fetch shared by every price label on the page.
