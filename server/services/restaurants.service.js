@@ -334,7 +334,7 @@ async function platformOverview() {  const res = await query(
     `SELECT
        (SELECT COUNT(*)::int FROM restaurants) AS restaurants_total,
        (SELECT COUNT(*)::int FROM restaurants WHERE is_active) AS restaurants_active,
-       (SELECT COUNT(*)::int FROM orders WHERE created_at >= date_trunc('day', now())) AS orders_today,
+       (SELECT COUNT(*)::int FROM orders WHERE archived_at IS NULL AND created_at >= date_trunc('day', now())) AS orders_today,
        (SELECT COALESCE(SUM(total_cents), 0)::bigint FROM orders
           WHERE created_at >= date_trunc('day', now()) AND ${REVENUE_SQL}) AS revenue_today_cents`
   );

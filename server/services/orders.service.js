@@ -517,12 +517,16 @@ async function archiveOrder(orderId, restaurantId) {
 /* ------------------------------------------------------------------ */
 
 async function dashboardCounts(restaurantId, timezone) {
+  // Order counts exclude archived orders so they match the Orders list
+  // (which filters archived_at IS NULL). Revenue intentionally still
+  // counts archived completed orders: archiving hides an order from the
+  // lists but its money remains counted (see archiveOrder above).
   const res = await query(
     `SELECT
-       COUNT(*) FILTER (WHERE (created_at AT TIME ZONE $2)::date = (now() AT TIME ZONE $2)::date)::int AS orders_today,
-       COUNT(*) FILTER (WHERE status = 'pending')::int AS pending,
-       COUNT(*) FILTER (WHERE status IN ('confirmed','preparing','ready','out_for_delivery'))::int AS active_orders,
-       COUNT(*) FILTER (WHERE status = 'completed' AND (updated_at AT TIME ZONE $2)::date = (now() AT TIME ZONE $2)::date)::int AS completed_today,
+       COUNT(*) FILTER (WHERE archived_at IS NULL AND (created_at AT TIME ZONE $2)::date = (now() AT TIME ZONE $2)::date)::int AS orders_today,
+       COUNT(*) FILTER (WHERE archived_at IS NULL AND status = 'pending')::int AS pending,
+       COUNT(*) FILTER (WHERE archived_at IS NULL AND status IN ('confirmed','preparing','ready','out_for_delivery'))::int AS active_orders,
+       COUNT(*) FILTER (WHERE archived_at IS NULL AND status = 'completed' AND (updated_at AT TIME ZONE $2)::date = (now() AT TIME ZONE $2)::date)::int AS completed_today,
        COALESCE(SUM(total_cents) FILTER (
          WHERE ${REVENUE_SQL} AND (created_at AT TIME ZONE $2)::date = (now() AT TIME ZONE $2)::date
        ), 0)::bigint AS revenue_today_cents
