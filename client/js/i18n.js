@@ -1740,6 +1740,14 @@
   function setLang(next) {
     lang = next === 'en' ? 'en' : 'ar';
     try { localStorage.setItem(STORE_KEY, lang); } catch (_) { /* ignore */ }
+    // Keep the language in the URL (?lang=) so the choice is shareable and
+    // linkable, mirroring the homepage. No reload: the page is re-applied
+    // in place, and a fresh load with ?lang= already picks it up above.
+    try {
+      const url = new URL(location.href);
+      url.searchParams.set('lang', lang);
+      history.replaceState(null, '', url.toString());
+    } catch (_) { /* ignore */ }
     try {
       fetch('/api/auth/language', {
         method: 'PUT',

@@ -2,14 +2,22 @@
 <!-- Ordora sitemap — canonical absolute URLs only.
      Excluded on purpose: /admin/, /owner.html, /login.html, /signup.html,
      /app/ (JS app shell), /api/*, /track.html, /delivery.html, and any
-     parameterised URL (?lang=, ?reorder=, ?code=). lastmod is the date
-     each page was last changed in this repo; update it when a page changes.
+     parameterised URL (?lang=, ?reorder=, ?code=) — EXCEPT the homepage
+     English alternate /?lang=en, which is listed with xhtml hreflang
+     below because the homepage is the one page with true, full English
+     content (its JS copy renders entirely in English for ?lang=en).
+     Marketing pages are NOT given hreflang alternates on purpose: their
+     bodies are static Arabic and only nav/footer links translate, so a
+     ?lang=en alternate would point crawlers at an Arabic page.
+     lastmod is the date each page was last changed in this repo; update
+     it when a page changes.
      Restaurant storefronts (/restaurant?r=<slug>) are intentionally NOT
      listed here: they are created by restaurants at any time, so a static
      list would go stale. They are reachable from the public directory and
      from each restaurant's own share link. -->
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://ordora.pages.dev/</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url><loc>https://ordora.pages.dev/</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>1.0</priority><xhtml:link rel="alternate" hreflang="ar" href="https://ordora.pages.dev/"/><xhtml:link rel="alternate" hreflang="en" href="https://ordora.pages.dev/?lang=en"/><xhtml:link rel="alternate" hreflang="x-default" href="https://ordora.pages.dev/"/></url>
+  <url><loc>https://ordora.pages.dev/?lang=en</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>0.9</priority><xhtml:link rel="alternate" hreflang="ar" href="https://ordora.pages.dev/"/><xhtml:link rel="alternate" hreflang="en" href="https://ordora.pages.dev/?lang=en"/><xhtml:link rel="alternate" hreflang="x-default" href="https://ordora.pages.dev/"/></url>
   <url><loc>https://ordora.pages.dev/features.html</loc><lastmod>2026-10-24</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://ordora.pages.dev/how-it-works.html</loc><lastmod>2026-10-24</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://ordora.pages.dev/pricing.html</loc><lastmod>2026-10-24</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
