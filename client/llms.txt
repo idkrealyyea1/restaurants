@@ -9,7 +9,7 @@
 - [How it works](https://ordora.pages.dev/how-it-works.html): Create the restaurant page, share the menu link or QR code, receive orders in the dashboard.
 - [Pricing](https://ordora.pages.dev/pricing.html): One monthly plan. The current price is shown on the pricing page; it was $4.99 per month when this file was written (October 2026).
 - [FAQ](https://ordora.pages.dev/faq.html): Common questions about apps, commissions, ordering, branding, and starting.
-- [Ordora vs MenuX](https://ordora.pages.dev/ordora-vs-menux.html): Honest, dated price comparison with MenuX.
+- [About Ordora](https://ordora.pages.dev/ordora-vs-menux.html): What Ordora is, its design, and its benefits.
 
 ## Who it is for
 
@@ -30,11 +30,11 @@
 - Dashboard analytics: orders, revenue, and top items.
 - No commission on orders. No card-payment gateway in this plan.
 
-## Pricing and how it differs from MenuX
+## Pricing
 
-- Ordora: one plan, currently $4.99 per month, and online ordering is included in that plan.
-- MenuX: a free tier that is a display menu only (no ordering), a Basic tier at $9.9 per month without ordering, and ordering starting at the Excellence tier at $14.9 per month, as listed on MenuX's public pricing page when visited on 24 October 2026. MenuX prices can change; compare the live pricing pages before choosing.
-- Ordora does not include a booking app, a promotions app, multi-branch management, or multiple admin roles in this plan; MenuX offers some of those at its higher tiers.
+- Ordora: one plan, currently $4.99 per month, and online ordering is included in that plan. No commission is taken from a restaurant's orders.
+- A free trial is offered; the pricing page and signup page state its current terms (7 days, no card at signup, when this file was written in October 2026).
+- Ordora does not include a booking app, a promotions app, multi-branch management, or multiple admin roles in this plan.
 
 ## Try it
 

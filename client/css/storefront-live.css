@@ -563,7 +563,7 @@
   }
 }
 
-/* ------------------- MenuX-style richness (optional fields) ----------- */
+/* ------------------- Item richness (optional fields) ----------- */
 /* Only rendered when the restaurant set the field, so existing menus
    look exactly as before. */
 .dish-old-price {

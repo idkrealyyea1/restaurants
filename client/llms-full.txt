@@ -12,14 +12,12 @@ A restaurant gets its own public menu page at a clean link of the form /restaura
 - No commission is taken from a restaurant's orders.
 - A free trial is offered; the pricing page and signup page state its current terms.
 
-## Comparison with MenuX (as of 24 October 2026, re-check before deciding)
+## What this plan does not include
 
-- MenuX's free tier is a display menu only (15 items, 5 sections) with no ordering, no table management, and no removal of MenuX branding.
-- MenuX Basic is $9.9 per month (or $99 per year) and still does not include ordering.
-- MenuX Excellence is $14.9 per month (or $149 per year) and is the first tier with ordering through the menu and table management.
-- MenuX Comprehensive is $19.9 per month (or $199 per year) and adds a booking app, a promotions app, and removal of MenuX branding, with 10 admin accounts.
-- Ordora's single $4.99 per month plan includes ordering. Ordora does not match MenuX's booking app, promotions app, multi-admin accounts, or multi-language menu display in this plan.
-- Full comparison: https://ordora.pages.dev/ordora-vs-menux.html
+- No card-payment gateway in this plan: payment is arranged with the restaurant as it is today.
+- No standalone booking app and no standalone promotions app; table bookings are managed from the same restaurant dashboard.
+- No multi-branch management and no multiple admin roles in this plan: one restaurant, one page, one monthly plan.
+- More about the product: https://ordora.pages.dev/ordora-vs-menux.html
 
 ## Setup steps (HowTo)
 

@@ -13,7 +13,7 @@ const copy = {
     ] },
     dashboard: { eyebrow: "كل طلب، بتفاصيله", titleA: "الطلب يصل", titleB: "جاهزًا للتحضير.", body: "يرتب Ordora الأصناف والكميات والملاحظات في ملخص واحد، ويعرض الطلبات في لوحة مطعمك لتعرف ما يحتاجه فريقك.", chips: ["ملخص واضح", "متابعة الطلبات", "الأكثر طلبًا"], label: "لوحة الطلبات", date: "معاينة لوحة المطعم", today: "طلبات اليوم", yesterday: "خلال هذا اليوم", top: "الأكثر طلبًا", item: "برجر سموكي", count: "١٨ طلب", fresh: "جديد", done: "مكتمل", orders: ["#1042  برجر سموكي × 2", "#1041  ليمون ونعناع × 1", "#1040  وجبة بَسْطة × 3"] },
     pricing: { eyebrow: "ببساطة", titleA: "خطة واحدة.", titleB: "سعر واضح.", body: "ابدأ بمنيو رقمي وسلة طلب ومتابعة للطلبات — تجربة مجانية لمدة 7 أيام، ثم اشتراك شهري واضح 4.99 US$ شهريًا، ومن دون عمولة على الطلبات.", label: "Ordora للمطاعم", month: "/ شهريًا", features: ["صفحة مطعم بهويتك", "رمز QR قابل للطباعة", "سلة طلب أونلاين", "ملخص جاهز لـ WhatsApp", "لوحة لمتابعة الطلبات", "بدون عمولة"], request: "ابدأ بمنيو مطعمك" },
-    live: { eyebrow: "مطاعم حيّة على Ordora", title: "قوائم حقيقية، تعمل الآن.", viewAll: "عرض كل المطاعم", compare: "قارن Ordora مع MenuX" },
+    live: { eyebrow: "مطاعم حيّة على Ordora", title: "قوائم حقيقية، تعمل الآن.", viewAll: "عرض كل المطاعم", compare: "عن Ordora" },
     faq: { eyebrow: "قبل أن تبدأ", title: "إجابات قبل الاشتراك.", items: [
       ["هل أحتاج إلى تطبيق خاص؟", "لا. يفتح Ordora في متصفح جوال الضيف مباشرة، من دون تحميل تطبيق أو إنشاء حساب."],
       ["هل يأخذ Ordora عمولة على الطلبات؟", "لا. الاشتراك الشهري ثابت، ولا توجد عمولة على طلبات مطعمك."],
@@ -78,7 +78,7 @@ const copy = {
     ] },
     dashboard: { eyebrow: "Every order, in detail", titleA: "Orders arrive", titleB: "ready for your team.", body: "Ordora groups dishes, quantities, and notes into one clear summary, then shows incoming orders in your restaurant dashboard.", chips: ["Clear order summary", "Order tracking", "Popular dishes"], label: "Restaurant orders", date: "Dashboard preview", today: "Today’s orders", yesterday: "Since opening", top: "Most ordered", item: "Smoky burger", count: "18 orders", fresh: "New", done: "Complete", orders: ["#1042  Smoky burger × 2", "#1041  Lemon mint × 1", "#1040  Basta meal × 3"] },
     pricing: { eyebrow: "Simple", titleA: "One plan.", titleB: "One clear price.", body: "Get a branded menu, an online order cart, and a place to follow orders—7-day free trial, then one monthly price of 4.99 US$ and no order commissions.", label: "Ordora for restaurants", month: "/ month", features: ["Restaurant page in your brand", "Printable QR code", "Online order cart", "WhatsApp-ready summary", "Order dashboard", "No commission"], request: "Start your restaurant menu" },
-    live: { eyebrow: "Live on Ordora", title: "Real menus, working now.", viewAll: "View all restaurants", compare: "Compare Ordora with MenuX" },
+    live: { eyebrow: "Live on Ordora", title: "Real menus, working now.", viewAll: "View all restaurants", compare: "About Ordora" },
     faq: { eyebrow: "Before you start", title: "Answers before you sign up.", items: [
       ["Do my guests need an app?", "No. Ordora opens in the guest’s mobile browser. There’s nothing to download and no account to create."],
       ["Does Ordora charge a commission?", "No. The monthly subscription is flat, with no commission on your restaurant orders."],
