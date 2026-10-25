@@ -103,7 +103,7 @@
         '<p class="muted small">' + esc(I.t('su_passwordHint')) + '</p>', 'f-password') +
       // Honeypot: hidden from sighted users and screen readers; bots that
       // fill every field trip the server-side check in validateSignup.
-      '<div aria-hidden="true" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden">' +
+      '<div aria-hidden="true" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0">' +
       '<label for="f-website">Website</label>' +
       '<input id="f-website" name="website" type="text" tabindex="-1" autocomplete="off"></div>';
   }
