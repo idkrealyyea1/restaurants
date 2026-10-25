@@ -147,6 +147,8 @@
       liveShowCode: 'رمز طلبك:',
       liveTrack: 'تتبع طلبي',
       liveDone: 'تمام',
+      liveWhatsappOrder: 'أرسل نسخة الطلب عبر واتساب',
+      liveWhatsappOrderNote: 'تم إرسال طلبك إلى المطعم وظهر في لوحة طلباته. وفتحنا لك واتساب صاحب المطعم بنسخة جاهزة من طلبك — اضغط "إرسال" في واتساب لإتمامها. إذا لم تفتح نافذة واتساب، استخدم الزر أدناه.',
       liveEnterNameAndWa: 'الرجاء إدخال الاسم',
       liveEnterName: 'الرجاء إدخال الاسم',
       liveWhatsappInvalid: 'رقم الواتساب يجب أن يحتوي على 8 إلى 15 رقمًا، أو اتركه فارغًا',
@@ -251,6 +253,8 @@
       liveShowCode: 'Show this code at pickup:',
       liveTrack: 'Track my order',
       liveDone: 'Done',
+      liveWhatsappOrder: 'Send a copy of the order on WhatsApp',
+      liveWhatsappOrderNote: 'Your order was sent to the restaurant and appears in its dashboard. We also opened the restaurant owner’s WhatsApp with a ready copy of your order — tap Send in WhatsApp to complete it. If WhatsApp did not open, use the button below.',
       liveEnterNameAndWa: 'Please enter your name',
       liveEnterName: 'Please enter your name',
       liveWhatsappInvalid: 'WhatsApp number must contain 8 to 15 digits, or leave it empty',
@@ -1051,8 +1055,15 @@
         '<p>' + escapeHTML(getCopy('liveShowCode')) + '</p>' +
         (state.placedOrder.noWhatsapp
           ? '<p class="muted small">' + escapeHTML(getCopy('liveNoWhatsappNote')) + '</p>'
+          : '') +
+        (state.placedOrder.whatsappUrl
+          ? '<p class="muted small">' + escapeHTML(getCopy('liveWhatsappOrderNote')) + '</p>'
           : '') + '</div>' +
-        '<div class="totals"><a class="checkout-demo" style="text-decoration:none"' +
+        '<div class="totals">' +
+        (state.placedOrder.whatsappUrl
+          ? '<a class="checkout-demo" style="text-decoration:none" href="' + escapeHTML(state.placedOrder.whatsappUrl) + '" target="_blank" rel="noopener"><span>' + escapeHTML(getCopy('liveWhatsappOrder')) + '</span><span></span></a>'
+          : '') +
+        '<a class="checkout-demo" style="text-decoration:none"' +
         ' href="/track?code=' + encodeURIComponent(code) + '"><span>' + escapeHTML(getCopy('liveTrack')) + '</span>' +
         '<span>' + escapeHTML(code) + '</span></a>' +
         (state.placedOrder.reorderItems
@@ -1254,6 +1265,57 @@
     };
     return state.checkoutDraft;
   }
+  // WhatsApp handoff for a placed order (ADDITION ONLY): the order has
+  // already been saved to the site/dashboard before this runs, so this
+  // never replaces the site order or its notification. It only opens the
+  // restaurant owner's WhatsApp (from settings.whatsapp, digits as stored,
+  // same convention as the existing wa.me links) with a ready order text.
+  // WhatsApp click-to-chat cannot send by itself: the customer still taps
+  // Send inside WhatsApp, which is why the confirmation screen also keeps
+  // the same link as a button in case the browser blocked the new tab.
+  // Returns '' when the restaurant has no usable owner WhatsApp number.
+  function ownerWhatsappOrderUrl(code, order) {
+    var ownerWa = view && view.settings ? String(view.settings.whatsapp || '').replace(/[^0-9]/g, '') : '';
+    if (!ownerWa || ownerWa.length < 8 || ownerWa.length > 15) return '';
+    var isAr = state.language === 'ar';
+    var lines = order.lines.map(function (line) {
+      var text = line.quantity + ' × ' + line.name;
+      if (line.options) text += ' (' + line.options + ')';
+      return '- ' + text + ' — ' + money(line.unitPrice * line.quantity);
+    }).join('\n');
+    var parts = [];
+    if (isAr) {
+      parts.push('طلب جديد — ' + (view ? view.name : ''));
+      parts.push('رمز الطلب: ' + code);
+      parts.push('الاسم: ' + order.name);
+      parts.push('النوع: ' + (order.fulfillment === 'delivery' ? getCopy('delivery') : getCopy('pickup')));
+      if (order.address) parts.push('العنوان: ' + order.address);
+      parts.push('');
+      parts.push('الأصناف:');
+      parts.push(lines);
+      parts.push('');
+      parts.push('المجموع: ' + money(order.subtotal));
+      if (order.fee) parts.push('رسوم التوصيل: ' + money(order.fee));
+      parts.push('الإجمالي: ' + money(order.subtotal + order.fee));
+      if (order.notes) parts.push('ملاحظات: ' + order.notes);
+    } else {
+      parts.push('New order — ' + (view ? view.name : ''));
+      parts.push('Order code: ' + code);
+      parts.push('Name: ' + order.name);
+      parts.push('Type: ' + (order.fulfillment === 'delivery' ? getCopy('delivery') : getCopy('pickup')));
+      if (order.address) parts.push('Address: ' + order.address);
+      parts.push('');
+      parts.push('Items:');
+      parts.push(lines);
+      parts.push('');
+      parts.push('Subtotal: ' + money(order.subtotal));
+      if (order.fee) parts.push('Delivery fee: ' + money(order.fee));
+      parts.push('Total: ' + money(order.subtotal + order.fee));
+      if (order.notes) parts.push('Notes: ' + order.notes);
+    }
+    parts.push((isAr ? 'تتبع الطلب: ' : 'Track order: ') + location.origin + '/track?code=' + encodeURIComponent(code));
+    return 'https://wa.me/' + ownerWa + '?text=' + encodeURIComponent(parts.join('\n'));
+  }
   function handleCheckout() {
     if (orderingBlocked() || state.placing || cartCount() === 0) return;
     if (!state.checkoutOpen) {
@@ -1316,6 +1378,30 @@
       state.placing = false;
       state.checkoutOpen = false;
       state.submissionKey = null;
+      // Snapshot the order for the owner-WhatsApp handoff BEFORE the cart
+      // is cleared. The site order above has already succeeded, so this
+      // snapshot is only used to prefill WhatsApp — it changes nothing
+      // about the saved order or its dashboard notification.
+      var waSubtotal = cartSubtotalCents();
+      var waOrder = {
+        name: draft.name,
+        fulfillment: state.fulfillment,
+        address: draft.address,
+        notes: draft.notes,
+        subtotal: waSubtotal,
+        fee: deliveryFeeCents(waSubtotal),
+        lines: state.cart.filter(function (line) { return getDish(line.dishId); }).map(function (line) {
+          var dish = getDish(line.dishId);
+          return {
+            name: localize(dish.name),
+            options: lineOptionText(dish, line.selections),
+            quantity: line.quantity,
+            unitPrice: selectedTotalCents(dish, line.selections),
+          };
+        }),
+      };
+      var waCode = (data && data.order && data.order.code) || '';
+      var waUrl = waCode ? ownerWhatsappOrderUrl(waCode, waOrder) : '';
       state.cart = [];
       state.checkoutDraft = { name: '', whatsapp: '', address: '', notes: '' };
       saveCart();
@@ -1324,7 +1410,14 @@
       // can stress the tracking code (no WhatsApp updates can be sent).
       state.placedOrder.noWhatsapp = !draft.whatsapp;
       state.placedOrder.reorderItems = reorderItems;
+      state.placedOrder.whatsappUrl = waUrl;
       renderCart();
+      // Auto-open the owner's WhatsApp chat with the ready order text.
+      // Browsers may block this new tab (the order was saved async), so
+      // the confirmation screen keeps the identical link as a button.
+      if (waUrl) {
+        try { window.open(waUrl, '_blank', 'noopener'); } catch (_) { /* fallback button covers this */ }
+      }
     }).catch(function (err) {
       state.placing = false;
       renderCart();
