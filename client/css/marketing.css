@@ -151,6 +151,10 @@
 
 /* pricing */
 .mk-price-card { border-radius: 28px; background: var(--ink); padding: 32px; box-shadow: 9px 10px 0 var(--coral); }
+/* Pricing plan extra features: hidden until the visitor taps "show all". */
+.mk-price-card .mk-feature-more { display: none; }
+.mk-price-card.mk-expanded .mk-feature-more { display: list-item; }
+#mk-features-toggle { margin-bottom: 14px; }
 @media (min-width: 640px){ .mk-price-card { padding: 40px; } }
 .mk-price-amount { font-family: var(--font-display); font-weight: 800; font-size: 3.6rem; color: #f8f0df; line-height: 1; }
 .mk-price-amount sup { font-size: .9rem; font-weight: 600; color: rgba(248,240,223,.5); }

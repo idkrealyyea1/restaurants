@@ -109,14 +109,23 @@
           <div class="mk-kicker">Ordora</div>
           <div class="mk-price-amount"><span id="mk-price">—</span><sup id="mk-price-period"></sup></div>
           <p class="muted small">تُدفع شهريًا. احتفظ بـ 100% من طلباتك — بدون عمولة، بدون رسوم خفية.</p>
-          <ul style="text-align:right; max-width:420px; margin:14px auto; padding-right:18px; line-height:1.7">
+          <ul id="mk-plan-features" style="text-align:right; max-width:420px; margin:14px auto; padding-right:18px; line-height:1.7">
             <li>منيو رقمي ورمز QR</li>
             <li>طلب أونلاين + تدفق واتساب</li>
             <li>لوحة تحكم: القائمة، الطلبات، الحجوزات، التحليلات</li>
             <li>هويتك: الشعار، الغلاف، الألوان، العملة</li>
             <li>مولّد QR ورابط مشاركة</li>
             <li>تجربة مجانية لمدة 7 أيام — بدون التزام</li>
+            <li class="mk-feature-more">ساعات العمل وشارة "مفتوح الآن" على صفحة المطعم</li>
+            <li class="mk-feature-more">بانر عروض ترويجية تتحكم فيه من لوحة التحكم</li>
+            <li class="mk-feature-more">تتبع الطلب برمز خاص + إلغاء ضمن المهلة</li>
+            <li class="mk-feature-more">إعادة طلب سابق بضغطة واحدة من صفحة التأكيد</li>
+            <li class="mk-feature-more">تفاصيل الأصناف: سعرات، وقت تحضير، تنبيه حساسية، شارة، وسعر قبل الخصم</li>
+            <li class="mk-feature-more">ملاحظات على الطلب + واتساب اختياري عند الدفع (الاسم فقط مطلوب)</li>
+            <li class="mk-feature-more">مشاركة رابط المتجر ونسخ الرابط + رابط خرائط للوصول للمطعم</li>
+            <li class="mk-feature-more">طلب مسبق للأصناف مع ملاحظة وقت التحضير</li>
           </ul>
+          <button type="button" id="mk-features-toggle" class="btn btn-outline" aria-expanded="false" aria-controls="mk-plan-features" hidden>عرض كل المميزات</button>
           <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap">
             <a class="btn" href="/contact.html">أدخل مطعمك أونلاين</a>
             <a class="btn btn-outline" href="/app/">جرّب التجريبي</a>
@@ -180,5 +189,21 @@
   <script src="/js/seo-meta.js" defer></script>
   <script src="/js/site.js"></script>
   <script src="/js/skeleton.js"></script>
+  <script>
+    // Pricing plan: show first features, reveal the rest on tap.
+    // The button stays hidden until this script runs, so without JS
+    // there is never a dead button — visitors just see the first list.
+    (function () {
+      var btn = document.getElementById('mk-features-toggle');
+      var card = document.querySelector('.mk-price-card');
+      if (!btn || !card) return;
+      btn.hidden = false;
+      btn.addEventListener('click', function () {
+        var expanded = card.classList.toggle('mk-expanded');
+        btn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+        btn.textContent = expanded ? 'إظهار أقل' : 'عرض كل المميزات';
+      });
+    })();
+  </script>
 </body>
 </html>
