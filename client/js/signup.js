@@ -91,8 +91,12 @@
       '<p class="muted small">' + esc(I.t('su_accountDesc')) + '</p>' +
       // Preview before step 1: owners see the whole road (7 steps) and an
       // estimated time up front, instead of discovering screens one by one.
-      '<div class="card mt-1"><p><strong>' + esc(I.t('su_previewTitle')) + '</strong></p>' +
-      '<p class="muted small">' + esc(I.t('su_previewList')) + '</p></div>' +
+      // Hide the preview card entirely if its translation keys are missing
+      // (e.g. a stale cached i18n.js): raw key names must never be visible.
+      (hasKey('su_previewTitle') && hasKey('su_previewList')
+        ? '<div class="card mt-1"><p><strong>' + esc(I.t('su_previewTitle')) + '</strong></p>' +
+          '<p class="muted small">' + esc(I.t('su_previewList')) + '</p></div>'
+        : '') +
       field('su_email', input('f-email', 'email', draft.email, 'autocomplete="email" required'), 'f-email') +
       field('su_username', input('f-username', 'text', draft.username, 'autocomplete="username" required'), 'f-username') +
       field('su_password', input('f-password', 'password', '', 'autocomplete="new-password" required') +
