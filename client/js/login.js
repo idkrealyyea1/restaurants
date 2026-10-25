@@ -33,7 +33,7 @@
       return;
     }
 
-    submitBtn.disabled = true;
+    window.App.setButtonLoading(submitBtn, true);
     try {
       const data = await api.post('/api/auth/login', { identifier, password });
       toast(I.t('welcomeBack'), 'success');
@@ -44,7 +44,7 @@
       const isTrial = err.code === 'SUBSCRIPTION_EXPIRED' || (err.message && err.message.includes('Trial finished'));
       errorBox.textContent = isTrial ? I.t('loginNoAccess') : err.message;
       errorBox.classList.remove('hidden');
-      submitBtn.disabled = false;
+      window.App.setButtonLoading(submitBtn, false);
     }
   });
 })();

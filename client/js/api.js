@@ -274,5 +274,41 @@
     };
   }
 
-  window.App = { api: API, esc, fmtMoney, fmtDateTime, qsParam, debounce, toast, compressImage, STATUS_LABELS, theme: { buildTokens, hexToRgb, toHex } };
+
+  /* Button loading state: spinner + disabled until the action finishes.
+     Restores the original label, unless the page re-rendered the button
+     meanwhile (then it only clears disabled/class, never clobbers the
+     new label). Safe to call with a button that was never set loading. */
+  function ensureButtonLoadingStyle() {
+    if (document.getElementById('btn-loading-style')) return;
+    const st = document.createElement('style');
+    st.id = 'btn-loading-style';
+    st.textContent = '.btn-loading{opacity:.75;cursor:wait}.btn-spinner{display:inline-block;width:14px;height:14px;margin-inline-end:8px;vertical-align:-2px;border:2px solid currentColor;border-top-color:transparent;border-radius:50%;animation:btn-spin .7s linear infinite}@keyframes btn-spin{to{transform:rotate(360deg)}}';
+    document.head.appendChild(st);
+  }
+  function setButtonLoading(btn, loading) {
+    if (!btn) return;
+    ensureButtonLoadingStyle();
+    if (loading) {
+      if (btn.dataset.btnLoading === '1') return;
+      btn.dataset.btnLoading = '1';
+      btn.dataset.btnOriginalHtml = btn.innerHTML;
+      btn.disabled = true;
+      btn.setAttribute('aria-busy', 'true');
+      btn.classList.add('btn-loading');
+      const label = (document.documentElement.lang || 'ar').startsWith('ar') ? 'جاري…' : 'Loading…';
+      btn.innerHTML = '<span class="btn-spinner" aria-hidden="true"></span>' + label;
+    } else {
+      if (btn.dataset.btnLoading !== '1') return;
+      btn.dataset.btnLoading = '';
+      btn.disabled = false;
+      btn.removeAttribute('aria-busy');
+      btn.classList.remove('btn-loading');
+      if (btn.innerHTML.indexOf('btn-spinner') !== -1 && btn.dataset.btnOriginalHtml != null) {
+        btn.innerHTML = btn.dataset.btnOriginalHtml;
+      }
+      delete btn.dataset.btnOriginalHtml;
+    }
+  }
+  window.App = { api: API, setButtonLoading, esc, fmtMoney, fmtDateTime, qsParam, debounce, toast, compressImage, STATUS_LABELS, theme: { buildTokens, hexToRgb, toHex } };
 })();

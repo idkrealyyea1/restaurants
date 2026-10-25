@@ -171,13 +171,13 @@
     if (cancelBtn) {
       cancelBtn.addEventListener('click', async () => {
         if (!confirm(I.t('cancelOrderConfirm'))) return;
-        cancelBtn.disabled = true;
+        window.App.setButtonLoading(cancelBtn, true);
         try {
           const d = await api.post('/api/orders/cancel', { code: lastOrder.code });
           await loadOrder(d.order.code);
         } catch (err) {
           toast(err.message, 'error');
-          cancelBtn.disabled = false;
+          window.App.setButtonLoading(cancelBtn, false);
         }
       });
     }
@@ -220,10 +220,10 @@
     const code = codeInput.value.trim().toUpperCase();
     if (!code) return;
     history.replaceState(null, '', '/track?code=' + encodeURIComponent(code));
-    if (submitBtn) submitBtn.disabled = true;
+    if (submitBtn) window.App.setButtonLoading(submitBtn, true);
     loadOrder(code)
       .then((ok) => { if (ok) startPolling(code); })
-      .finally(() => { if (submitBtn) submitBtn.disabled = false; });
+      .finally(() => { if (submitBtn) window.App.setButtonLoading(submitBtn, false); });
   });
 
   document.getElementById('reset-btn').addEventListener('click', () => {
@@ -238,9 +238,9 @@
   document.getElementById('refresh-btn').addEventListener('click', (event) => {
     if (!currentCode) return;
     const button = event.currentTarget;
-    button.disabled = true;
+    window.App.setButtonLoading(button, true);
     loadOrder(currentCode, { silent: true })
-      .finally(() => { button.disabled = false; });
+      .finally(() => { window.App.setButtonLoading(button, false); });
   });
 
   window.addEventListener('offline', () => showError(I.t('offlineTrack')));

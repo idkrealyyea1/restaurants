@@ -281,7 +281,6 @@
   async function go(next) {
     screen = next;
     errorBox.classList.add('hidden');
-    nextBtn.disabled = false;
     if (next === 'account') showAccount();
     else if (next === 'type') showType();
     else if (next === 'info') showInfo();
@@ -294,7 +293,7 @@
 
   async function submit() {
     errorBox.classList.add('hidden');
-    nextBtn.disabled = true;
+    window.App.setButtonLoading(nextBtn, true);
     try {
       if (screen === 'account') {
         draft.website = (document.getElementById('f-website') || {}).value || '';
@@ -364,6 +363,8 @@
       }
     } catch (err) {
       fail(err);
+    } finally {
+      window.App.setButtonLoading(nextBtn, false);
     }
   }
 
