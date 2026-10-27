@@ -45,7 +45,6 @@ const copy = {
     total: "الإجمالي",
     continueCheckout: "متابعة الطلب",
     checkoutDemo: "هذه معاينة فقط. لم يتم إرسال أي طلب.",
-    demoBrowseLive: "تصفح مطاعم حقيقية",
     demoCreateMenu: "أنشئ منيوك الخاص",
     demoNotes: "ملاحظات للطلب (اختياري)",
     demoNotesPlaceholder: "مثال: بدون بصل، صوص إضافي…",
@@ -115,7 +114,6 @@ const copy = {
     total: "Total",
     continueCheckout: "Continue to checkout",
     checkoutDemo: "This is only a preview. No order was sent.",
-    demoBrowseLive: "Browse live restaurants",
     demoCreateMenu: "Create your own menu",
     demoNotes: "Order notes (optional)",
     demoNotesPlaceholder: "e.g. no onions, extra sauce…",
@@ -770,7 +768,7 @@ function cartMarkup() {
             <span>${escapeHTML(getCopy("continueCheckout"))}</span>
             <span>${escapeHTML(formatMoney(subtotal + deliveryFee))}</span>
           </button>
-          <p class="demo-ctas"><a href="/app/">${escapeHTML(getCopy("demoBrowseLive"))}</a><a href="/signup.html">${escapeHTML(getCopy("demoCreateMenu"))}</a></p>
+          <p class="demo-ctas"><a href="/signup">${escapeHTML(getCopy("demoCreateMenu"))}</a></p>
         </div>`}
     <p class="prototype-footnote">${escapeHTML(getCopy("noOrders"))}</p>`;
 }
