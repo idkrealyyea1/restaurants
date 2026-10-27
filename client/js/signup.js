@@ -22,7 +22,7 @@
   const nextBtn = document.getElementById('su-next');
   const errorBox = document.getElementById('su-error');
 
-  const draft = { email: '', username: '', password: '', businessType: '', businessName: '', slug: '' };
+  const draft = { username: '', password: '', businessType: '', businessName: '', slug: '' };
   let business = null;
   let types = null;
   let typeMeta = null;
@@ -97,7 +97,6 @@
         ? '<div class="card mt-1"><p><strong>' + esc(I.t('su_previewTitle')) + '</strong></p>' +
           '<p class="muted small">' + esc(I.t('su_previewList')) + '</p></div>'
         : '') +
-      field('su_email', input('f-email', 'email', draft.email, 'autocomplete="email" required'), 'f-email') +
       field('su_username', input('f-username', 'text', draft.username, 'autocomplete="username" required'), 'f-username') +
       field('su_password', input('f-password', 'password', '', 'autocomplete="new-password" required') +
         '<p class="muted small">' + esc(I.t('su_passwordHint')) + '</p>', 'f-password') +
@@ -297,17 +296,15 @@
     try {
       if (screen === 'account') {
         draft.website = (document.getElementById('f-website') || {}).value || '';
-        draft.email = document.getElementById('f-email').value.trim();
         draft.username = document.getElementById('f-username').value.trim();
         draft.password = document.getElementById('f-password').value;
         // Per-field errors: never answer an empty form with a repeated
         // description — name exactly which fields are missing.
+        // No email at signup: account is username + password only.
         const missing = [];
-        if (!draft.email) missing.push(I.t('su_email'));
         if (!draft.username) missing.push(I.t('su_username'));
         if (!draft.password) missing.push(I.t('su_password'));
         if (missing.length) throw new Error(I.t('su_requiredFields', { fields: missing.join('، ') }));
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(draft.email)) throw new Error(I.t('su_emailInvalid'));
         await go('type');
       } else if (screen === 'type') {
         const picked = stepEl.querySelector('input[name="bt"]:checked');
@@ -322,7 +319,7 @@
         // business already exists at this point, so only the first pass posts.
         if (!business) {
           const res = await api.post('/api/signup', {
-            email: draft.email, username: draft.username, password: draft.password,
+            username: draft.username, password: draft.password,
             businessName: draft.businessName, businessType: draft.businessType,
             website: draft.website || '',
             ...(draft.slug ? { slug: draft.slug } : {}),
