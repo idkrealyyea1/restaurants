@@ -8,7 +8,7 @@ A restaurant gets its own public menu page at a clean link of the form /restaura
 
 ## Pricing
 
-- One monthly plan. The current price is shown on https://ordora.pages.dev/pricing.html; it was $4.99 per month when this file was written (October 2026).
+- One monthly plan. The current price is shown on https://ordora.site/pricing.html; it was $4.99 per month when this file was written (October 2026).
 - No commission is taken from a restaurant's orders.
 - A free trial is offered; the pricing page and signup page state its current terms.
 
@@ -17,7 +17,7 @@ A restaurant gets its own public menu page at a clean link of the form /restaura
 - No card-payment gateway in this plan: payment is arranged with the restaurant as it is today.
 - No standalone booking app and no standalone promotions app; table bookings are managed from the same restaurant dashboard.
 - No multi-branch management and no multiple admin roles in this plan: one restaurant, one page, one monthly plan.
-- More about the product: https://ordora.pages.dev/ordora-vs-menux.html
+- More about the product: https://ordora.site/ordora-vs-menux.html
 
 ## Setup steps (HowTo)
 
@@ -36,16 +36,16 @@ A restaurant gets its own public menu page at a clean link of the form /restaura
 
 ## Pages
 
-- Home: https://ordora.pages.dev/
-- Features: https://ordora.pages.dev/features.html
-- How it works: https://ordora.pages.dev/how-it-works.html
-- Pricing: https://ordora.pages.dev/pricing.html
-- FAQ: https://ordora.pages.dev/faq.html
-- Restaurants: https://ordora.pages.dev/for-restaurants.html
-- Cafes: https://ordora.pages.dev/for-cafes.html
-- Dessert shops: https://ordora.pages.dev/for-dessert-shops.html
-- Cake shops: https://ordora.pages.dev/for-cake-shops.html
-- Guides: https://ordora.pages.dev/resources/
-- Demo menu: https://ordora.pages.dev/demo/
-- Contact: https://ordora.pages.dev/contact.html
-- Sitemap: https://ordora.pages.dev/sitemap.xml
+- Home: https://ordora.site/
+- Features: https://ordora.site/features.html
+- How it works: https://ordora.site/how-it-works.html
+- Pricing: https://ordora.site/pricing.html
+- FAQ: https://ordora.site/faq.html
+- Restaurants: https://ordora.site/for-restaurants.html
+- Cafes: https://ordora.site/for-cafes.html
+- Dessert shops: https://ordora.site/for-dessert-shops.html
+- Cake shops: https://ordora.site/for-cake-shops.html
+- Guides: https://ordora.site/resources/
+- Demo menu: https://ordora.site/demo/
+- Contact: https://ordora.site/contact.html
+- Sitemap: https://ordora.site/sitemap.xml

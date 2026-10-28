@@ -1475,9 +1475,11 @@
     // Canonical uses the query form (?r=slug): Cloudflare Pages strips
     // the slug from /restaurant/<slug> (308 to /restaurant), so the path
     // form is not a working canonical URL on the Pages site.
+    // Canonical domain is ordora.site (Oct 2026 domain switch), even when
+    // visited via ordora.pages.dev.
     var canonical = slug
-      ? location.origin + '/restaurant?r=' + encodeURIComponent(slug)
-      : location.origin + location.pathname;
+      ? 'https://ordora.site/restaurant?r=' + encodeURIComponent(slug)
+      : 'https://ordora.site' + location.pathname;
     setMetaContent('meta[property="og:url"]', canonical);
     var image = '';
     if (view && view.heroImages && view.heroImages.length) image = view.heroImages[0].imagePath;

@@ -195,4 +195,4 @@ Disallow: /signup.html
 Disallow: /delivery.html
 Disallow: /track.html
 
-Sitemap: https://ordora.pages.dev/sitemap.xml
+Sitemap: https://ordora.site/sitemap.xml

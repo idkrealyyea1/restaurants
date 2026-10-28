@@ -4,19 +4,19 @@
 
 ## What Ordora is
 
-- [Ordora home](https://ordora.pages.dev/): Digital menu and simpler ordering for independent restaurants.
-- [Features](https://ordora.pages.dev/features.html): Digital menu, QR code menu, online ordering, WhatsApp ordering, restaurant dashboard, order management, table bookings, analytics.
-- [How it works](https://ordora.pages.dev/how-it-works.html): Create the restaurant page, share the menu link or QR code, receive orders in the dashboard.
-- [Pricing](https://ordora.pages.dev/pricing.html): One monthly plan. The current price is shown on the pricing page; it was $4.99 per month when this file was written (October 2026).
-- [FAQ](https://ordora.pages.dev/faq.html): Common questions about apps, commissions, ordering, branding, and starting.
-- [About Ordora](https://ordora.pages.dev/ordora-vs-menux.html): What Ordora is, its design, and its benefits.
+- [Ordora home](https://ordora.site/): Digital menu and simpler ordering for independent restaurants.
+- [Features](https://ordora.site/features.html): Digital menu, QR code menu, online ordering, WhatsApp ordering, restaurant dashboard, order management, table bookings, analytics.
+- [How it works](https://ordora.site/how-it-works.html): Create the restaurant page, share the menu link or QR code, receive orders in the dashboard.
+- [Pricing](https://ordora.site/pricing.html): One monthly plan. The current price is shown on the pricing page; it was $4.99 per month when this file was written (October 2026).
+- [FAQ](https://ordora.site/faq.html): Common questions about apps, commissions, ordering, branding, and starting.
+- [About Ordora](https://ordora.site/ordora-vs-menux.html): What Ordora is, its design, and its benefits.
 
 ## Who it is for
 
-- [Restaurants](https://ordora.pages.dev/for-restaurants.html): A full digital menu with online ordering.
-- [Cafes](https://ordora.pages.dev/for-cafes.html): A QR menu and online ordering for cafes.
-- [Dessert shops](https://ordora.pages.dev/for-dessert-shops.html): An online menu for dessert shops.
-- [Cake shops](https://ordora.pages.dev/for-cake-shops.html): A digital menu with pre-orders for cake shops.
+- [Restaurants](https://ordora.site/for-restaurants.html): A full digital menu with online ordering.
+- [Cafes](https://ordora.site/for-cafes.html): A QR menu and online ordering for cafes.
+- [Dessert shops](https://ordora.site/for-dessert-shops.html): An online menu for dessert shops.
+- [Cake shops](https://ordora.site/for-cake-shops.html): A digital menu with pre-orders for cake shops.
 
 ## Key features
 
@@ -38,25 +38,25 @@
 
 ## Try it
 
-- [Demo menu](https://ordora.pages.dev/demo/): A sample restaurant menu to browse and try ordering from.
-- [Live restaurants](https://ordora.pages.dev/app/): The public directory of restaurants on Ordora.
-- [Contact](https://ordora.pages.dev/contact.html): Request your own restaurant page.
-- [Guides](https://ordora.pages.dev/resources/): Guides for digital menus, QR ordering, and online ordering.
+- [Demo menu](https://ordora.site/demo/): A sample restaurant menu to browse and try ordering from.
+- [Live restaurants](https://ordora.site/app/): The public directory of restaurants on Ordora.
+- [Contact](https://ordora.site/contact.html): Request your own restaurant page.
+- [Guides](https://ordora.site/resources/): Guides for digital menus, QR ordering, and online ordering.
 
 ## Optional
 
-- [Full details](https://ordora.pages.dev/llms-full.txt): Longer factual summary of Ordora, including the setup steps and the limits of the current plan.
+- [Full details](https://ordora.site/llms-full.txt): Longer factual summary of Ordora, including the setup steps and the limits of the current plan.
 
 ## ملخص بالعربية
 
 Ordora منصة منيو رقمي وطلب أونلاين للمطاعم والمقاهي ومحلات الحلويات والكيك، بواجهة عربية. يحصل كل مطعم على صفحة قائمة عامة برابط ورمز QR يفتحها الضيوف من المتصفح دون تحميل تطبيق، ويطلبون استلامًا أو توصيلًا، وتظهر الطلبات في لوحة تحكم المطعم مع ملخصات عبر واتساب. اشتراك شهري واحد ثابت: 4.99$ شهريًا، مع تجربة مجانية لمدة 7 أيام بدون بطاقة عند التسجيل، وبدون عمولة على الطلبات.
 
-- [الرئيسية](https://ordora.pages.dev/)
-- [المميزات](https://ordora.pages.dev/features.html)
-- [الأسعار](https://ordora.pages.dev/pricing.html)
-- [الأسئلة الشائعة](https://ordora.pages.dev/faq.html)
-- [عن Ordora](https://ordora.pages.dev/ordora-vs-menux.html)
-- [للمطاعم](https://ordora.pages.dev/for-restaurants.html)
-- [للمقاهي](https://ordora.pages.dev/for-cafes.html)
-- [لمحلات الحلويات](https://ordora.pages.dev/for-dessert-shops.html)
-- [لمحلات الكيك](https://ordora.pages.dev/for-cake-shops.html)
+- [الرئيسية](https://ordora.site/)
+- [المميزات](https://ordora.site/features.html)
+- [الأسعار](https://ordora.site/pricing.html)
+- [الأسئلة الشائعة](https://ordora.site/faq.html)
+- [عن Ordora](https://ordora.site/ordora-vs-menux.html)
+- [للمطاعم](https://ordora.site/for-restaurants.html)
+- [للمقاهي](https://ordora.site/for-cafes.html)
+- [لمحلات الحلويات](https://ordora.site/for-dessert-shops.html)
+- [لمحلات الكيك](https://ordora.site/for-cake-shops.html)
