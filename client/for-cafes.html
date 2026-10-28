@@ -21,6 +21,7 @@
   <meta name="twitter:image" content="https://ordora.site/icons/icon-512.png">
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="icon" type="image/png" href="/favicon.png">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
   <title>منيو رقمي للمقاهي — قائمة QR وطلب أونلاين | Ordora</title>
   <link rel="stylesheet" href="/fonts/fonts.css">
   <link rel="stylesheet" href="/css/style.css">
@@ -33,7 +34,7 @@
 <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
   {"@type":"ListItem","position":1,"name":"Ordora","item":"https://ordora.site/"},
-  {"@type":"ListItem","position":2,"name":"المقاهي","item":"https://ordora.site/for-cafes.html"}]}
+  {"@type":"ListItem","position":2,"name":"المقاهي","item":"https://ordora.site/for-cafes"}]}
   </script>
 <!-- Microsoft Clarity -->
 <script type="text/javascript">
@@ -70,11 +71,11 @@
   <div class="page-glow" aria-hidden="true"></div>
   <nav class="mk-nav" aria-label="التنقل الرئيسي">
     <div class="mk-container mk-nav-inner">
-      <a class="mk-brand" href="/"><img class="mk-brand-lockup" src="/images/ordora-lockup.png" alt="Ordora"></a>
+      <a class="mk-brand" href="/"><img class="mk-brand-lockup" src="/images/ordora-lockup.png" alt="Ordora" width="723" height="200"></a>
       <div class="mk-links" role="navigation">
-        <a href="/features.html" data-i18n="navFeatures">المميزات</a>
-        <a href="/how-it-works.html" data-i18n="navHow">كيف يعمل</a>
-        <a href="/pricing.html" data-i18n="navPricing">الأسعار</a>
+        <a href="/features" data-i18n="navFeatures">المميزات</a>
+        <a href="/how-it-works" data-i18n="navHow">كيف يعمل</a>
+        <a href="/pricing" data-i18n="navPricing">الأسعار</a>
         <a href="/app/" data-i18n="navLive">مطعم حي</a>
       </div>
       <span style="flex:1"></span>
@@ -86,24 +87,24 @@
     </div>
     <div id="mk-drawer" class="mk-drawer" role="dialog" aria-label="القائمة">
       <button type="button" class="mk-drawer-close" aria-label="إغلاق القائمة">✕</button>
-      <a href="/features.html" data-i18n="navFeatures">المميزات</a>
-      <a href="/how-it-works.html" data-i18n="navHow">كيف يعمل</a>
-      <a href="/pricing.html" data-i18n="navPricing">الأسعار</a>
+      <a href="/features" data-i18n="navFeatures">المميزات</a>
+      <a href="/how-it-works" data-i18n="navHow">كيف يعمل</a>
+      <a href="/pricing" data-i18n="navPricing">الأسعار</a>
       <a href="/app/" data-i18n="navLive">مطعم حي</a>
       <a href="/login.html" data-i18n="signIn">دخول</a>
       <a href="/app/">المطاعم</a>
-      <a href="/for-restaurants.html" data-i18n="indRest">المطاعم</a>
-      <a href="/for-cafes.html" data-i18n="indCafe">المقاهي</a>
-      <a href="/for-dessert-shops.html" data-i18n="indDessert">محلات الحلويات</a>
-      <a href="/for-cake-shops.html" data-i18n="indCake">محلات الكيك</a>
-      <a href="/contact.html">تواصل</a>
+      <a href="/for-restaurants" data-i18n="indRest">المطاعم</a>
+      <a href="/for-cafes" data-i18n="indCafe">المقاهي</a>
+      <a href="/for-dessert-shops" data-i18n="indDessert">محلات الحلويات</a>
+      <a href="/for-cake-shops" data-i18n="indCake">محلات الكيك</a><a href="/for-home-businesses">مشاريع الأكل المنزلية</a>
+      <a href="/contact">تواصل</a>
     </div>
   </nav>
   <main>
     <section class="mk-hero">
       <div class="mk-container">
         <div class="mk-kicker">Ordora</div>
-        <h1 class="mk-h1">للمقاهي</h1>
+        <h1 class="mk-h1">منيو رقمي للمقاهي</h1>
         <p class="mk-muted" style="max-width:62ch">طلب قهوة سريع، طلبات متكررة، استلام — مصمم للكاونترات المزدحمة.</p>
       </div>
     </section>
@@ -119,7 +120,7 @@
               <li><b>بدون حساب:</b> الزبائن الدائمون يعيدون الطلب عبر رمز التتبع بدون تسجيل دخول.</li>
               <li><b>العملة والرسوم:</b> اضبط دينارًا أردنيًا / ريالًا سعوديًا، ورسوم توصيل إن كنت توصّل.</li>
             </ul>
-            <div class="mt-1"><a class="btn" href="/app/">شاهد العرض التجريبي</a></div>
+            <div class="mt-1"><a class="btn" href="/demo/">شاهد العرض التجريبي</a></div>
           </div>
           <div class="mk-show-card">
             <h3>إعداد مفيد</h3><p class="muted">التصنيفات: مشروبات ساخنة / مشروبات باردة / معجنات. علّم معجنات اليوم كالأكثر مبيعًا، وبدّلها إلى نافدة عند نفادها. الشعار وألوان الهوية تصبغ القائمة.</p>
@@ -149,16 +150,16 @@
     <div class="mk-container" style="display:flex; gap:14px; flex-wrap:wrap; justify-content:space-between">
       <span>© Ordora — منيو رقمي وطلبات.</span>
       <span style="display:flex; gap:12px; flex-wrap:wrap">
-        <a href="/features.html">المميزات</a>
-        <a href="/how-it-works.html">كيف يعمل</a>
-        <a href="/pricing.html">الأسعار</a>
-        <a href="/contact.html">تواصل</a>
-        <a href="/for-restaurants.html">المطاعم</a>
-        <a href="/for-cafes.html">المقاهي</a>
-        <a href="/for-dessert-shops.html">محلات الحلويات</a>
-        <a href="/for-cake-shops.html">محلات الكيك</a>
-        <a href="/faq.html">الأسئلة الشائعة</a>
-        <a href="/ordora-vs-menux.html">عن Ordora</a>
+        <a href="/features">المميزات</a>
+        <a href="/how-it-works">كيف يعمل</a>
+        <a href="/pricing">الأسعار</a>
+        <a href="/contact">تواصل</a>
+        <a href="/for-restaurants">المطاعم</a>
+        <a href="/for-cafes">المقاهي</a>
+        <a href="/for-dessert-shops">محلات الحلويات</a>
+        <a href="/for-cake-shops">محلات الكيك</a><a href="/for-home-businesses">مشاريع الأكل المنزلية</a>
+        <a href="/faq">الأسئلة الشائعة</a>
+        <a href="/ordora-vs-menux">عن Ordora</a>
         <a href="/app/">مطعم حي</a>
       </span>
     </div>

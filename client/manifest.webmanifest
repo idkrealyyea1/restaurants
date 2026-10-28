@@ -1,7 +1,7 @@
 {
   "name": "Ordora",
   "short_name": "Ordora",
-  "description": "Order from your favorite local restaurants",
+  "description": "منيو رقمي وطلب أونلاين للمطاعم والمقاهي ومحلات الحلويات والكيك",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
