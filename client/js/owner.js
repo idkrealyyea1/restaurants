@@ -642,7 +642,7 @@
           const { heroImages } = await api.get('/api/admin/hero-images?restaurantId=' + id);
           zone.innerHTML = heroImages.length ? heroImages.map((h) =>
             '<div data-hid="' + esc(h.id) + '" style="display:flex;align-items:center;gap:8px;margin-bottom:6px">' +
-            '<img src="' + esc(h.image_path) + '" width="64" height="36" style="object-fit:cover;border-radius:6px">' +
+            '<img src="' + esc(h.image_path) + '" alt="Hero image preview" width="64" height="36" style="object-fit:cover;border-radius:6px">' +
             '<small>#' + h.position + (h.is_primary ? ' ★' : '') + '</small>' +
             (h.is_primary ? '' : '<button type="button" class="btn btn-outline btn-sm" data-hp>Primary</button>') +
             '<button type="button" class="btn btn-outline btn-sm" data-hd>Remove</button></div>'
