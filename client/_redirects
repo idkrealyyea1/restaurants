@@ -1,14 +1,15 @@
 # Canonical-domain consolidation (Oct 2026 domain switch to ordora.site).
-# These host-specific 301s run before the 200 rewrites below: the old
-# Pages subdomain and the www subdomain both redirect to the apex
-# custom domain, preserving the path, so every old link still lands on
-# the same page under ordora.site and ranking signals consolidate there.
-# Verify after deploy (must be 301, not 200/308-loop):
-#   curl -I https://ordora.pages.dev/features  (Location: https://ordora.site/features)
-#   curl -I https://www.ordora.site/features  (Location: https://ordora.site/features)
-#   curl -I https://ordora.site/features      (must stay 200)
-https://ordora.pages.dev/*  https://ordora.site/:splat  301
-https://www.ordora.site/*  https://ordora.site/:splat  301
+# NOTE (verified live 2026-10-28): host-based 301s do NOT work in this
+# file — Cloudflare Pages _redirects is path-only, so host rules like
+# "https://ordora.pages.dev/* -> https://ordora.site/:splat 301" are
+# silently ignored (live test returned 200, not 301). The real redirects
+# must be Cloudflare Bulk Redirects in the dashboard (see the SEO notes):
+#   ordora.pages.dev -> https://ordora.site (301, subpath matching,
+#     preserve path suffix + query, NO include-subdomains so preview
+#     deployments keep working)
+#   www.ordora.site -> https://ordora.site (301, same parameters)
+# Canonical tags already point every page to ordora.site, so signals
+# consolidate via canonical even before those Bulk Redirects are live.
 # Cloudflare Pages rewrites (same-site, 200 = serve without redirect).
 # WARNING (Oct 2026, verified live): do NOT add rewrites to .html files
 # here. Pages' own clean-URL handling redirects *.html to its clean form,
