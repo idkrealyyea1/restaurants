@@ -52,19 +52,47 @@
   <div id="sk-offline" class="sk-offline" role="status" aria-live="polite">يبدو أنك غير متصل — تحقق من اتصالك <button id="sk-offline-retry" type="button">إعادة المحاولة</button></div>
   <div id="sk-retry" class="sk-retry" role="alert"><p style="margin:0 0 8px; font-weight:700">الاتصال بطيء أو غير متاح</p><p class="muted small" style="margin:0 0 12px">الصفحة تستغرق وقتًا أطول من المعتاد. تحقق من اتصالك أو حاول مجددًا.</p><button id="sk-retry-btn" class="btn btn-sm" type="button">إعادة المحاولة</button></div>
 
-  <nav class="mk-nav">
+  <div class="page-glow" aria-hidden="true"></div>
+<nav class="mk-nav" aria-label="التنقل الرئيسي">
     <div class="mk-container mk-nav-inner">
       <a class="mk-brand" href="/"><img class="mk-brand-lockup" src="/images/ordora-lockup.png" alt="Ordora" width="723" height="200"></a>
+      <div class="mk-links" role="navigation">
+        <a href="/features" data-i18n="navFeatures">المميزات</a>
+        <a href="/how-it-works" data-i18n="navHow">كيف يعمل</a>
+        <a href="/pricing" data-i18n="navPricing">الأسعار</a>
+        <a href="/app/" data-i18n="navLive">مطعم حي</a>
+      </div>
       <span style="flex:1"></span>
-      <a class="btn btn-outline btn-sm" href="/">الرئيسية</a>
-      <a class="btn btn-sm" href="/demo/" style="background:var(--primary);color:#fff">العرض التجريبي</a>
+      <div class="mk-actions">
+        <a class="btn btn-outline btn-sm" href="/login.html">دخول</a>
+        <a class="btn btn-sm" href="/signup.html" style="background:var(--primary);color:#fff">ابدأ الآن</a>
+        <button id="mk-burger" class="mk-burger" aria-label="فتح القائمة" aria-expanded="false"><span></span></button>
+      </div>
+    </div>
+    <div id="mk-drawer" class="mk-drawer" role="dialog" aria-label="القائمة">
+      <button type="button" class="mk-drawer-close" aria-label="إغلاق القائمة">✕</button>
+      <a href="/features" data-i18n="navFeatures">المميزات</a>
+      <a href="/how-it-works" data-i18n="navHow">كيف يعمل</a>
+      <a href="/pricing" data-i18n="navPricing">الأسعار</a>
+      <a href="/app/" data-i18n="navLive">مطعم حي</a>
+      <a href="/login.html" data-i18n="signIn">دخول</a>
+      <a href="/signup.html">ابدأ الآن</a>
+      <a href="/for-restaurants" data-i18n="indRest">المطاعم</a>
+      <a href="/for-cafes" data-i18n="indCafe">المقاهي</a>
+      <a href="/for-dessert-shops" data-i18n="indDessert">محلات الحلويات</a>
+      <a href="/for-cake-shops" data-i18n="indCake">محلات الكيك</a><a href="/for-home-businesses">مشاريع الأكل المنزلية</a>
+      <a href="/contact">تواصل</a>
     </div>
   </nav>
   <main class="mk-container">
     <section class="mk-hero">
       <div class="mk-kicker">الأدلة</div>
       <h1 class="mk-h1">كيف تعمل منيو رقمي لمطعمك — أدلة لأصحاب المطاعم</h1>
-      <p class="muted">أدلة عملية — بدون حشو، فقط ما يبحث عنه أصحاب المطاعم فعلًا. الدليل الأول جاهز أدناه، والباقي قريبًا.</p>
+      <p class="muted">أدلة عملية — بدون حشو، فقط ما يبحث عنه أصحاب المطاعم فعلًا. دليلان جاهزان أدناه، والباقي قريبًا.</p>
+      <div class="mk-cta-row">
+        <a class="mk-btn-primary" href="/signup.html">ابدأ مجانًا</a>
+        <a class="mk-btn-ghost" href="/demo/">جرّب القائمة التجريبية ←</a>
+      </div>
       <div class="mt-2" style="display:grid; gap:12px">
         <article class="card"><h3 style="margin:0">كيف تنشئ منيو رقميًا لمطعمك</h3>
 <p class="muted small">المنيو الرقمي هو صفحة قائمة عامة لمطعمك يفتحها الزبون من رابط أو رمز QR في متصفح هاتفه — بدون تطبيق وبدون حساب. هكذا تنشئها مع Ordora، خطوة بخطوة:</p>
@@ -79,12 +107,30 @@
         <article class="card"><h3 style="margin:0">كيف تعمل قوائم QR للمطاعم</h3><p class="muted small">قريبًا — الطباعة والمواضع والتحديث بدون إعادة طباعة.</p><span class="badge">قريبًا</span></article>
         <article class="card"><h3 style="margin:0">كيف تستقبل المطاعم الطلبات أونلاين</h3><p class="muted small">قريبًا — لوحة التحكم وواتساب ورموز التتبع.</p><span class="badge">قريبًا</span></article>
         <article class="card"><h3 style="margin:0">المنيو الرقمي مقابل المنيو المطبوع</h3><p class="muted small">قريبًا — التكلفة والتحديثات وتجربة الزبون.</p><span class="badge">قريبًا</span></article>
-        <article class="card"><h3 style="margin:0">كيف يعمل الطلب عبر واتساب للمطاعم</h3><p class="muted small">قريبًا — روابط wa.me والطلبات المنظمة والتأكيدات.</p><span class="badge">قريبًا</span></article>
+        <article class="card"><h3 style="margin:0"><a href="/resources/whatsapp-ordering">كيف تنظم طلبات واتساب لمطعمك أو مشروعك المنزلي</a></h3><p class="muted small">منيو واحد برابط وQR، طلب منظم بلوحة تحكم، وملخص الطلب بيوصل واتساب — بدل الطلبات المشتتة بين الرسائل.</p><a href="/resources/whatsapp-ordering">اقرأ الدليل ←</a></article>
       </div>
       <p class="small muted mt-2">باقي الأدلة ستُضاف يدويًا بعد البحث — بدون محتوى وهمي.</p>
     </section>
   </main>
-  <footer class="mk-footer"><div class="mk-container" style="display:flex; gap:14px; flex-wrap:wrap; justify-content:space-between"><span>© Ordora — منيو رقمي وطلبات.</span><span style="display:flex; gap:12px; flex-wrap:wrap"><a href="/features">المميزات</a><a href="/how-it-works">كيف يعمل</a><a href="/pricing">الأسعار</a><a href="/faq">الأسئلة الشائعة</a><a href="/ordora-vs-menux">عن Ordora</a><a href="/app/">مطعم حي</a></span></div></footer>
+  <footer class="mk-footer">
+    <div class="mk-container" style="display:flex; gap:14px; flex-wrap:wrap; justify-content:space-between">
+      <span>© Ordora — منيو رقمي وطلبات.</span>
+      <span style="display:flex; gap:12px; flex-wrap:wrap">
+        <a href="/features">المميزات</a>
+        <a href="/how-it-works">كيف يعمل</a>
+        <a href="/pricing">الأسعار</a>
+        <a href="/contact">تواصل</a>
+        <a href="/for-restaurants">المطاعم</a>
+        <a href="/for-cafes">المقاهي</a>
+        <a href="/for-dessert-shops">محلات الحلويات</a>
+        <a href="/for-cake-shops">محلات الكيك</a><a href="/for-home-businesses">مشاريع الأكل المنزلية</a>
+        <a href="/resources/">الأدلة</a>
+        <a href="/faq">الأسئلة الشائعة</a>
+        <a href="/ordora-vs-menux">عن Ordora</a>
+        <a href="/app/">المطاعم</a>
+      </span>
+    </div>
+  </footer>
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"HowTo","name":"كيف تنشئ منيو رقميًا لمطعمك","description":"خطوات إنشاء منيو رقمي مع Ordora: حساب ورابط، تصنيفات وأصناف، هوية وساعات عمل، مشاركة الرابط وQR، واستقبال الطلبات.","step":[
   {"@type":"HowToStep","name":"أنشئ حساب مطعمك واختر الرابط","text":"أنشئ حساب مطعمك واختر الرابط (slug) الذي سيكون عنوان منيوك العام."},
@@ -93,6 +139,9 @@
   {"@type":"HowToStep","name":"شارك الرابط واطبع QR","text":"شارك الرابط في بايو إنستغرام وحالة واتساب، واطبع رمز QR للطاولات والتغليف."},
   {"@type":"HowToStep","name":"استقبل الطلبات","text":"تظهر الطلبات في لوحة تحكم المطعم، ويمكن مشاركة ملخصها عبر واتساب."}]}
   </script>
+  <script src="/js/api.js"></script><script src="/js/i18n.js"></script>
+  <script src="/js/seo-meta.js" defer></script>
+  <script src="/js/site.js"></script>
   <script src="/js/skeleton.js"></script>
 </body>
 </html>

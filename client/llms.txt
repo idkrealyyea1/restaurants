@@ -42,6 +42,7 @@
 - [Demo menu](https://ordora.site/demo/): A sample restaurant menu to browse and try ordering from.
 - [Contact](https://ordora.site/contact): Request your own restaurant page.
 - [Guides](https://ordora.site/resources/): Guides for digital menus, QR ordering, and online ordering.
+- [WhatsApp ordering guide](https://ordora.site/resources/whatsapp-ordering): How to organize WhatsApp orders for a restaurant or home food business, step by step.
 
 ## Optional
 

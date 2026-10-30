@@ -46,6 +46,7 @@ A restaurant gets its own public menu page at a clean link of the form /restaura
 - Dessert shops: https://ordora.site/for-dessert-shops
 - Cake shops: https://ordora.site/for-cake-shops
 - Guides: https://ordora.site/resources/
+- WhatsApp ordering guide: https://ordora.site/resources/whatsapp-ordering
 - Demo menu: https://ordora.site/demo/
 - Contact: https://ordora.site/contact
 - Sitemap: https://ordora.site/sitemap.xml
