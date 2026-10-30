@@ -1,7 +1,7 @@
 const copy = {
   ar: {
     nav: { how: "كيف يعمل", features: "المزايا", pricing: "الاشتراك", faq: "أسئلة شائعة", audience: "حلّ للمطاعم المستقلة", menu: "فتح القائمة", close: "إغلاق", startFree: "ابدأ مجانًا" },
-    hero: { titleA: "منيو رقمي.", titleB: "وطلب أسهل.", description: "اعرض أطباقك وأسعارها في منيو يفتحه ضيوفك عبر رابط أو QR، ويتيح لهم إرسال طلباتهم بسهولة — بلا تطبيق أو عمولة. ابدأ بتجربة مجانية لمدة 7 أيام، بدون بطاقة، ثم 4.99 US$ شهريًا.", request: "تعرّف على Ordora", demo: "جرّب المنيو التجريبي مجانًا" },
+    hero: { titleA: "منيو رقمي.", titleB: "وطلب أسهل.", description: "اعرض أطباقك وأسعارها في منيو يفتحه ضيوفك عبر رابط أو QR، ويتيح لهم إرسال طلباتهم بسهولة — بلا تطبيق أو عمولة. ابدأ بتجربة مجانية لمدة 7 أيام، بدون بطاقة، ثم 4.99 US$ شهريًا.", request: "تعرّف على Ordora", demo: "كيف يبدو المنيو" },
     ticker: ["بدون عمولة على الطلبات", "لا يحتاج الضيف إلى تطبيق", "منيو بهوية مطعمك", "اشتراك شهري واضح"],
     story: { eyebrow: "من مطبخك إلى شاشة ضيفك", titleA: "منيو يحمل هويتك.", titleB: "وطلب أسهل لضيفك.", body: "اعرض أطباقك بصورها وأسعارها بوضوح، ليختار الضيف ما يحب ويراجع طلبه قبل إرساله. تجمع الصفحة المنيو والطلب في تجربة واحدة.", tag: "أطباقك، كما تحب أن يراها ضيوفك.", owner: "منيو رقمي على جهاز لوحي", note: "مصمم لصاحب المطعم وفريق الخدمة." },
     how: { eyebrow: "من الاختيار إلى الطلب", titleA: "ثلاث خطوات.", titleB: "وطلب يصل بوضوح.", body: "يمسح الضيف رمز QR، يتصفح المنيو ويضيف أطباقه إلى السلة، ثم يرسل ملخص الطلب لفريقك.", steps: [["يمسح", "رمز QR يفتح المنيو"], ["يختار", "يضيف أطباقه إلى السلة"], ["يرسل", "ملخص واضح للمطعم"]] },
@@ -65,7 +65,7 @@ const copy = {
   },
   en: {
     nav: { how: "How it works", features: "Features", pricing: "Pricing", faq: "FAQ", audience: "For independent restaurants", menu: "Open menu", close: "Close", startFree: "Start for free" },
-    hero: { titleA: "Digital menu.", titleB: "Simpler orders.", description: "Show your dishes and prices in one menu guests can open by link or QR, then send an order—no app download or commission. Start with a 7-day free trial, no card required, then 4.99 US$ per month.", request: "Talk to the Ordora team", demo: "Try the sample menu free" },
+    hero: { titleA: "Digital menu.", titleB: "Simpler orders.", description: "Show your dishes and prices in one menu guests can open by link or QR, then send an order—no app download or commission. Start with a 7-day free trial, no card required, then 4.99 US$ per month.", request: "Talk to the Ordora team", demo: "See how the menu looks" },
     ticker: ["No commission on orders", "No app for guests", "A menu in your brand", "One clear monthly price"],
     story: { eyebrow: "From your kitchen to their screen", titleA: "A menu in your brand.", titleB: "An easier order for guests.", body: "Show every dish with clear photos and prices. Guests can choose what they want and review the order before sending. Your menu and online ordering live in one simple page.", tag: "Your dishes, shown the way you want.", owner: "A digital menu on a tablet", note: "Made for owners and the people serving guests." },
     how: { eyebrow: "From browsing to ordering", titleA: "Three simple steps.", titleB: "One clear order.", body: "Guests scan a QR code, browse the menu, add dishes to their cart, then send an order summary straight to your team.", steps: [["Scan", "A QR code opens the menu"], ["Choose", "Add dishes to the cart"], ["Send", "A clear order summary"]] },
