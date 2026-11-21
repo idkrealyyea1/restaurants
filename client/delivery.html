@@ -1,12 +1,12 @@
 <!doctype html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="utf-8">
   <meta name="api-base" content="">
   <meta name="robots" content="noindex, nofollow, noarchive">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <meta name="theme-color" content="#111827">
-  <title>لوحة التوصيل — Ordora</title>
+  <title data-i18n="deliveryDashboardOrdora">Delivery dashboard — Ordora</title>
   <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/icons/icon-192.png">
   <link rel="stylesheet" href="/fonts/fonts.css">
@@ -26,25 +26,25 @@
       <a class="brand" href="/" data-i18n="brand">Ordora</a>
       <span class="spacer"></span>
       <span id="dlv-group" class="muted small"></span>
-      <button id="logout-btn" type="button" class="btn btn-outline btn-sm" data-i18n="logout">خروج</button>
+      <button id="logout-btn" type="button" class="btn btn-outline btn-sm" data-i18n="logout">Log out</button>
     </div>
   </header>
 
   <main class="container mt-2">
     <div class="flex-between mb-2" style="gap:12px;flex-wrap:wrap">
       <div>
-        <h1 class="section-title" data-i18n="dlvTitle">لوحة التوصيل</h1>
+        <h1 class="section-title" data-i18n="dlvTitle">Delivery dashboard</h1>
         <p id="dlv-subtitle" class="muted small"></p>
       </div>
       <div class="flex-between" style="gap:8px">
-        <label class="sr-only" for="dlv-status" data-i18n="statusTh">الحالة</label>
+        <label class="sr-only" for="dlv-status" data-i18n="statusTh">Status</label>
         <select id="dlv-status">
-          <option value="" data-i18n="dlvAll">كل الطلبات</option>
-          <option value="ready" data-i18n="status_ready">جاهز</option>
-          <option value="out_for_delivery" data-i18n="status_out_for_delivery">في طريق التوصيل</option>
-          <option value="completed" data-i18n="status_completed">مكتمل</option>
+          <option value="" data-i18n="dlvAll">All orders</option>
+          <option value="ready" data-i18n="status_ready">Ready</option>
+          <option value="out_for_delivery" data-i18n="status_out_for_delivery">Out for delivery</option>
+          <option value="completed" data-i18n="status_completed">Completed</option>
         </select>
-        <button id="dlv-refresh" type="button" class="btn btn-outline btn-sm" data-i18n="refresh">تحديث</button>
+        <button id="dlv-refresh" type="button" class="btn btn-outline btn-sm" data-i18n="refresh">Refresh</button>
       </div>
     </div>
     <div id="dlv-error" class="notice notice-error hidden" role="alert"></div>

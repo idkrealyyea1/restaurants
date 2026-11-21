@@ -35,7 +35,7 @@
       if(offlineBar) offlineBar.classList.remove('show');
       if(retryBox) retryBox.classList.remove('show');
       if(isSlow() && offlineBar){
-        // Site is Arabic-first: use Arabic when the page language is Arabic.
+        // Site is English-first: use English unless the page language is Arabic.
         offlineBar.textContent = (document.documentElement.lang || 'ar').startsWith('ar')
           ? 'اتصال بطيء — قد يستغرق التحميل وقتًا أطول'
           : 'Slow connection — loading may take longer';

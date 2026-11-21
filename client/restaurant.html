@@ -1,24 +1,24 @@
 <!doctype html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
   <head>
     <meta charset="UTF-8" />
     <meta name="api-base" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
     <meta name="theme-color" content="#1f3439" />
-    <meta name="description" content="تصفّح قائمة المطعم، أضف أطباقك، وأرسل طلبك مباشرة — بدون تطبيق. Browse the menu and order directly, no app needed." />
+    <meta name="description" content="Browse the restaurant's menu, add your dishes, and send your order directly — no app needed." />
     <meta name="robots" content="index, follow" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="القائمة — Ordora" />
-    <meta property="og:description" content="تصفّح قائمة المطعم وأرسل طلبك مباشرة." />
+    <meta property="og:title" content="Menu — Ordora" />
+    <meta property="og:description" content="Browse the restaurant's menu and send your order directly." />
     <meta property="og:url" content="https://ordora.site/" />
     <meta property="og:image" content="https://ordora.site/icons/icon-512.png" />
     <meta property="og:image:width" content="512" />
     <meta property="og:image:height" content="512" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="القائمة — Ordora" />
-    <meta name="twitter:description" content="تصفّح قائمة المطعم وأرسل طلبك مباشرة." />
+    <meta name="twitter:title" content="Menu — Ordora" />
+    <meta name="twitter:description" content="Browse the restaurant's menu and send your order directly." />
     <meta name="twitter:image" content="https://ordora.site/icons/icon-512.png" />
-    <title>القائمة — Ordora</title>
+    <title>Menu — Ordora</title>
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/icons/icon-192.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -46,31 +46,31 @@
       <header class="topbar">
         <div class="topbar-info">
           <span class="preview-dot" aria-hidden="true"></span>
-          <span data-copy="menuLabel">القائمة</span>
+          <span data-copy="menuLabel">Menu</span>
           <span class="topbar-divider" aria-hidden="true"></span>
-          <span id="topbarStatus" data-copy="openNow">مفتوح الآن</span>
+          <span id="topbarStatus" data-copy="openNow">Open now</span>
         </div>
         <div class="topbar-actions">
           <button class="text-button" id="shareButton" type="button">
             <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 13V3m0 0L6.5 6.5M10 3l3.5 3.5M4 10.5v4A2.5 2.5 0 0 0 6.5 17h7a2.5 2.5 0 0 0 2.5-2.5v-4" /></svg>
-            <span data-copy="share">مشاركة</span>
+            <span data-copy="share">Share</span>
           </button>
           <button class="language-button" id="languageButton" type="button" aria-label="Switch to English">EN</button>
         </div>
       </header>
 
       <div class="brandbar">
-        <a class="brand-mark storefront-brand" href="/" aria-label="Ordora — طعامك أونلاين">
+        <a class="brand-mark storefront-brand" href="/" aria-label="Ordora — Your Food, Online" data-i18n-aria-label="ordoraYourFoodOnline">
           <img class="brand-lockup" src="/images/ordora-lockup.png" alt="Ordora — Your Food, Online">
         </a>
         <div class="brandbar-actions">
           <span class="brandbar-note">
             <span class="brandbar-mark" aria-hidden="true"></span>
-            <span data-copy="brandNote">منيو رقمي</span>
+            <span data-copy="brandNote">Digital menu</span>
           </span>
-          <button class="header-cart" id="openCartButton" type="button" aria-label="افتح طلبك">
+          <button class="header-cart" id="openCartButton" type="button" aria-label="Your order">
             <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 6.5h12l-1 10H5l-1-10ZM7 7V5a3 3 0 0 1 6 0v2" /></svg>
-            <span data-copy="order">طلبك</span>
+            <span data-copy="order">Your order</span>
             <span class="header-cart-count" id="headerCartCount" aria-live="polite">0</span>
           </button>
         </div>
@@ -78,37 +78,37 @@
 
       <main>
         <section class="restaurant-hero" aria-labelledby="restaurantName">
-          <div class="restaurant-cover" id="coverCarousel" role="region" aria-roledescription="carousel" aria-label="صور المطعم">
+          <div class="restaurant-cover" id="coverCarousel" role="region" aria-roledescription="carousel" aria-label="Restaurant cover photos">
             <div class="cover-track" id="coverTrack">
               <div class="cover-slide is-active" aria-hidden="false">
                 <div class="cover-placeholder" aria-hidden="true"></div>
               </div>
             </div>
             <div class="cover-shade" aria-hidden="true"></div>
-            <button class="cover-control cover-previous" id="coverPrevious" type="button" data-cover-step="-1" aria-label="الصورة السابقة" aria-controls="coverTrack" hidden>
+            <button class="cover-control cover-previous" id="coverPrevious" type="button" data-cover-step="-1" aria-label="Previous cover photo" aria-controls="coverTrack" hidden>
               <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m12.5 4.5-5.5 5.5 5.5 5.5" /></svg>
             </button>
-            <button class="cover-control cover-next" id="coverNext" type="button" data-cover-step="1" aria-label="الصورة التالية" aria-controls="coverTrack" hidden>
+            <button class="cover-control cover-next" id="coverNext" type="button" data-cover-step="1" aria-label="Next cover photo" aria-controls="coverTrack" hidden>
               <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7.5 4.5 5.5 5.5-5.5 5.5" /></svg>
             </button>
-            <div class="cover-pagination" id="coverPagination" role="group" aria-label="صور الغلاف" hidden></div>
+            <div class="cover-pagination" id="coverPagination" role="group" aria-label="Cover photos" hidden data-i18n-aria-label="coverPhotos"></div>
           </div>
           <div class="restaurant-profile">
-            <a class="restaurant-logo-overlap" href="#top" aria-label="العودة لأعلى القائمة">
+            <a class="restaurant-logo-overlap" href="#top" aria-label="Back to the top of the menu" data-i18n-aria-label="backToTheTopOfTheMenu">
               <img class="restaurant-logo-image" id="restaurantLogo" src="/images/logo-placeholder.svg" alt="" />
             </a>
             <div class="restaurant-profile-copy">
-              <p class="eyebrow"><span class="open-dot" aria-hidden="true"></span><span id="heroStatus" data-copy="openNow">مفتوح الآن</span></p>
+              <p class="eyebrow"><span class="open-dot" aria-hidden="true"></span><span id="heroStatus" data-copy="openNow">Open now</span></p>
               <h1 class="hero-title" id="restaurantName">…</h1>
               <p class="hero-description" id="heroDescription" data-copy="restaurantDescription">
-                أطباق طازجة وأسعار واضحة وطلب سهل بدون تطبيق.
+                Fresh food, clear prices, and ordering without an app.
               </p>
               <div class="restaurant-meta">
                 <span class="meta-item" id="metaItems" hidden><span class="meta-emoji" aria-hidden="true">🍽️</span><span></span></span>
                 <span class="meta-item" id="metaAddress" hidden><span class="meta-emoji" aria-hidden="true">📍</span><span></span></span>
                 <span class="meta-item" id="metaDelivery" hidden><span class="meta-emoji" aria-hidden="true">🚚</span><span></span></span>
                 <span class="meta-item" id="metaHours" hidden><span class="meta-emoji" aria-hidden="true">🕐</span><span></span></span>
-                <a class="meta-item" id="metaMaps" href="#" target="_blank" rel="noopener" hidden><span class="meta-emoji" aria-hidden="true">🗺️</span><span>خرائط Google</span></a>
+                <a class="meta-item" id="metaMaps" href="#" target="_blank" rel="noopener" hidden><span class="meta-emoji" aria-hidden="true">🗺️</span><span>Google Maps</span></a>
               </div>
               <p class="promo-banner" id="promoBanner" hidden></p>
             </div>
@@ -119,44 +119,45 @@
           <section class="menu-main" aria-labelledby="browseTitle">
             <div class="browse-head">
               <div class="browse-copy">
-                <p class="section-kicker" data-copy="menuKicker">قائمة الطعام</p>
-                <h2 class="browse-title" id="browseTitle" data-copy="menuTitle">اختر أطباقك</h2>
-                <p class="browse-description" data-copy="menuDescription">تصفّح الأصناف، أضف ما يعجبك، وأرسل طلبك مباشرة إلى المطعم.</p>
+                <p class="section-kicker" data-copy="menuKicker">The menu</p>
+                <h2 class="browse-title" id="browseTitle" data-copy="menuTitle">Choose your dishes</h2>
+                <p class="browse-description" data-copy="menuDescription">Browse the dishes, add what you like, and send your order straight to the restaurant.</p>
               </div>
               <label class="search-box">
                 <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.7" cy="8.7" r="5.7" /><path d="m13 13 4 4" /></svg>
                 <input id="menuSearch" type="search" autocomplete="off" />
-                <span class="sr-only" data-copy="searchLabel">ابحث في القائمة</span>
+                <span class="sr-only" data-copy="searchLabel">Search the menu</span>
               </label>
             </div>
             <span class="category-dock-sentinel" id="categoryDockSentinel" aria-hidden="true"></span>
-            <nav class="category-strip" id="categoryStrip" aria-label="تصنيفات القائمة"></nav>
+            <nav class="category-strip" id="categoryStrip" aria-label="Menu categories"></nav>
             <div class="dish-grid" id="dishGrid" aria-live="polite" aria-busy="true"></div>
           </section>
 
-          <aside class="cart-panel desktop-cart" id="desktopCart" aria-label="طلبك"></aside>
+          <aside class="cart-panel desktop-cart" id="desktopCart" aria-label="Your order"></aside>
         </div>
       </main>
 
       <details class="nutrition-disclaimer" id="nutritionDisclaimer">
-        <summary data-copy="disclaimerTitle">ملاحظة غذائية</summary>
-        <p data-copy="disclaimerText">السعرات وأوقات التحضير المذكورة تقديرية وقد تختلف حسب طريقة التحضير. إذا كان لديك حساسية غذائية، اسأل المطعم قبل الطلب.</p>
+        <summary data-copy="disclaimerTitle">Nutrition note</summary>
+        <p data-copy="disclaimerText">Calories and prep times shown are estimates and may vary by preparation. If you have a food allergy, ask the restaurant before ordering. Adults typically need around 2000 kcal a day; needs vary by age, activity, and health.</p>
       </details>
 
       <footer class="footer-note" id="menuFooter">
         <img class="footer-logo" src="/images/ordora-mark.png" alt="Ordora" />
-        <span class="footer-copyright" data-copy="footerCopyright">© 2026 Ordora. جميع الحقوق محفوظة.</span>
-        <span class="footer-made" data-copy="footerMade">صُنع مع Ordora</span>
+        <span class="footer-copyright" data-copy="footerCopyright">© 2026 Ordora. All rights reserved.</span>
+        <span class="footer-made" data-copy="footerMade">Made with Ordora</span>
       </footer>
     </div>
 
     <button class="mobile-cart-bar" id="mobileCartBar" type="button" aria-expanded="false" aria-controls="cartDrawerRoot" hidden>
-      <span class="mobile-cart-summary"><span class="mobile-cart-count">0</span><span data-copy="viewOrder">عرض الطلب</span></span>
+      <span class="mobile-cart-summary"><span class="mobile-cart-count">0</span><span data-copy="viewOrder">View order</span></span>
       <strong class="mobile-cart-total">₪0</strong>
     </button>
     <div id="modalRoot"></div>
     <div id="cartDrawerRoot"></div>
     <div class="toast-zone" id="toastZone" aria-live="polite" aria-atomic="true"></div>
+    <script src="/js/i18n.js"></script>
     <script src="/js/api.js"></script>
     <script src="/js/restaurant.js"></script>
   </body>

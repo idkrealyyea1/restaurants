@@ -268,7 +268,7 @@
 
   /* ------------------------------ state ---------------------------- */
   var state = {
-    language: 'ar',
+    language: 'en',
     category: 'all',
     query: '',
     fulfillment: 'pickup',
@@ -1638,6 +1638,8 @@
   function setLanguage(language) {
     if (language === state.language) return;
     state.language = language;
+    // Keep the shared i18n layer (data-i18n labels) in sync.
+    if (window.I18N) window.I18N.setLang(language);
     state.languagePinned = true;
     try { localStorage.setItem(LANG_STORE_KEY, language); } catch (_) { /* ignore */ }
     try {

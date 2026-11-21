@@ -1,21 +1,21 @@
 <!doctype html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="utf-8">
   <meta name="api-base" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/icons/icon-192.png">
-  <meta name="description" content="كيف تعمل منيو رقمي لمطعمك: خطوة بخطوة — التصنيفات والصور والأسعار ورمز QR والطلب أونلاين، مع أدلة Ordora العملية الأخرى.">
+  <meta name="description" content="How a digital menu works for your restaurant: step by step — categories, photos, prices, QR code, and online ordering, plus Ordora's other practical guides.">
   <link rel="canonical" href="https://ordora.site/resources/">
   <meta property="og:url" content="https://ordora.site/resources/">
-  <meta property="og:title" content="كيف تعمل منيو رقمي لمطعمك — أدلة Ordora">
+  <meta property="og:title" content="How a digital menu works for your restaurant — Ordora guides">
   <meta property="og:image" content="https://ordora.site/icons/icon-512.png">
   <meta property="og:image:width" content="512">
   <meta property="og:image:height" content="512">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="https://ordora.site/icons/icon-512.png">
-  <title>كيف تعمل منيو رقمي لمطعمك — أدلة Ordora</title>
+  <title data-i18n="howADigitalMenuWorksForYour">How a digital menu works for your restaurant — Ordora guides</title>
   <link rel="stylesheet" href="/fonts/fonts.css">
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/css/marketing.css">
@@ -31,7 +31,7 @@
 </head>
 <body>
   <!-- Skeleton loader: visible until page fully loads / offline handling -->
-  <div id="app-skeleton" aria-hidden="false" aria-label="جارٍ التحميل">
+  <div id="app-skeleton" aria-hidden="false" aria-label="Loading" data-i18n-aria-label="loading2">
     <div class="sk-skeleton-topbar">
       <div class="sk-logo shimmer" aria-hidden="true"></div>
       <div class="sk-brand shimmer"></div>
@@ -49,95 +49,95 @@
     </div>
     <div class="sk-cards"><div class="sk-mini shimmer"></div><div class="sk-mini shimmer"></div><div class="sk-mini shimmer"></div><div class="sk-mini shimmer"></div><div class="sk-mini shimmer"></div></div>
   </div>
-  <div id="sk-offline" class="sk-offline" role="status" aria-live="polite">يبدو أنك غير متصل — تحقق من اتصالك <button id="sk-offline-retry" type="button">إعادة المحاولة</button></div>
-  <div id="sk-retry" class="sk-retry" role="alert"><p style="margin:0 0 8px; font-weight:700">الاتصال بطيء أو غير متاح</p><p class="muted small" style="margin:0 0 12px">الصفحة تستغرق وقتًا أطول من المعتاد. تحقق من اتصالك أو حاول مجددًا.</p><button id="sk-retry-btn" class="btn btn-sm" type="button">إعادة المحاولة</button></div>
+  <div id="sk-offline" class="sk-offline" role="status" aria-live="polite"><span data-i18n="itLooksLikeYouReOfflineCheck">It looks like you're offline — check your connection</span> <button id="sk-offline-retry" type="button" data-i18n="retryLoad">Try again</button></div>
+  <div id="sk-retry" class="sk-retry" role="alert"><p style="margin:0 0 8px; font-weight:700" data-i18n="connectionIsSlowOr">Connection is slow or unavailable</p><p class="muted small" style="margin:0 0 12px" data-i18n="thePageIsTakingLongerThan">The page is taking longer than usual. Check your connection or try again.</p><button id="sk-retry-btn" class="btn btn-sm" type="button" data-i18n="retryLoad">Try again</button></div>
 
   <div class="page-glow" aria-hidden="true"></div>
-<nav class="mk-nav" aria-label="التنقل الرئيسي">
+<nav class="mk-nav" aria-label="Main navigation" data-i18n-aria-label="mainNavigation">
     <div class="mk-container mk-nav-inner">
       <a class="mk-brand" href="/"><img class="mk-brand-lockup" src="/images/ordora-lockup.png" alt="Ordora" width="723" height="200"></a>
       <div class="mk-links" role="navigation">
-        <a href="/features" data-i18n="navFeatures">المميزات</a>
-        <a href="/how-it-works" data-i18n="navHow">كيف يعمل</a>
-        <a href="/pricing" data-i18n="navPricing">الأسعار</a>
-        <a href="/app/" data-i18n="navLive">مطعم حي</a>
+        <a href="/features" data-i18n="navFeatures">Features</a>
+        <a href="/how-it-works" data-i18n="navHow">How it Works</a>
+        <a href="/pricing" data-i18n="navPricing">Pricing</a>
+        <a href="/app/" data-i18n="navLive">Live Restaurant</a>
       </div>
       <span style="flex:1"></span>
       <div class="mk-actions">
-        <a class="btn btn-outline btn-sm" href="/login.html">دخول</a>
-        <a class="btn btn-sm" href="/signup.html" style="background:var(--primary);color:#fff">ابدأ الآن</a>
-        <button id="mk-burger" class="mk-burger" aria-label="فتح القائمة" aria-expanded="false"><span></span></button>
+        <a class="btn btn-outline btn-sm" href="/login.html" data-i18n="signIn">Sign in</a>
+        <a class="btn btn-sm" href="/signup.html" style="background:var(--primary);color:#fff" data-i18n="heroCTA2">Get Started</a>
+        <button id="mk-burger" class="mk-burger" aria-label="Open the menu" aria-expanded="false" data-i18n-aria-label="openTheMenu"><span></span></button>
       </div>
     </div>
-    <div id="mk-drawer" class="mk-drawer" role="dialog" aria-label="القائمة">
-      <button type="button" class="mk-drawer-close" aria-label="إغلاق القائمة">✕</button>
-      <a href="/features" data-i18n="navFeatures">المميزات</a>
-      <a href="/how-it-works" data-i18n="navHow">كيف يعمل</a>
-      <a href="/pricing" data-i18n="navPricing">الأسعار</a>
-      <a href="/app/" data-i18n="navLive">مطعم حي</a>
-      <a href="/login.html" data-i18n="signIn">دخول</a>
-      <a href="/signup.html">ابدأ الآن</a>
-      <a href="/for-restaurants" data-i18n="indRest">المطاعم</a>
-      <a href="/for-cafes" data-i18n="indCafe">المقاهي</a>
-      <a href="/for-dessert-shops" data-i18n="indDessert">محلات الحلويات</a>
-      <a href="/for-cake-shops" data-i18n="indCake">محلات الكيك</a><a href="/for-home-businesses">مشاريع الأكل المنزلية</a>
-      <a href="/contact">تواصل</a>
+    <div id="mk-drawer" class="mk-drawer" role="dialog" aria-label="Menu" data-i18n-aria-label="menuTab">
+      <button type="button" class="mk-drawer-close" aria-label="Close the menu" data-i18n-aria-label="closeTheMenu">✕</button>
+      <a href="/features" data-i18n="navFeatures">Features</a>
+      <a href="/how-it-works" data-i18n="navHow">How it Works</a>
+      <a href="/pricing" data-i18n="navPricing">Pricing</a>
+      <a href="/app/" data-i18n="navLive">Live Restaurant</a>
+      <a href="/login.html" data-i18n="signIn">Sign in</a>
+      <a href="/signup.html" data-i18n="heroCTA2">Get Started</a>
+      <a href="/for-restaurants" data-i18n="indRest">Restaurants</a>
+      <a href="/for-cafes" data-i18n="indCafe">Cafes</a>
+      <a href="/for-dessert-shops" data-i18n="indDessert">Dessert Shops</a>
+      <a href="/for-cake-shops" data-i18n="indCake">Cake Shops</a><a href="/for-home-businesses" data-i18n="homeFoodBusinesses">Home food businesses</a>
+      <a href="/contact" data-i18n="contactLink">Contact</a>
     </div>
   </nav>
   <main class="mk-container">
     <section class="mk-hero">
-      <div class="mk-kicker">الأدلة</div>
-      <h1 class="mk-h1">كيف تعمل منيو رقمي لمطعمك — أدلة لأصحاب المطاعم</h1>
-      <p class="muted">أدلة عملية — بدون حشو، فقط ما يبحث عنه أصحاب المطاعم فعلًا. دليلان جاهزان أدناه، والباقي قريبًا.</p>
+      <div class="mk-kicker" data-i18n="guides">Guides</div>
+      <h1 class="mk-h1" data-i18n="howADigitalMenuWorksForYour2">How a digital menu works for your restaurant — guides for restaurant owners</h1>
+      <p class="muted" data-i18n="practicalGuidesNoFluffJust">Practical guides — no fluff, just what restaurant owners actually look for. Two guides are ready below, and more are coming soon.</p>
       <div class="mk-cta-row">
-        <a class="mk-btn-primary" href="/signup.html">ابدأ مجانًا</a>
-        <a class="mk-btn-ghost" href="/demo/">كيف يبدو المنيو ←</a>
+        <a class="mk-btn-primary" href="/signup.html" data-i18n="startForFree">Start for free</a>
+        <a class="mk-btn-ghost" href="/demo/" data-i18n="whatTheMenuLooksLike">What the menu looks like →</a>
       </div>
       <div class="mt-2" style="display:grid; gap:12px">
-        <article class="card"><h3 style="margin:0">كيف تنشئ منيو رقميًا لمطعمك</h3>
-<p class="muted small">المنيو الرقمي هو صفحة قائمة عامة لمطعمك يفتحها الزبون من رابط أو رمز QR في متصفح هاتفه — بدون تطبيق وبدون حساب. هكذا تنشئها مع Ordora، خطوة بخطوة:</p>
+        <article class="card"><h3 style="margin:0" data-i18n="howToCreateADigitalMenuFor">How to create a digital menu for your restaurant</h3>
+<p class="muted small" data-i18n="aDigitalMenuIsAPublicMenu">A digital menu is a public menu page for your restaurant that customers open from a link or QR code in their phone's browser — no app, no account. Here's how to create one with Ordora, step by step:</p>
 <ol class="muted small" style="line-height:1.9; padding-inline-start:18px">
-<li><b>أنشئ حساب مطعمك واختر الرابط (slug):</b> هذا الرابط هو عنوان منيوك العام، مثل /restaurant?r=اسم-مطعمك.</li>
-<li><b>أضف التصنيفات والأصناف:</b> قسّم القائمة (مثلًا: مشاوي، مقبلات، حلويات)، وأضف لكل صنف اسمه وسعره وصورته، وحدّد توفره.</li>
-<li><b>اضبط الهوية وساعات العمل:</b> الشعار وصور الغلاف والألوان والعملة، وساعات العمل التي تظهر شارة مفتوح/مغلق تلقائيًا.</li>
-<li><b>شارك الرابط واطبع QR:</b> ضع الرابط في بايو إنستغرام وحالة واتساب، واطبع رمز QR للطاولات والتغليف — تحديث القائمة لا يحتاج إعادة طباعة.</li>
-<li><b>استقبل الطلبات:</b> تظهر الطلبات في لوحة تحكم المطعم (استلام أو توصيل)، ويمكن مشاركة ملخصها عبر واتساب، ويتتبع الزبون طلبه برمزه.</li>
+<li><b data-i18n="createYourRestaurantAccount2">Create your restaurant account and choose the link (slug):</b> <span data-i18n="thisLinkIsTheAddressOfYour">This link is the address of your public menu, like /restaurant?r=your-restaurant-name.</span></li>
+<li><b data-i18n="addCategoriesAndItems">Add categories and items:</b> <span data-i18n="splitTheMenuEGGrills">Split the menu (e.g. grills, appetizers, desserts), and add each item's name, price, and photo, and set its availability.</span></li>
+<li><b data-i18n="setYourBrandAndOpeningHours">Set your brand and opening hours:</b> <span data-i18n="logoCoverPhotosColorsAnd">Logo, cover photos, colors, and currency, plus opening hours that show the open/closed badge automatically.</span></li>
+<li><b data-i18n="shareTheLinkAndPrintAQrCode">Share the link and print a QR code:</b> <span data-i18n="putTheLinkInYourInstagramBio">Put the link in your Instagram bio and WhatsApp status, and print a QR code for tables and packaging — updating the menu needs no reprinting.</span></li>
+<li><b data-i18n="receiveOrders2">Receive orders:</b> <span data-i18n="ordersAppearInTheRestaurant2">Orders appear in the restaurant dashboard (pickup or delivery), their summary can be shared on WhatsApp, and customers track their order with its code.</span></li>
 </ol>
-<p class="muted small"><b>كم يكلف؟</b> تجربة مجانية 7 أيام بدون بطاقة عند التسجيل، ثم اشتراك شهري واحد 4.99$، بدون عمولة على الطلبات. <b>هل يحتاج الزبون تطبيقًا؟</b> لا — المتصفح فقط. جرّب بنفسك من <a href="/demo/">المنيو التجريبي</a>.</p></article>
-        <article class="card"><h3 style="margin:0">كيف تعمل قوائم QR للمطاعم</h3><p class="muted small">قريبًا — الطباعة والمواضع والتحديث بدون إعادة طباعة.</p><span class="badge">قريبًا</span></article>
-        <article class="card"><h3 style="margin:0">كيف تستقبل المطاعم الطلبات أونلاين</h3><p class="muted small">قريبًا — لوحة التحكم وواتساب ورموز التتبع.</p><span class="badge">قريبًا</span></article>
-        <article class="card"><h3 style="margin:0">المنيو الرقمي مقابل المنيو المطبوع</h3><p class="muted small">قريبًا — التكلفة والتحديثات وتجربة الزبون.</p><span class="badge">قريبًا</span></article>
-        <article class="card"><h3 style="margin:0"><a href="/resources/whatsapp-ordering">كيف تنظم طلبات واتساب لمطعمك أو مشروعك المنزلي</a></h3><p class="muted small">منيو واحد برابط وQR، طلب منظم بلوحة تحكم، وملخص الطلب بيوصل واتساب — بدل الطلبات المشتتة بين الرسائل.</p><a href="/resources/whatsapp-ordering">اقرأ الدليل ←</a></article>
+<p class="muted small"><b data-i18n="howMuchDoesItCost">How much does it cost?</b> <span data-i18n="dayFreeTrialNoCardRequiredAt2">7-day free trial, no card required at sign-up, then a single monthly subscription of $4.99, with no commission on orders.</span> <b data-i18n="doesTheCustomerNeedAnApp">Does the customer need an app?</b> <span data-i18n="noTheBrowserOnlyTryIt">No — the browser only. Try it yourself from</span> <a href="/demo/" data-i18n="demoMenu2">Demo menu</a>.</p></article>
+        <article class="card"><h3 style="margin:0" data-i18n="howQrMenusWorkForRestaurants">How QR menus work for restaurants</h3><p class="muted small" data-i18n="comingSoonPrintingPlacement">Coming soon — printing, placement, and updating without reprinting.</p><span class="badge" data-i18n="comingSoon">Coming soon</span></article>
+        <article class="card"><h3 style="margin:0" data-i18n="howRestaurantsReceiveOrders">How restaurants receive orders online</h3><p class="muted small" data-i18n="comingSoonDashboardWhatsapp">Coming soon — dashboard, WhatsApp, and tracking codes.</p><span class="badge" data-i18n="comingSoon">Coming soon</span></article>
+        <article class="card"><h3 style="margin:0" data-i18n="digitalMenuVsPrintedMenu">Digital menu vs. printed menu</h3><p class="muted small" data-i18n="comingSoonCostUpdatesAndThe">Coming soon — cost, updates, and the customer experience.</p><span class="badge" data-i18n="comingSoon">Coming soon</span></article>
+        <article class="card"><h3 style="margin:0"><a href="/resources/whatsapp-ordering" data-i18n="howToOrganizeWhatsappOrders">How to organize WhatsApp orders for your restaurant or home business</a></h3><p class="muted small" data-i18n="oneMenuWithALinkAndQrAn">One menu with a link and QR, an organized order in a dashboard, and the order summary delivered on WhatsApp — instead of orders scattered across messages.</p><a href="/resources/whatsapp-ordering" data-i18n="readTheGuide">Read the guide →</a></article>
       </div>
-      <p class="small muted mt-2">باقي الأدلة ستُضاف يدويًا بعد البحث — بدون محتوى وهمي.</p>
+      <p class="small muted mt-2" data-i18n="theRemainingGuidesWillBe">The remaining guides will be added manually after research — no made-up content.</p>
     </section>
   </main>
   <footer class="mk-footer">
     <div class="mk-container" style="display:flex; gap:14px; flex-wrap:wrap; justify-content:space-between">
-      <span>© Ordora — منيو رقمي وطلبات.</span>
+      <span data-i18n="ordoraDigitalMenusAnd">© Ordora — Digital menus and ordering.</span>
       <span style="display:flex; gap:12px; flex-wrap:wrap">
-        <a href="/features">المميزات</a>
-        <a href="/how-it-works">كيف يعمل</a>
-        <a href="/pricing">الأسعار</a>
-        <a href="/contact">تواصل</a>
-        <a href="/for-restaurants">المطاعم</a>
-        <a href="/for-cafes">المقاهي</a>
-        <a href="/for-dessert-shops">محلات الحلويات</a>
-        <a href="/for-cake-shops">محلات الكيك</a><a href="/for-home-businesses">مشاريع الأكل المنزلية</a>
-        <a href="/resources/">الأدلة</a>
-        <a href="/faq">الأسئلة الشائعة</a>
-        <a href="/ordora-vs-menux">عن Ordora</a>
-        <a href="/app/">المطاعم</a>
+        <a href="/features" data-i18n="navFeatures">Features</a>
+        <a href="/how-it-works" data-i18n="navHow">How it Works</a>
+        <a href="/pricing" data-i18n="navPricing">Pricing</a>
+        <a href="/contact" data-i18n="contactLink">Contact</a>
+        <a href="/for-restaurants" data-i18n="appLink">Restaurants</a>
+        <a href="/for-cafes" data-i18n="indCafe">Cafes</a>
+        <a href="/for-dessert-shops" data-i18n="indDessert">Dessert Shops</a>
+        <a href="/for-cake-shops" data-i18n="indCake">Cake Shops</a><a href="/for-home-businesses" data-i18n="homeFoodBusinesses">Home food businesses</a>
+        <a href="/resources/" data-i18n="guides">Guides</a>
+        <a href="/faq" data-i18n="frequentlyAskedQuestions">Frequently asked questions</a>
+        <a href="/ordora-vs-menux" data-i18n="aboutOrdora">About Ordora</a>
+        <a href="/app/" data-i18n="appLink">Restaurants</a>
       </span>
     </div>
   </footer>
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"HowTo","name":"كيف تنشئ منيو رقميًا لمطعمك","description":"خطوات إنشاء منيو رقمي مع Ordora: حساب ورابط، تصنيفات وأصناف، هوية وساعات عمل، مشاركة الرابط وQR، واستقبال الطلبات.","step":[
-  {"@type":"HowToStep","name":"أنشئ حساب مطعمك واختر الرابط","text":"أنشئ حساب مطعمك واختر الرابط (slug) الذي سيكون عنوان منيوك العام."},
-  {"@type":"HowToStep","name":"أضف التصنيفات والأصناف","text":"قسّم القائمة إلى تصنيفات، وأضف لكل صنف اسمه وسعره وصورته وتوفره."},
-  {"@type":"HowToStep","name":"اضبط الهوية وساعات العمل","text":"أضف الشعار وصور الغلاف والألوان والعملة وساعات العمل."},
-  {"@type":"HowToStep","name":"شارك الرابط واطبع QR","text":"شارك الرابط في بايو إنستغرام وحالة واتساب، واطبع رمز QR للطاولات والتغليف."},
-  {"@type":"HowToStep","name":"استقبل الطلبات","text":"تظهر الطلبات في لوحة تحكم المطعم، ويمكن مشاركة ملخصها عبر واتساب."}]}
+  {"@context":"https://schema.org","@type":"HowTo","name":"How to create a digital menu for your restaurant","description":"Steps to create a digital menu with Ordora: account and link, categories and items, brand and opening hours, sharing the link and QR, and receiving orders.","step":[
+  {"@type":"HowToStep","name":"Create your restaurant account and choose the link","text":"Create your restaurant account and choose the link (slug) that will be your public menu's address."},
+  {"@type":"HowToStep","name":"Add categories and items","text":"Split the menu into categories, and add each item's name, price, photo, and availability."},
+  {"@type":"HowToStep","name":"Set the brand and opening hours","text":"Add the logo, cover photos, colors, currency, and opening hours."},
+  {"@type":"HowToStep","name":"Share the link and print a QR code","text":"Share the link in your Instagram bio and WhatsApp status, and print a QR code for tables and packaging."},
+  {"@type":"HowToStep","name":"Receive orders","text":"Orders appear in the restaurant dashboard, and their summary can be shared via WhatsApp."}]}
   </script>
   <script src="/js/api.js"></script><script src="/js/i18n.js"></script>
   <script src="/js/seo-meta.js" defer></script>

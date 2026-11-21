@@ -90,7 +90,7 @@
         const r=(document.getElementById('rq-rest')?.value||'').trim();
         let msg=tr('waRequestMsg', null, 'مرحبا Ordora — أريد صفحة لمطعمي');
         if(r) msg+=' ('+r+')';
-        if(n) msg+=' — اسمي '+n;
+        if(n) msg+=tr('waRequestName', {name: n}, ' — اسمي '+n);
         fast.href='https://wa.me/972567439846?text='+encodeURIComponent(msg);
       }catch(_){}
     });
@@ -135,7 +135,7 @@
         form.reset();
         if(window.App && window.App.toast) window.App.toast(tr('rqSentToast', null, 'تم إرسال طلبك'), 'success');
       }catch(err){
-        showMsg(err.message || 'حدث خطأ، حاول مجددًا', 'error');
+        showMsg(err.message || tr('rqGenericError', null, 'حدث خطأ، حاول مجددًا'), 'error');
         if(window.App && window.App.toast) window.App.toast(err.message, 'error');
       }finally{ btn.disabled=false; btn.textContent=old; }
     });
