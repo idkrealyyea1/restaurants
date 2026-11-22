@@ -1,6 +1,17 @@
 'use strict';
 (function(){
   const I = window.I18N;
+  document.querySelectorAll('.mk-footer').forEach((footer) => {
+    const links = footer.querySelector('span[style*="flex"]') || footer;
+    [['/terms', 'termsLink', 'الشروط'], ['/privacy', 'privacyLink', 'الخصوصية']].forEach(([href, key, label]) => {
+      if (footer.querySelector(`a[href="${href}"]`)) return;
+      const a = document.createElement('a');
+      a.href = href;
+      a.dataset.i18n = key;
+      a.textContent = I ? I.t(key) : label;
+      links.append(a);
+    });
+  });
   function tr(key, vars, fallback){
     try{
       const value = I && I.t ? I.t(key, vars) : key;
