@@ -869,10 +869,11 @@ function openConfirm() {
   closeDish();
   closeCart();
   state.demoOrderCode = `RB-${Math.floor(1000 + Math.random() * 9000)}`;
+  state.previousFocus = document.activeElement;
   state.confirmOpen = true;
   renderConfirm();
   document.body.classList.add("overlay-open");
-  requestAnimationFrame(() => $("#modalRoot [data-close-confirm]")?.focus());
+  requestAnimationFrame(() => $("#modalRoot [data-close-confirm]")?.focus({ preventScroll: true }));
 }
 
 function closeConfirm() {
@@ -880,6 +881,7 @@ function closeConfirm() {
   state.confirmOpen = false;
   $("#modalRoot").innerHTML = "";
   document.body.classList.remove("overlay-open");
+  state.previousFocus?.focus?.();
 }
 
 function renderCart() {
@@ -1103,7 +1105,7 @@ document.addEventListener("keydown", (event) => {
 
   const dialog = $("#modalRoot [role='dialog'], #cartDrawerRoot [role='dialog']");
   if (event.key !== "Tab" || !dialog) return;
-  const focusable = $$("button:not(:disabled), input:not(:disabled), [tabindex='0']", dialog)
+  const focusable = $$("button:not(:disabled), input:not(:disabled), a[href], [tabindex='0']", dialog)
     .filter((element) => element.offsetParent !== null);
   if (!focusable.length) return;
   const first = focusable[0];
