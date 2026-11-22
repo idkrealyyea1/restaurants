@@ -358,7 +358,7 @@ function render() {
       <section class="faq-section" id="faq"><div class="container faq-container"><div class="faq-heading"><span class="section-kicker">${t.faq.eyebrow}</span><h2>${t.faq.title}</h2></div><div class="faq-list">${t.faq.items.map((item, i) => `<details class="faq-item"${i === 0 ? " open" : ""}><summary>${item[0]}<span>${icon("plus", 17)}</span></summary><p>${item[1]}</p></details>`).join("")}</div></div></section>
       <section class="final-section"><span class="final-spark">${icon("spark", 32)}</span><h2>${t.final.titleA}<br>${t.final.titleB}</h2><p>${t.final.body}</p><button type="button" class="button final-button" data-action="start">${t.final.request}${icon("arrow", 17)}</button></section>
     </main>
-      <footer class="site-footer"><div class="container footer-inner"><div>${logo(true)}<p>${t.footer[0]}<br>${t.footer[1]}</p></div><nav><a href="#features">${t.nav.features}</a><a href="#pricing">${t.nav.pricing}</a><a href="${demoUrl}">${t.hero.demo}</a><span>© Ordora</span></nav></div></footer>
+      <footer class="site-footer"><div class="container footer-inner"><div>${logo(true)}<p>${t.footer[0]}<br>${t.footer[1]}</p></div><nav><a href="#features">${t.nav.features}</a><a href="#pricing">${t.nav.pricing}</a><a href="${demoUrl}">${t.hero.demo}</a><a href="/terms">${language === "en" ? "Terms" : "الشروط"}</a><a href="/privacy">${language === "en" ? "Privacy" : "الخصوصية"}</a><span>© Ordora</span></nav></div></footer>
     ${modalOpen ? modalMarkup(t) : ""}
   </div>`;
 }
