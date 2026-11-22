@@ -812,23 +812,23 @@
     if(!zone) return;
     const status=document.getElementById('requests-status')?.value || '';
     const q='?page='+reqPage+'&limit=10'+(status?'&status='+encodeURIComponent(status):'');
-    zone.innerHTML='<div class="empty-state small">'+I.t('reqLoading')+'</div>';
+    zone.innerHTML='<div class="empty-state small">جاري التحميل…</div>';
     try{
       const data=await api.get('/api/owner/restaurant-requests'+q);
       const list=data.requests||[];
       const pendingAll = await api.get('/api/owner/restaurant-requests?limit=1&status=pending').catch(()=>({total:0}));
       const badge=document.getElementById('req-count-badge');
-      if(badge){ const n=pendingAll.total||0; badge.textContent=n? n+' '+I.t('new'):''; badge.style.display=n?'inline-block':'none'; }
-      if(!list.length){ zone.innerHTML='<div class="empty-state small">'+I.t('noOrders')+'</div>'; document.getElementById('req-page-info').textContent=''; return; }
-      zone.innerHTML='<div class="table-wrap"><table class="data"><thead><tr><th>'+I.t('reqCode')+'</th><th>'+I.t('reqCustomer')+'</th><th>'+I.t('restaurantTh')+'</th><th>'+I.t('thPhone')+'</th><th>'+I.t('statusTh')+'</th><th>'+I.t('reqDate')+'</th><th></th></tr></thead><tbody>'+
-        list.map(r=>'<tr><td><span class="order-code">'+esc(r.code)+'</span></td><td>'+esc(r.customer_name)+'<div class="muted small">'+esc(r.city||'')+'</div></td><td><strong>'+esc(r.restaurant_name)+'</strong></td><td class="small">'+esc(r.phone)+'<br>'+esc(r.whatsapp)+'</td><td><span class="badge '+(r.status==='pending'?'badge-closed':r.status==='approved'?'badge-open':'')+'">'+esc(r.status)+'</span></td><td class="small muted">'+esc(String(r.created_at).slice(0,10))+'</td><td><div style="display:flex;gap:4px;flex-wrap:wrap"><select data-req-status="'+esc(r.id)+'"><option value="pending"'+(r.status==='pending'?' selected':'')+'>pending</option><option value="contacted"'+(r.status==='contacted'?' selected':'')+'>contacted</option><option value="approved"'+(r.status==='approved'?' selected':'')+'>approved</option><option value="rejected"'+(r.status==='rejected'?' selected':'')+'>rejected</option></select><a class="btn btn-outline btn-sm" href="https://wa.me/'+encodeURIComponent(String(r.whatsapp).replace(/[^0-9]/g,''))+'" target="_blank" rel="noopener">'+I.t('whatsappL2')+'</a><button type="button" class="btn btn-danger btn-sm" data-req-del="'+esc(r.id)+'">'+I.t('bDelete')+'</button></div>'+(r.notes?'<div class="muted small" style="margin-top:4px">'+esc(r.notes)+'</div>':'')+'</td></tr>').join('')+'</tbody></table></div>';
-      document.getElementById('req-page-info').textContent=I.t('reqPageInfo', {page: data.page, pages: Math.max(1,Math.ceil(data.total/data.limit)), total: data.total});
+      if(badge){ const n=pendingAll.total||0; badge.textContent=n? n+' جديد':''; badge.style.display=n?'inline-block':'none'; }
+      if(!list.length){ zone.innerHTML='<div class="empty-state small">لا توجد طلبات.</div>'; document.getElementById('req-page-info').textContent=''; return; }
+      zone.innerHTML='<div class="table-wrap"><table class="data"><thead><tr><th>الكود</th><th>العميل</th><th>المطعم</th><th>الهاتف</th><th>الحالة</th><th>تاريخ</th><th></th></tr></thead><tbody>'+
+        list.map(r=>'<tr><td><span class="order-code">'+esc(r.code)+'</span></td><td>'+esc(r.customer_name)+'<div class="muted small">'+esc(r.city||'')+'</div></td><td><strong>'+esc(r.restaurant_name)+'</strong></td><td class="small">'+esc(r.phone)+'<br>'+esc(r.whatsapp)+'</td><td><span class="badge '+(r.status==='pending'?'badge-closed':r.status==='approved'?'badge-open':'')+'">'+esc(r.status)+'</span></td><td class="small muted">'+esc(String(r.created_at).slice(0,10))+'</td><td><div style="display:flex;gap:4px;flex-wrap:wrap"><select data-req-status="'+esc(r.id)+'"><option value="pending"'+(r.status==='pending'?' selected':'')+'>pending</option><option value="contacted"'+(r.status==='contacted'?' selected':'')+'>contacted</option><option value="approved"'+(r.status==='approved'?' selected':'')+'>approved</option><option value="rejected"'+(r.status==='rejected'?' selected':'')+'>rejected</option></select><a class="btn btn-outline btn-sm" href="https://wa.me/'+encodeURIComponent(String(r.whatsapp).replace(/[^0-9]/g,''))+'" target="_blank" rel="noopener">واتساب</a><button type="button" class="btn btn-danger btn-sm" data-req-del="'+esc(r.id)+'">حذف</button></div>'+(r.notes?'<div class="muted small" style="margin-top:4px">'+esc(r.notes)+'</div>':'')+'</td></tr>').join('')+'</tbody></table></div>';
+      document.getElementById('req-page-info').textContent='صفحة '+data.page+' من '+Math.max(1,Math.ceil(data.total/data.limit))+' ('+data.total+')';
       zone.querySelectorAll('[data-req-status]').forEach(sel=> sel.addEventListener('change', async ()=>{
-        try{ await api.patch('/api/owner/restaurant-requests/'+sel.getAttribute('data-req-status'), {status: sel.value}); toast(I.t('reqUpdated'),'success'); }catch(e){ toast(e.message,'error'); }
+        try{ await api.patch('/api/owner/restaurant-requests/'+sel.getAttribute('data-req-status'), {status: sel.value}); toast('تم التحديث','success'); }catch(e){ toast(e.message,'error'); }
       }));
       zone.querySelectorAll('[data-req-del]').forEach(b=> b.addEventListener('click', async ()=>{
-        if(!confirm(I.t('reqDeleteConfirm', {id: b.getAttribute('data-req-del')}))) return;
-        try{ await api.del('/api/owner/restaurant-requests/'+b.getAttribute('data-req-del')); toast(I.t('reqDeleted'),'success'); loadRequests(); }catch(e){ toast(e.message,'error'); }
+        if(!confirm('حذف الطلب '+b.getAttribute('data-req-del')+'؟')) return;
+        try{ await api.del('/api/owner/restaurant-requests/'+b.getAttribute('data-req-del')); toast('تم الحذف','success'); loadRequests(); }catch(e){ toast(e.message,'error'); }
       }));
     }catch(err){ zone.innerHTML='<div class="notice notice-error">'+esc(err.message)+'</div>'; }
   }

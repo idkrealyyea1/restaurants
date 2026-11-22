@@ -131,7 +131,7 @@ const copy = {
 
 const app = document.querySelector("#app");
 const LANG_STORE_KEY = "site_lang";
-let language = "en";
+let language = "ar";
 try {
   const queryLanguage = new URLSearchParams(location.search).get("lang");
   const savedLanguage = localStorage.getItem(LANG_STORE_KEY);

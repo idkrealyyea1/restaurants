@@ -263,7 +263,7 @@ const coverSlides = [
 ];
 
 const state = {
-  language: "en",
+  language: "ar",
   category: "all",
   query: "",
   fulfillment: "pickup",
@@ -868,8 +868,6 @@ async function shareMenu() {
 function setLanguage(language) {
   if (language === state.language) return;
   state.language = language;
-  // Keep the shared i18n layer (data-i18n labels) in sync.
-  if (window.I18N) window.I18N.setLang(language);
   updateStaticCopy();
   renderMenu();
   renderCart();

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" dir="ltr">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8">
   <meta name="api-base" content="">
@@ -9,7 +9,7 @@
   <meta name="theme-color" content="#22211d">
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="icon" type="image/png" href="/favicon.png">
-  <title data-i18n="restaurantsOrdora">Restaurants — Ordora</title>
+  <title>المطاعم — Ordora</title>
   <link rel="stylesheet" href="/fonts/fonts.css">
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/css/skeleton.css">
@@ -24,7 +24,7 @@
 </head>
 <body>
   <!-- Skeleton loader: visible until page fully loads / offline handling -->
-  <div id="app-skeleton" aria-hidden="false" aria-label="Loading" data-i18n-aria-label="loading2">
+  <div id="app-skeleton" aria-hidden="false" aria-label="جارٍ التحميل">
     <div class="sk-skeleton-topbar">
       <div class="sk-logo shimmer" aria-hidden="true"></div>
       <div class="sk-brand shimmer"></div>
@@ -42,8 +42,8 @@
     </div>
     <div class="sk-cards"><div class="sk-mini shimmer"></div><div class="sk-mini shimmer"></div><div class="sk-mini shimmer"></div><div class="sk-mini shimmer"></div><div class="sk-mini shimmer"></div></div>
   </div>
-  <div id="sk-offline" class="sk-offline" role="status" aria-live="polite"><span data-i18n="itLooksLikeYouReOfflineCheck">It looks like you're offline — check your connection</span> <button id="sk-offline-retry" type="button" data-i18n="retryLoad">Try again</button></div>
-  <div id="sk-retry" class="sk-retry" role="alert"><p style="margin:0 0 8px; font-weight:700" data-i18n="connectionIsSlowOr">Connection is slow or unavailable</p><p class="muted small" style="margin:0 0 12px" data-i18n="thePageIsTakingLongerThan">The page is taking longer than usual. Check your connection or try again.</p><button id="sk-retry-btn" class="btn btn-sm" type="button" data-i18n="retryLoad">Try again</button></div>
+  <div id="sk-offline" class="sk-offline" role="status" aria-live="polite">يبدو أنك غير متصل — تحقق من اتصالك <button id="sk-offline-retry" type="button">إعادة المحاولة</button></div>
+  <div id="sk-retry" class="sk-retry" role="alert"><p style="margin:0 0 8px; font-weight:700">الاتصال بطيء أو غير متاح</p><p class="muted small" style="margin:0 0 12px">الصفحة تستغرق وقتًا أطول من المعتاد. تحقق من اتصالك أو حاول مجددًا.</p><button id="sk-retry-btn" class="btn btn-sm" type="button">إعادة المحاولة</button></div>
 
   <div class="page-glow" aria-hidden="true"></div>
 
@@ -51,31 +51,31 @@
     <div class="topbar-inner container" style="max-width:960px">
       <a class="brand" href="/" data-i18n="brand">Ordora</a>
       <span class="spacer"></span>
-      <a class="btn btn-outline btn-sm" href="/track" data-i18n="trackAnOrder">Track an order</a>
-      <a class="btn btn-outline btn-sm" href="/login.html" data-i18n="signIn">Sign in</a>
+      <a class="btn btn-outline btn-sm" href="/track" data-i18n="trackAnOrder">تتبع طلب</a>
+      <a class="btn btn-outline btn-sm" href="/login.html" data-i18n="signIn">دخول</a>
     </div>
   </header>
 
   <main class="container mt-3">
     <!-- Hero: the platform's menu cover -->
     <section class="home-hero">
-      <span class="home-eye" data-i18n="homeEyebrow">Local restaurants near you</span>
-      <h1 data-i18n="homeTitle">Order from your favorite local restaurants</h1>
+      <span class="home-eye" data-i18n="homeEyebrow">مطاعم من مدينتك</span>
+      <h1 data-i18n="homeTitle">اطلب من مطاعمك المفضلة</h1>
       <p data-i18n="homeDesc">
-        Scan a restaurant's QR code or open their link to browse the menu, add items to your cart and place an order — no account needed.
+        امسح رمز QR للمطعم أو افتح رابطه لتصفح القائمة وإضافة الأصناف وإرسال طلبك — دون الحاجة إلى حساب.
       </p>
     </section>
 
     <!-- Restaurants directory -->
     <div class="flex-between mb-1 home-rest-head">
-      <h2 class="section-title" data-i18n="homeRestH">Restaurants</h2>
-      <input id="rest-search" class="search-input" type="text" data-i18n-placeholder="searchRest" placeholder="Search for a restaurant…" maxlength="60" data-i18n-placeholder="searchRest">
+      <h2 class="section-title" data-i18n="homeRestH">المطاعم</h2>
+      <input id="rest-search" class="search-input" type="text" data-i18n-placeholder="searchRest" placeholder="ابحث عن مطعم…" maxlength="60">
     </div>
 
     <section id="rest-grid" class="rest-grid"></section>
     <div id="rest-empty" class="empty-state card hidden"></div>
 
-    <p class="footer-note"><a href="/login.html" class="muted" data-i18n="footerOwner">Are you a restaurant owner? Sign in to manage your menu and orders.</a></p>
+    <p class="footer-note"><a href="/login.html" class="muted" data-i18n="footerOwner">هل أنت صاحب مطعم؟ سجّل الدخول لإدارة قائمتك وطلباتك.</a></p>
   </main>
 
   <script src="/js/i18n.js"></script>

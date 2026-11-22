@@ -304,7 +304,7 @@
         const missing = [];
         if (!draft.username) missing.push(I.t('su_username'));
         if (!draft.password) missing.push(I.t('su_password'));
-        if (missing.length) throw new Error(I.t('su_requiredFields', { fields: missing.join(I && I.lang === 'ar' ? '، ' : ', ') }));
+        if (missing.length) throw new Error(I.t('su_requiredFields', { fields: missing.join('، ') }));
         await go('type');
       } else if (screen === 'type') {
         const picked = stepEl.querySelector('input[name="bt"]:checked');

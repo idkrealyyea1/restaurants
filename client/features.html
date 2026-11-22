@@ -1,28 +1,28 @@
 <!doctype html>
-<html lang="en" dir="ltr">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8">
   <meta name="api-base" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="theme-color" content="#c73d18">
-  <meta name="description" content="Explore Ordora's features: digital menu, QR menu, online ordering, WhatsApp orders, restaurant dashboard, order management, and analytics.">
+  <meta name="description" content="استكشف مميزات Ordora: منيو رقمي، قائمة QR، طلب أونلاين، طلبات واتساب، لوحة تحكم للمطعم، إدارة الطلبات والتحليلات.">
   <link rel="canonical" href="https://ordora.site/features">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://ordora.site/features">
-  <meta property="og:title" content="Features — Digital menu, QR code, online ordering, WhatsApp, dashboard | Ordora">
-  <meta property="og:description" content="Explore Ordora's features: digital menu, QR menu, online ordering, WhatsApp orders, restaurant dashboard, order management, and analytics.">
+  <meta property="og:title" content="المميزات — منيو رقمي، رمز QR، طلب أونلاين، واتساب، لوحة تحكم | Ordora">
+  <meta property="og:description" content="استكشف مميزات Ordora: منيو رقمي، قائمة QR، طلب أونلاين، طلبات واتساب، لوحة تحكم للمطعم، إدارة الطلبات والتحليلات.">
   <meta property="og:image" content="https://ordora.site/icons/icon-512.png">
   <meta property="og:image:width" content="512">
   <meta property="og:image:height" content="512">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Features — Digital menu, QR code, online ordering, WhatsApp, dashboard | Ordora">
-  <meta name="twitter:description" content="Explore Ordora's features: digital menu, QR menu, online ordering, WhatsApp orders, restaurant dashboard, order management, and analytics.">
+  <meta name="twitter:title" content="المميزات — منيو رقمي، رمز QR، طلب أونلاين، واتساب، لوحة تحكم | Ordora">
+  <meta name="twitter:description" content="استكشف مميزات Ordora: منيو رقمي، قائمة QR، طلب أونلاين، طلبات واتساب، لوحة تحكم للمطعم، إدارة الطلبات والتحليلات.">
   <meta name="twitter:image" content="https://ordora.site/icons/icon-512.png">
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/icons/icon-192.png">
-  <title data-i18n="featuresDigitalMenuQrCode">Features — Digital menu, QR code, online ordering, WhatsApp, dashboard | Ordora</title>
+  <title>المميزات — منيو رقمي، رمز QR، طلب أونلاين، واتساب، لوحة تحكم | Ordora</title>
   <link rel="stylesheet" href="/fonts/fonts.css">
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/css/marketing.css">
@@ -42,7 +42,7 @@
 </head>
 <body>
   <!-- Skeleton loader: visible until page fully loads / offline handling -->
-  <div id="app-skeleton" aria-hidden="false" aria-label="Loading" data-i18n-aria-label="loading2">
+  <div id="app-skeleton" aria-hidden="false" aria-label="جارٍ التحميل">
     <div class="sk-skeleton-topbar">
       <div class="sk-logo shimmer" aria-hidden="true"></div>
       <div class="sk-brand shimmer"></div>
@@ -60,52 +60,52 @@
     </div>
     <div class="sk-cards"><div class="sk-mini shimmer"></div><div class="sk-mini shimmer"></div><div class="sk-mini shimmer"></div><div class="sk-mini shimmer"></div><div class="sk-mini shimmer"></div></div>
   </div>
-  <div id="sk-offline" class="sk-offline" role="status" aria-live="polite"><span data-i18n="itLooksLikeYouReOfflineCheck">It looks like you're offline — check your connection</span> <button id="sk-offline-retry" type="button" data-i18n="retryLoad">Try again</button></div>
-  <div id="sk-retry" class="sk-retry" role="alert"><p style="margin:0 0 8px; font-weight:700" data-i18n="connectionIsSlowOr">Connection is slow or unavailable</p><p class="muted small" style="margin:0 0 12px" data-i18n="thePageIsTakingLongerThan">The page is taking longer than usual. Check your connection or try again.</p><button id="sk-retry-btn" class="btn btn-sm" type="button" data-i18n="retryLoad">Try again</button></div>
+  <div id="sk-offline" class="sk-offline" role="status" aria-live="polite">يبدو أنك غير متصل — تحقق من اتصالك <button id="sk-offline-retry" type="button">إعادة المحاولة</button></div>
+  <div id="sk-retry" class="sk-retry" role="alert"><p style="margin:0 0 8px; font-weight:700">الاتصال بطيء أو غير متاح</p><p class="muted small" style="margin:0 0 12px">الصفحة تستغرق وقتًا أطول من المعتاد. تحقق من اتصالك أو حاول مجددًا.</p><button id="sk-retry-btn" class="btn btn-sm" type="button">إعادة المحاولة</button></div>
 
   <div class="page-glow" aria-hidden="true"></div>
-  <nav class="mk-nav" aria-label="Main navigation" data-i18n-aria-label="mainNavigation">
+  <nav class="mk-nav" aria-label="التنقل الرئيسي">
     <div class="mk-container mk-nav-inner">
       <a class="mk-brand" href="/"><img class="mk-brand-lockup" src="/images/ordora-lockup.png" alt="Ordora" width="723" height="200"></a>
       <div class="mk-links" role="navigation">
-        <a href="/features" data-i18n="navFeatures">Features</a>
-        <a href="/how-it-works" data-i18n="navHow">How it Works</a>
-        <a href="/pricing" data-i18n="navPricing">Pricing</a>
-        <a href="/app/" data-i18n="navLive">Live Restaurant</a>
+        <a href="/features" data-i18n="navFeatures">المميزات</a>
+        <a href="/how-it-works" data-i18n="navHow">كيف يعمل</a>
+        <a href="/pricing" data-i18n="navPricing">الأسعار</a>
+        <a href="/app/" data-i18n="navLive">مطعم حي</a>
       </div>
       <span style="flex:1"></span>
       <div class="mk-actions">
-        <a class="btn btn-outline btn-sm" href="/login.html" data-i18n="signIn">Sign in</a>
-        <a class="btn btn-sm" href="/signup.html" style="background:var(--primary);color:#fff" data-i18n="heroCTA2">Get Started</a>
-        <button id="mk-burger" class="mk-burger" aria-label="Open the menu" aria-expanded="false" data-i18n-aria-label="openTheMenu"><span></span></button>
+        <a class="btn btn-outline btn-sm" href="/login.html">دخول</a>
+        <a class="btn btn-sm" href="/signup.html" style="background:var(--primary);color:#fff">ابدأ الآن</a>
+        <button id="mk-burger" class="mk-burger" aria-label="فتح القائمة" aria-expanded="false"><span></span></button>
       </div>
     </div>
-    <div id="mk-drawer" class="mk-drawer" role="dialog" aria-label="Menu" data-i18n-aria-label="menuTab">
-      <button type="button" class="mk-drawer-close" aria-label="Close the menu" data-i18n-aria-label="closeTheMenu">✕</button>
-      <a href="/features" data-i18n="navFeatures">Features</a>
-      <a href="/how-it-works" data-i18n="navHow">How it Works</a>
-      <a href="/pricing" data-i18n="navPricing">Pricing</a>
-      <a href="/app/" data-i18n="navLive">Live Restaurant</a>
-      <a href="/login.html" data-i18n="signIn">Sign in</a>
-      <a href="/app/" data-i18n="appLink">Restaurants</a>
-      <a href="/for-restaurants" data-i18n="indRest">Restaurants</a>
-      <a href="/for-cafes" data-i18n="indCafe">Cafes</a>
-      <a href="/for-dessert-shops" data-i18n="indDessert">Dessert Shops</a>
-      <a href="/for-cake-shops" data-i18n="indCake">Cake Shops</a><a href="/for-home-businesses" data-i18n="homeFoodBusinesses">Home food businesses</a>
-      <a href="/contact" data-i18n="contactLink">Contact</a>
+    <div id="mk-drawer" class="mk-drawer" role="dialog" aria-label="القائمة">
+      <button type="button" class="mk-drawer-close" aria-label="إغلاق القائمة">✕</button>
+      <a href="/features" data-i18n="navFeatures">المميزات</a>
+      <a href="/how-it-works" data-i18n="navHow">كيف يعمل</a>
+      <a href="/pricing" data-i18n="navPricing">الأسعار</a>
+      <a href="/app/" data-i18n="navLive">مطعم حي</a>
+      <a href="/login.html" data-i18n="signIn">دخول</a>
+      <a href="/app/">المطاعم</a>
+      <a href="/for-restaurants" data-i18n="indRest">المطاعم</a>
+      <a href="/for-cafes" data-i18n="indCafe">المقاهي</a>
+      <a href="/for-dessert-shops" data-i18n="indDessert">محلات الحلويات</a>
+      <a href="/for-cake-shops" data-i18n="indCake">محلات الكيك</a><a href="/for-home-businesses">مشاريع الأكل المنزلية</a>
+      <a href="/contact">تواصل</a>
     </div>
   </nav>
   <main>
     <section class="mk-hero">
       <div class="mk-container">
         <div class="mk-kicker">Ordora</div>
-        <h1 class="mk-h1" data-i18n="digitalMenuFeaturesActually">Digital menu features — actually live, not mockups</h1>
-        <p class="mk-muted" style="max-width:62ch" data-i18n="everyCardBelowIsAReal">Every card below is a real capability in the platform. No fake screens.</p>
-        <p class="mk-muted" style="max-width:62ch" data-i18n="ordoraIsADigitalMenuAnd">Ordora is a digital menu and ordering for restaurants and home businesses: create your menu, share it with a QR code, and receive orders.</p>
+        <h1 class="mk-h1">مميزات المنيو الرقمي — موجودة فعلًا، ليست نماذج وهمية</h1>
+        <p class="mk-muted" style="max-width:62ch">كل بطاقة أدناه قدرة حقيقية في المنصة. لا لوحات وهمية.</p>
+        <p class="mk-muted" style="max-width:62ch">Ordora منيو رقمي وطلبات للمطاعم والمشاريع المنزلية: أنشئ قائمتك، شاركها برمز QR، واستقبل الطلبات.</p>
         <div class="mt-2" style="display:flex;gap:10px;flex-wrap:wrap">
-          <a class="btn" href="/demo/" data-i18n="seeTheDemo">See the demo</a>
-          <a class="btn btn-outline" href="/app/" data-i18n="tryALiveRestaurant">Try a live restaurant</a>
-          <a class="btn btn-outline" href="/" data-i18n="home2">Home</a>
+          <a class="btn" href="/demo/">شاهد الديمو</a>
+          <a class="btn btn-outline" href="/app/">جرّب مطعمًا حيًا</a>
+          <a class="btn btn-outline" href="/">الصفحة الرئيسية</a>
         </div>
       </div>
     </section>
@@ -113,43 +113,43 @@
     <section class="mk-section" style="background: var(--surface-muted); border-top:1px solid var(--border); border-bottom:1px solid var(--border)">
       <div class="mk-container">
         <div class="mk-feature-grid">
-          <div class="mk-feat"><h3 data-i18n="digitalMenu">Digital menu</h3><p data-i18n="categoriesItemsPricesAnd">Categories, items, prices, and photos, with availability markers and a best-seller badge. Reorder by position, and hide sold-out items instantly.</p></div>
-          <div class="mk-feat"><h3 data-i18n="trustQR">QR Menu</h3><p><span data-i18n="oneLinkPerRestaurant">One link per restaurant (</span><code dir="ltr">/restaurant?r=your-slug</code><span data-i18n="aPrintableQrCodeFromThe">) + a printable QR code from the dashboard. No app install — it opens instantly.</span></p></div>
-          <div class="mk-feat"><h3 data-i18n="onlineOrdering">Online ordering</h3><p data-i18n="customersAddToTheCartFrom">Customers add to the cart from their phones, choose pickup or delivery, enter their name and WhatsApp, and send. The server calculates the totals.</p></div>
-          <div class="mk-feat"><h3 data-i18n="orderingViaWhatsapp">Ordering via WhatsApp</h3><p data-i18n="twoPathsOrderViaTheWebsite">Two paths: order via the website (organized) or order via WhatsApp (a wa.me message pre-filled with the cart). You choose.</p></div>
-          <div class="mk-feat"><h3 data-i18n="restaurantDashboard">Restaurant dashboard</h3><p data-i18n="manageCategoriesAndItemsWith">Manage categories and items with image uploads (compressed WebP), and edit availability, best sellers, prices, and order.</p></div>
-          <div class="mk-feat"><h3 data-i18n="featOrder">Order Management</h3><p data-i18n="statusFlowPendingConfirmed">Status flow: Pending → Confirmed → Preparing → Ready → Out for delivery → Completed / Cancelled. The archive keeps the revenue record.</p></div>
-          <div class="mk-feat"><h3 data-i18n="tableBookings">Table bookings</h3><p data-i18n="guestsBookTablesByDateTime">Guests book tables by date, time, and party size. You confirm or cancel — optionally with a ready WhatsApp message.</p></div>
-          <div class="mk-feat"><h3 data-i18n="analyticsAndQrCode">Analytics and QR code</h3><p data-i18n="dashboardMetricsTodaySOrders">Dashboard metrics: today's orders, pending orders, revenue, and analytics by hour, day, and best-selling items. QR generator and share link.</p></div>
+          <div class="mk-feat"><h3>المنيو الرقمي</h3><p>تصنيفات وأصناف وأسعار وصور، مع علامة التوفر وشارة الأكثر مبيعًا. أعد الترتيب حسب الموضع، وأخفِ الصنف النافد فورًا.</p></div>
+          <div class="mk-feat"><h3>قائمة QR</h3><p>رابط واحد لكل مطعم (<code dir="ltr">/restaurant?r=your-slug</code>) + رمز QR قابل للطباعة من لوحة التحكم. بدون تثبيت تطبيق، يفتح فورًا.</p></div>
+          <div class="mk-feat"><h3>الطلب أونلاين</h3><p>الزبون يضيف إلى السلة من هاتفه، يختار استلامًا أو توصيلًا، يُدخل الاسم وواتساب، ويرسل. الخادم يحسب المجاميع.</p></div>
+          <div class="mk-feat"><h3>الطلب عبر واتساب</h3><p>مساران: طلب عبر الموقع (منظم) أو طلب عبر واتساب (رسالة wa.me معبأة مسبقًا بالسلة). أنت تختار.</p></div>
+          <div class="mk-feat"><h3>لوحة تحكم المطعم</h3><p>إدارة التصنيفات والأصناف مع رفع الصور (WebP مضغوطة)، وتعديل التوفر والأكثر مبيعًا والسعر والترتيب.</p></div>
+          <div class="mk-feat"><h3>إدارة الطلبات</h3><p>مسار الحالات: قيد الانتظار ← مؤكد ← قيد التحضير ← جاهز ← خرج للتوصيل ← مكتمل / ملغى. الأرشيف يحتفظ بسجل الإيرادات.</p></div>
+          <div class="mk-feat"><h3>حجوزات الطاولات</h3><p>الزبائن يحجزون الطاولات بالتاريخ والوقت والعدد. أنت تؤكد أو تلغي، واختياريًا عبر رسالة واتساب جاهزة.</p></div>
+          <div class="mk-feat"><h3>التحليلات ورمز QR</h3><p>مؤشرات لوحة التحكم: طلبات اليوم، المعلقة، الإيرادات، وتحليلات حسب الساعة واليوم والأصناف الأكثر مبيعًا. مولد QR ورابط مشاركة.</p></div>
         </div>
         <div class="mt-2" style="text-align:center">
-          <a class="btn" href="/app/" data-i18n="tryTheLiveDemo">Try the live demo</a>
-          <a class="btn btn-outline" href="/pricing" data-i18n="seeThePricing2">See the pricing</a>
+          <a class="btn" href="/app/">جرّب العرض التجريبي الحي</a>
+          <a class="btn btn-outline" href="/pricing">اطّلع على الأسعار</a>
         </div>
       </div>
     </section>
     <section class="mk-section">
       <div class="mk-container">
-        <h2 class="mk-section-title" data-i18n="whatSInTheDashboard">What's in the dashboard?</h2>
+        <h2 class="mk-section-title">ماذا يوجد في لوحة التحكم؟</h2>
         <div class="mk-two-col">
-          <div class="mk-show-card"><h3 data-i18n="menuManagement">Menu management</h3><p class="muted" data-i18n="createCategoriesAddItemsWith">Create categories, add items with prices, upload photos that are saved in the database and survive redeploys, and toggle availability. The maximum is enforced server-side with a row lock.</p></div>
-          <div class="mk-show-card"><h3 data-i18n="settingsTab">Settings</h3><p class="muted" data-i18n="descriptionPhoneWhatsapp">Description, phone, WhatsApp, address, timezone, currency, delivery fee, opening hours (7 days), brand colors, logo and cover upload.</p></div>
+          <div class="mk-show-card"><h3>إدارة القائمة</h3><p class="muted">أنشئ تصنيفات، أضف أصنافًا بالأسعار، ارفع صورًا تُحفظ في قاعدة البيانات وتدوم بعد إعادة النشر، وبدّل التوفر. الحد الأقصى يُفرض من الخادم بقفل صف.</p></div>
+          <div class="mk-show-card"><h3>الإعدادات</h3><p class="muted">الوصف، الهاتف، واتساب، العنوان، المنطقة الزمنية، العملة، رسوم التوصيل، ساعات العمل (7 أيام)، ألوان الهوية، رفع الشعار والغلاف.</p></div>
         </div>
       </div>
     </section>
  
     <section class="container mt-2" id="request">
       <div class="card">
-        <h2 data-i18n="navRequest">Get Your Page</h2>
-        <p class="muted small" data-i18n="fillInTheFormAndWeLlBeIn">Fill in the form and we'll be in touch soon — and you'll get a tracking code as soon as you send it.</p>
+        <h2>اطلب صفحتك</h2>
+        <p class="muted small">املأ النموذج وسنتواصل معك قريبًا — وتحصل على رمز تتبع فور الإرسال.</p>
         <form id="request-form" novalidate>
-          <div class="field"><label for="rq-name" data-i18n="rqNameL">Your name *</label><input id="rq-name" type="text" maxlength="80" autocomplete="name"></div>
-          <div class="field"><label for="rq-rest" data-i18n="rqRestL">Restaurant name *</label><input id="rq-rest" type="text" maxlength="80"></div>
-          <div class="field"><label for="rq-phone" data-i18n="phone">Phone *</label><input id="rq-phone" type="tel" dir="ltr" placeholder="+970599123456"></div>
-          <div class="field"><label for="rq-wa" data-i18n="rqWaL">WhatsApp *</label><input id="rq-wa" type="tel" dir="ltr" placeholder="+970599123456"></div>
-          <div class="field"><label for="rq-city" data-i18n="rqCityL">City</label><input id="rq-city" type="text" maxlength="60"></div>
-          <div class="field"><label for="rq-notes" data-i18n="bookingNotes">Notes</label><textarea id="rq-notes" rows="3" maxlength="500"></textarea></div>
-          <button id="rq-submit" type="submit" class="btn btn-primary" data-i18n="sendRequest">Send request</button>
+          <div class="field"><label for="rq-name">اسمك *</label><input id="rq-name" type="text" maxlength="80" autocomplete="name"></div>
+          <div class="field"><label for="rq-rest">اسم المطعم *</label><input id="rq-rest" type="text" maxlength="80"></div>
+          <div class="field"><label for="rq-phone">الهاتف *</label><input id="rq-phone" type="tel" dir="ltr" placeholder="+970599123456"></div>
+          <div class="field"><label for="rq-wa">واتساب *</label><input id="rq-wa" type="tel" dir="ltr" placeholder="+970599123456"></div>
+          <div class="field"><label for="rq-city">المدينة</label><input id="rq-city" type="text" maxlength="60"></div>
+          <div class="field"><label for="rq-notes">ملاحظات</label><textarea id="rq-notes" rows="3" maxlength="500"></textarea></div>
+          <button id="rq-submit" type="submit" class="btn btn-primary">أرسل الطلب</button>
           <div id="rq-msg" class="notice hidden mt-1" role="status" aria-live="polite"></div>
         </form>
       </div>
@@ -157,19 +157,19 @@
   </main>
   <footer class="mk-footer">
     <div class="mk-container" style="display:flex; gap:14px; flex-wrap:wrap; justify-content:space-between">
-      <span data-i18n="ordoraDigitalMenusAnd">© Ordora — Digital menus and ordering.</span>
+      <span>© Ordora — منيو رقمي وطلبات.</span>
       <span style="display:flex; gap:12px; flex-wrap:wrap">
-        <a href="/features" data-i18n="navFeatures">Features</a>
-        <a href="/how-it-works" data-i18n="navHow">How it Works</a>
-        <a href="/pricing" data-i18n="navPricing">Pricing</a>
-        <a href="/contact" data-i18n="contactLink">Contact</a>
-        <a href="/for-restaurants" data-i18n="appLink">Restaurants</a>
-        <a href="/for-cafes" data-i18n="indCafe">Cafes</a>
-        <a href="/for-dessert-shops" data-i18n="indDessert">Dessert Shops</a>
-        <a href="/for-cake-shops" data-i18n="indCake">Cake Shops</a><a href="/for-home-businesses" data-i18n="homeFoodBusinesses">Home food businesses</a>
-        <a href="/faq" data-i18n="frequentlyAskedQuestions">Frequently asked questions</a>
-        <a href="/ordora-vs-menux" data-i18n="aboutOrdora">About Ordora</a>
-        <a href="/app/" data-i18n="navLive">Live Restaurant</a>
+        <a href="/features">المميزات</a>
+        <a href="/how-it-works">كيف يعمل</a>
+        <a href="/pricing">الأسعار</a>
+        <a href="/contact">تواصل</a>
+        <a href="/for-restaurants">المطاعم</a>
+        <a href="/for-cafes">المقاهي</a>
+        <a href="/for-dessert-shops">محلات الحلويات</a>
+        <a href="/for-cake-shops">محلات الكيك</a><a href="/for-home-businesses">مشاريع الأكل المنزلية</a>
+        <a href="/faq">الأسئلة الشائعة</a>
+        <a href="/ordora-vs-menux">عن Ordora</a>
+        <a href="/app/">مطعم حي</a>
       </span>
     </div>
   </footer>
