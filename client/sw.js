@@ -14,7 +14,7 @@ const SHELL = [
   '/css/skeleton.css',
   '/fonts/fonts.css',
   '/js/api.js',
-  '/js/i18n.js',
+  '/js/i18n.js?v=20261123',
   '/js/home.js',
   '/js/restaurant.js',
   '/js/track.js',
