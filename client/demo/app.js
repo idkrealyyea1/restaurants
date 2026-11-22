@@ -44,6 +44,19 @@ const copy = {
     free: "مجانًا",
     total: "الإجمالي",
     continueCheckout: "متابعة الطلب",
+    confirmKicker: "معاينة تجريبية",
+    confirmTitle: "هيك بيوصل طلبك",
+    confirmLead: "اكتمل الطلب التجريبي. في المنيو الحقيقي، يظهر الطلب في لوحة المطعم، ويمكن للزبون إرسال ملخصه عبر واتساب.",
+    waLabel: "معاينة ملخص واتساب",
+    dashLabel: "وفي لوحة تحكم المطعم",
+    dashNewOrder: "طلب جديد",
+    waMockTitle: "🧾 طلب جديد — ذا ريد بن",
+    orderCode: "رمز الطلب",
+    notesLabel: "ملاحظات",
+    fulfillmentLabel: "طريقة الاستلام",
+    waMockFooter: "تجريبي فقط: لم يُرسل شيء",
+    confirmNote: "هذه معاينة تفاعلية: لم يُرسل أي طلب حقيقي. هيك بس بيبدو وصول الطلب للمطعم.",
+    backToMenu: "رجوع للقائمة",
     checkoutDemo: "هذه معاينة فقط. لم يتم إرسال أي طلب.",
     demoCreateMenu: "أنشئ منيوك الخاص",
     demoNotes: "ملاحظات للطلب (اختياري)",
@@ -113,6 +126,19 @@ const copy = {
     free: "Free",
     total: "Total",
     continueCheckout: "Continue to checkout",
+    confirmKicker: "Demo preview",
+    confirmTitle: "This is where your order goes",
+    confirmLead: "Demo order complete. In a live menu, the order appears in the dashboard. The guest can also send this summary through WhatsApp.",
+    waLabel: "WhatsApp summary preview",
+    dashLabel: "And in the restaurant dashboard",
+    dashNewOrder: "New order",
+    waMockTitle: "🧾 New order — The Red Bun",
+    orderCode: "Order code",
+    notesLabel: "Notes",
+    fulfillmentLabel: "Fulfillment",
+    waMockFooter: "DEMO ONLY: nothing was sent",
+    confirmNote: "This is an interactive preview: no real order was sent. It only shows how the order reaches the restaurant.",
+    backToMenu: "Back to the menu",
     checkoutDemo: "This is only a preview. No order was sent.",
     demoCreateMenu: "Create your own menu",
     demoNotes: "Order notes (optional)",
@@ -273,6 +299,8 @@ const state = {
   modalSelections: {},
   modalQuantity: 1,
   cartOpen: false,
+  confirmOpen: false,
+  demoOrderCode: null,
   previousFocus: null,
   toastTimer: null,
   coverIndex: 0,
@@ -773,6 +801,87 @@ function cartMarkup() {
     <p class="prototype-footnote">${escapeHTML(getCopy("noOrders"))}</p>`;
 }
 
+function demoOrderLines() {
+  return state.cart.map((line) => {
+    const dish = getDish(line.dishId);
+    if (!dish) return "";
+    const options = lineOptionText(dish, line.selections);
+    return `${line.quantity}× ${localize(dish.name)}${options ? ` (${options})` : ""}`;
+  }).filter(Boolean);
+}
+
+function demoOrderTotal() {
+  const subtotal = cartSubtotal();
+  const deliveryFee = state.fulfillment === "delivery" && subtotal > 0 ? 12 : 0;
+  return subtotal + deliveryFee;
+}
+
+function confirmMarkup() {
+  const code = state.demoOrderCode;
+  const lines = demoOrderLines();
+  const messageParts = [getCopy("waMockTitle"), `${getCopy("orderCode")}: ${code}`, "", ...lines];
+  if (state.notes.trim()) messageParts.push("", `${getCopy("notesLabel")}: ${state.notes.trim()}`);
+  messageParts.push(
+    "",
+    `${getCopy("fulfillmentLabel")}: ${getCopy(state.fulfillment)}`,
+    `${getCopy("total")}: ${formatMoney(demoOrderTotal())}`,
+    "",
+    getCopy("waMockFooter"),
+  );
+  const message = messageParts.join("\n");
+  return `
+    <div class="modal-backdrop" data-close-confirm>
+      <section class="dish-modal demo-confirm" role="dialog" aria-modal="true" aria-labelledby="confirmTitle" tabindex="-1">
+        <div class="modal-body">
+          <button class="close-modal dish-modal-close" type="button" data-close-confirm aria-label="${escapeHTML(getCopy("close"))}">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 5 10 10M15 5 5 15" /></svg>
+          </button>
+          <p class="section-kicker">${escapeHTML(getCopy("confirmKicker"))}</p>
+          <h2 id="confirmTitle">${escapeHTML(getCopy("confirmTitle"))}</h2>
+          <p class="modal-description">${escapeHTML(getCopy("confirmLead"))}</p>
+          <p class="demo-confirm-label">${escapeHTML(getCopy("waLabel"))}</p>
+          <div class="wa-mock">
+            <div class="wa-bubble">${escapeHTML(message)}</div>
+          </div>
+          <p class="demo-confirm-label">${escapeHTML(getCopy("dashLabel"))}</p>
+          <div class="dash-mock">
+            <div class="dash-mock-head"><span class="dash-dot" aria-hidden="true"></span><strong>${escapeHTML(getCopy("dashNewOrder"))}</strong><span dir="ltr">${escapeHTML(code)}</span></div>
+            <p class="dash-mock-lines">${escapeHTML(lines.join(" · "))}</p>
+            <div class="dash-mock-total"><span>${escapeHTML(getCopy("total"))}</span><strong>${escapeHTML(formatMoney(demoOrderTotal()))}</strong></div>
+          </div>
+          <p class="prototype-footnote">${escapeHTML(getCopy("confirmNote"))}</p>
+          <div class="demo-confirm-actions">
+            <a class="checkout-demo" href="/signup"><span>${escapeHTML(getCopy("demoCreateMenu"))}</span><span aria-hidden="true"></span></a>
+            <button class="demo-confirm-back" type="button" data-close-confirm>${escapeHTML(getCopy("backToMenu"))}</button>
+          </div>
+        </div>
+      </section>
+    </div>`;
+}
+
+function renderConfirm() {
+  if (!state.confirmOpen) return;
+  $("#modalRoot").innerHTML = confirmMarkup();
+}
+
+function openConfirm() {
+  if (cartCount() === 0) return;
+  closeDish();
+  closeCart();
+  state.demoOrderCode = `RB-${Math.floor(1000 + Math.random() * 9000)}`;
+  state.confirmOpen = true;
+  renderConfirm();
+  document.body.classList.add("overlay-open");
+  requestAnimationFrame(() => $("#modalRoot [data-close-confirm]")?.focus());
+}
+
+function closeConfirm() {
+  if (!state.confirmOpen) return;
+  state.confirmOpen = false;
+  $("#modalRoot").innerHTML = "";
+  document.body.classList.remove("overlay-open");
+}
+
 function renderCart() {
   $("#desktopCart").innerHTML = cartMarkup();
   $("#headerCartCount").textContent = String(cartCount());
@@ -872,6 +981,7 @@ function setLanguage(language) {
   renderMenu();
   renderCart();
   if (state.modalDishId) renderModal();
+  if (state.confirmOpen) renderConfirm();
 }
 
 document.addEventListener("click", (event) => {
@@ -879,6 +989,7 @@ document.addEventListener("click", (event) => {
   if (!button) {
     if (event.target.matches("[data-close-modal]")) closeDish();
     if (event.target.matches("[data-close-cart]")) closeCart();
+    if (event.target.matches("[data-close-confirm]")) closeConfirm();
     return;
   }
 
@@ -949,7 +1060,12 @@ document.addEventListener("click", (event) => {
     return;
   }
   if (button.hasAttribute("data-demo-checkout")) {
-    toast(getCopy("checkoutDemo"));
+    openConfirm();
+    return;
+  }
+  if (button.hasAttribute("data-close-confirm")) {
+    closeConfirm();
+    return;
   }
 });
 
@@ -982,6 +1098,7 @@ document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") {
     closeDish();
     closeCart();
+    closeConfirm();
   }
 
   const dialog = $("#modalRoot [role='dialog'], #cartDrawerRoot [role='dialog']");
