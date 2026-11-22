@@ -24,7 +24,7 @@ test('menu item modal has a details-to-options step flow', () => {
 });
 
 test('menu item modal is widened and uses the step-builder styles', () => {
-  assert.ok(admin.includes("'modal-wide'"));
+  assert.ok(admin.includes("'modal-wide item-editor'"));
   assert.ok(css.includes('.modal.modal-wide'));
   assert.ok(css.includes('.item-steps'));
   assert.ok(css.includes('.item-step.is-active'));
@@ -81,4 +81,22 @@ test('new option-builder strings exist in both dictionaries', () => {
     const matches = i18n.match(new RegExp('\\b' + key + ':', 'g')) || [];
     assert.strictEqual(matches.length, 2, key + ' must be defined in Arabic and English');
   }
+});
+
+
+test('item editor keeps one scroll surface and does not hide pre-order note', () => {
+  assert.ok(css.includes('.modal.item-editor'));
+  assert.ok(css.includes('.item-editor-body'));
+  assert.ok(admin.includes('stepScroll[activeItemStep] = scroller.scrollTop'));
+  assert.ok(admin.includes("document.getElementById('it-prenote').disabled = !preorderCheck.checked"));
+  assert.ok(!admin.includes('prenoteField.hidden = !preorderCheck.checked'));
+});
+
+test('option refresh retains drafts, position, focus, and guards duplicate submissions', () => {
+  assert.ok(admin.includes('if (initial) zone.innerHTML'));
+  assert.ok(admin.includes('fields.forEach((saved)'));
+  assert.ok(admin.includes('target.focus({ preventScroll: true })'));
+  assert.ok(admin.includes("resetForm: f.dataset.choiceForm"));
+  assert.ok(admin.includes('if (button.disabled) return;'));
+  assert.ok(admin.includes("zone.removeAttribute('aria-busy')"));
 });
