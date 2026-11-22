@@ -1175,3 +1175,28 @@ body { overflow-x: hidden; overflow-x: clip; }
   #open-badge { flex-shrink: 0; white-space: nowrap; }
   #logout-btn { padding-inline: 10px; }
 }
+
+/* Keep the item editor steady while its forms grow or refresh. */
+body.item-editor-open { overflow: hidden; }
+.modal.item-editor {
+  height: min(860px, calc(100dvh - 56px));
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.item-editor > .modal-head, .item-editor > .item-steps { flex: none; }
+.item-editor-body { min-height: 0; flex: 1; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; overflow-anchor: none; padding: 2px 4px; }
+.item-editor .item-step-panel { min-width: 0; }
+.item-editor .is-inactive { opacity: .55; }
+.item-editor #it-prenote-field { min-height: 94px; }
+.item-editor .item-step-actions { position: sticky; bottom: -2px; background: var(--surface); padding: 12px 0 2px; border-top: 1px solid var(--border); }
+.item-editor #it-save { position: sticky; bottom: 0; }
+.item-editor [aria-busy="true"] { cursor: progress; }
+@media (max-width: 640px) {
+  .modal-backdrop:has(.item-editor) { padding: 8px; overflow: hidden; }
+  .modal.item-editor { height: calc(100dvh - 16px); padding: 14px; }
+  .item-editor .item-steps { grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 12px; }
+  .item-editor .item-step { gap: 6px; min-height: 70px; padding: 8px; }
+  .item-editor .item-step-copy small { font-size: .66rem; }
+  .item-editor .item-step-actions .btn { flex: 1 1 0; }
+}
