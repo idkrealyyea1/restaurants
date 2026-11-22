@@ -3200,3 +3200,106 @@ html[dir="rtl"] .hero-title {
   from { transform: translateX(-18px); opacity: 0.7; }
   to { transform: translateX(0); opacity: 1; }
 }
+
+/* Demo order confirmation: shows how an order reaches the restaurant.
+   Built only from the site's existing palette, radii and type. */
+.demo-confirm {
+  grid-template-columns: minmax(0, 1fr);
+  width: min(560px, 100%);
+}
+
+.demo-confirm-label {
+  margin: 14px 0 6px;
+  color: var(--teal-deep);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.wa-mock {
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: var(--sand);
+}
+
+.wa-bubble {
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 12px;
+  line-height: 1.8;
+  white-space: pre-line;
+}
+
+.dash-mock {
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: var(--paper);
+}
+
+.dash-mock-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  color: var(--ink);
+  font-size: 12px;
+}
+
+.dash-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--coral);
+}
+
+.dash-mock-lines {
+  margin: 0;
+  color: #65756c;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.dash-mock-total {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+  color: var(--ink);
+  font-size: 12px;
+}
+
+.demo-confirm-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.demo-confirm-actions .checkout-demo {
+  margin-top: 0;
+  justify-content: center;
+  text-decoration: none;
+  font-size: 12px;
+}
+
+.demo-confirm-back {
+  min-height: 45px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--paper);
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  transition: border-color 160ms ease, color 160ms ease;
+}
+
+.demo-confirm-back:hover {
+  border-color: var(--coral);
+  color: var(--coral);
+}
