@@ -32,3 +32,14 @@ test('category styles and language changes stay scoped', () => {
   assert.match(css, /@media \(max-width: 480px\)/);
   assert.match(css, /grid-template-columns: 1fr;/);
 });
+test('category photography is local, accessible, and responsive', () => {
+  for (const category of categories) {
+    const page = fs.readFileSync(path.join(client, `for-${category}.html`), 'utf8');
+    assert.match(page, /class="cat-editorial"/);
+    assert.match(page, /data-photo-alt-ar=/);
+    assert.match(page, /data-photo-alt-en=/);
+    assert.doesNotMatch(page, /src="https:\/\/images.unsplash/);
+    const paths = [...page.matchAll(/<img src="(\/images\/[^\"]+)"/g)];
+    for (const [, image] of paths) assert.ok(fs.existsSync(path.join(client, image)));
+  }
+});
