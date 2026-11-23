@@ -65,3 +65,47 @@
   .cat-form-grid { grid-template-columns: 1fr; }
   .cat-form-wide { grid-column: auto; }
 }
+
+/* Editorial photography with a smaller product preview layered in front. */
+.cat-with-photo { min-height: 540px; padding: 0 12px 44px; }
+.cat-editorial { position: relative; width: 88%; height: 480px; margin: 0; margin-inline-start: auto; border-radius: 110px 24px 24px 24px; overflow: hidden; background: var(--ink); box-shadow: 0 18px 38px rgba(31,52,57,.12); }
+[dir="rtl"] .cat-editorial { border-radius: 24px 110px 24px 24px; }
+.cat-editorial > img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cat-editorial::after { content: ""; position: absolute; inset: 45% 0 0; background: linear-gradient(transparent, rgba(15,28,31,.82)); pointer-events: none; }
+.cat-editorial figcaption { position: absolute; bottom: 26px; inset-inline: 22px; z-index: 1; color: #fffaf0; font-size: .82rem; font-weight: 700; display: flex; gap: 9px; align-items: center; }
+.cat-photo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--sun); flex: none; }
+.cat-with-photo .cat-preview { position: absolute; bottom: 8px; inset-inline-start: -12px; width: 250px; margin: 0; z-index: 2; border-radius: 20px; box-shadow: 7px 8px 0 var(--cat-accent); }
+.cat-with-photo .cat-menu-head { padding: 14px 12px 12px; }
+.cat-with-photo .cat-mark { width: 32px; height: 32px; font-size: 1.3rem; border-radius: 10px; }
+.cat-with-photo .cat-menu-head h2 { font-size: .95rem; }
+.cat-with-photo .cat-menu-head p { font-size: .6rem; }
+.cat-with-photo .cat-tabs { gap: 4px; padding: 10px 6px 0; }
+.cat-with-photo .cat-tab { padding: 4px 8px; font-size: .6rem; }
+.cat-with-photo .cat-items { padding: 2px 12px; }
+.cat-with-photo .cat-menu-item { gap: 8px; padding: 11px 0; }
+.cat-with-photo .cat-menu-item h3 { font-size: .75rem; }
+.cat-with-photo .cat-menu-item p { font-size: .58rem; }
+.cat-with-photo .cat-food { width: 34px; height: 38px; border-radius: 9px; font-size: 1.6rem; overflow: hidden; }
+.cat-food > img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cat-with-photo .cat-order-note { font-size: .62rem; padding: 10px; }
+.cat-with-photo .cat-sticker { display: none; }
+@media (max-width: 900px) {
+ .cat-with-photo { margin-top: 18px; min-height: 570px; }
+ .cat-editorial { height: 470px; width: 88%; }
+ .cat-with-photo .cat-preview { inset-inline-start: 4px; bottom: 0; }
+}
+@media (max-width: 480px) {
+ .cat-with-photo { min-height: 520px; padding-inline: 4px; }
+ .cat-editorial { height: 410px; width: 86%; border-start-start-radius: 80px; }
+ .cat-editorial figcaption { bottom: 24px; inset-inline-start: 80px; inset-inline-end: 14px; font-size: .75rem; }
+ .cat-with-photo .cat-preview { width: 218px; bottom: 4px; }
+ .cat-with-photo .cat-menu-item p { font-size: .56rem; }
+}
+/* Keep the caption clear of the overlapping preview in both directions. */
+.cat-editorial::after { inset: 0 0 50%; background: linear-gradient(rgba(15,28,31,.78), transparent); }
+.cat-editorial figcaption { top: 28px; bottom: auto; inset-inline: 24px; align-items: start; }
+.cat-photo-dot { margin-top: 5px; }
+.cat-editorial figcaption { inset-inline: 68px 22px; top: 44px; }
+@media (max-width: 480px) {
+ .cat-editorial figcaption { inset-inline: 58px 16px; top: 42px; font-size: .72rem; }
+}
