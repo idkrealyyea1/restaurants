@@ -276,6 +276,7 @@
   }
   function closeModal() {
     document.getElementById('modal-backdrop').classList.remove('open');
+    document.body.classList.remove('item-editor-open');
   }
 
   /* --------------------------- dashboard ----------------------------- */
@@ -924,6 +925,7 @@
           '<span class="item-step-copy"><strong>' + esc(I.t('itemStepOptions')) + '</strong><small>' + esc(isNew ? I.t('itemStepLockedHint') : I.t('itemStepOptionsHint')) + '</small></span>' +
         '</button></li>' +
       '</ol>' +
+      '<div class="item-editor-body">' +
       '<div id="item-step-details" class="item-step-panel">' +
         '<form id="item-form">' +
           '<div class="field"><label for="it-name">' + esc(I.t('nameReq')) + '</label>' +
@@ -961,7 +963,7 @@
           '<div class="checkbox-line mb-1"><input id="it-available" type="checkbox"' + (!item || item.is_available ? ' checked' : '') + '><label for="it-available">' + esc(I.t('availableL')) + '</label></div>' +
           '<div class="checkbox-line mb-1"><input id="it-popular" type="checkbox"' + (item && item.is_popular ? ' checked' : '') + '><label for="it-popular">' + esc(I.t('popularL')) + '</label></div>' +
           '<div class="checkbox-line mb-1"><input id="it-preorder" type="checkbox"' + (item && item.is_preorder ? ' checked' : '') + '><label for="it-preorder">' + esc(I.t('preorderAvailableL')) + '</label></div>' +
-          '<div class="field" id="it-prenote-field"' + (item && item.is_preorder ? '' : ' hidden') + '><label for="it-prenote">' + esc(I.t('preorderNoteL')) + '</label>' +
+          '<div class="field" id="it-prenote-field"><label for="it-prenote">' + esc(I.t('preorderNoteL')) + '</label>' +
             '<input id="it-prenote" type="text" maxlength="300" value="' + esc(item ? (item.preorder_note || '') : '') + '" placeholder="' + esc(I.t('preorderNotePh')) + '">' +
             '<div class="hint">' + esc(I.t('preorderNoteHint')) + '</div></div>' +
           '<div class="field mt-2"><label for="it-image">' + esc(I.t('imageL')) + '</label>' +
@@ -985,9 +987,10 @@
           '<button type="button" class="btn btn-outline" data-item-step="details">' + esc(I.t('itemOptionsBack')) + '</button>' +
           '<button type="button" class="btn" id="it-options-done">' + esc(I.t('itemOptionsDone')) + '</button>' +
         '</div>' +
-      '</div>',
-      'modal-wide'
+      '</div></div>',
+      'modal-wide item-editor'
     );
+    document.body.classList.add('item-editor-open');
     document.querySelector('.modal-close').addEventListener('click', closeModal);
 
     const detailsPanel = document.getElementById('item-step-details');
@@ -1002,9 +1005,14 @@
       if (hint) hint.textContent = I.t('itemStepOptionsHint');
     }
 
+    const stepScroll = { details: 0, options: 0 };
+    let activeItemStep = 'details';
     function setStep(step, opts) {
       const showOptions = step === 'options';
       if (showOptions && (!currentItem || isNew)) return;
+      const scroller = document.querySelector('.item-editor-body');
+      if (scroller) stepScroll[activeItemStep] = scroller.scrollTop;
+      activeItemStep = step;
       detailsPanel.hidden = showOptions;
       optionsPanel.hidden = !showOptions;
       stepTabs.forEach((btn) => {
@@ -1013,9 +1021,11 @@
         if (active) btn.setAttribute('aria-current', 'step');
         else btn.removeAttribute('aria-current');
       });
-      const backdrop = document.getElementById('modal-backdrop');
-      if (backdrop) backdrop.scrollTop = 0;
-      if (showOptions && !(opts && opts.skipLoad)) loadItemOptions(currentItem.id);
+      if (scroller) scroller.scrollTop = stepScroll[step] || 0;
+      if (showOptions && !(opts && opts.skipLoad) && !optionsPanel.dataset.loaded) {
+        optionsPanel.dataset.loaded = 'true';
+        loadItemOptions(currentItem.id);
+      }
     }
 
     document.querySelectorAll('[data-item-step]').forEach((btn) => {
@@ -1036,7 +1046,8 @@
     const preorderCheck = document.getElementById('it-preorder');
     const prenoteField = document.getElementById('it-prenote-field');
     function syncPreorderNote() {
-      if (prenoteField) prenoteField.hidden = !preorderCheck.checked;
+      if (prenoteField) prenoteField.classList.toggle('is-inactive', !preorderCheck.checked);
+      document.getElementById('it-prenote').disabled = !preorderCheck.checked;
     }
     preorderCheck.addEventListener('change', syncPreorderNote);
     syncPreorderNote();
@@ -1107,8 +1118,12 @@
         loadMenu();
         const optionsTitle = document.getElementById('item-options-title');
         if (optionsTitle) optionsTitle.textContent = I.t('optTitleFor', { name: currentItem.name || body.name });
+        enableOptionsStep();
         setStep('options', { skipLoad: true });
-        await loadItemOptions(currentItem.id, createdNow ? I.t('optCreatedHint') : undefined);
+        if (!optionsPanel.dataset.loaded) {
+          optionsPanel.dataset.loaded = 'true';
+          await loadItemOptions(currentItem.id, createdNow ? I.t('optCreatedHint') : undefined);
+        }
         submitBtn.disabled = false;
         submitBtn.textContent = I.t('itemSaveContinue');
         toast(createdNow ? I.t('itemCreated') : I.t('itemUpdated'), 'success');
@@ -1152,10 +1167,21 @@
 
   /* --------------------- product option groups --------------------- */
 
-  async function loadItemOptions(itemId, notice) {
+  async function loadItemOptions(itemId, notice, update) {
     const zone = document.getElementById('item-options');
     if (!zone) return;
-    zone.innerHTML = '<p class="hint" role="status">' + esc(I.t('loading')) + '</p>';
+    const scroller = zone.closest('.item-editor-body');
+    const scrollTop = scroller ? scroller.scrollTop : 0;
+    let fields = [];
+    let focusedField = null;
+    const focusId = zone.contains(document.activeElement) ? document.activeElement.id : null;
+    const anchorId = update && update.focusId;
+    const oldAnchor = anchorId && document.getElementById(anchorId);
+    const anchorTop = oldAnchor ? oldAnchor.getBoundingClientRect().top : null;
+    const initial = !zone.children.length;
+    zone.setAttribute('aria-busy', 'true');
+    zone.querySelectorAll('button').forEach((button) => { button.disabled = true; });
+    if (initial) zone.innerHTML = '<p class="hint" role="status">' + esc(I.t('loading')) + '</p>';
     try {
       const d = await api.get('/api/admin/option-groups?menuItemId=' + encodeURIComponent(itemId));
       const groups = d.groups || [];
@@ -1163,6 +1189,11 @@
         group: g,
         choices: (await api.get('/api/admin/option-groups/' + g.id + '/choices')).choices || [],
       })));
+      if (!zone.isConnected) return;
+      fields = Array.from(zone.querySelectorAll('input[id], select[id]')).map((el) => ({
+        id: el.id, value: el.value, checked: el.checked,
+      }));
+      focusedField = zone.contains(document.activeElement) ? document.activeElement.id : null;
       const groupCards = withChoices.map(({ group: g, choices }) => {
         const required = !!g.is_required || Number(g.min_picks) > 0;
         const minPicks = required ? Math.max(1, Number(g.min_picks) || 0) : Math.max(0, Number(g.min_picks) || 0);
@@ -1181,7 +1212,7 @@
                 esc(I.t('del')) + '</button>' +
             '</div>').join('') + '</div>'
           : '<p class="hint option-empty-choices">' + esc(I.t('optNoChoicesYet')) + '</p>';
-        return '<div class="option-group-card">' +
+        return '<div class="option-group-card" data-option-group="' + esc(g.id) + '">' +
           '<div class="option-group-head">' +
             '<div class="option-group-title"><h4>' + esc(g.name) + '</h4>' +
               '<div class="option-meta">' +
@@ -1251,26 +1282,29 @@
         '</form>';
 
       zone.querySelectorAll('[data-del-group]').forEach((b) => b.addEventListener('click', async () => {
-        try { await api.del('/api/admin/option-groups/' + b.dataset.delGroup); loadItemOptions(itemId); loadMenu(); }
-        catch (err) { toast(err.message, 'error'); }
+        try { b.disabled = true; await api.del('/api/admin/option-groups/' + b.dataset.delGroup); await loadItemOptions(itemId); loadMenu(); }
+        catch (err) { b.disabled = false; toast(err.message, 'error'); }
       }));
       zone.querySelectorAll('[data-del-choice]').forEach((b) => b.addEventListener('click', async () => {
         const [gid, cid] = b.dataset.delChoice.split('|');
-        try { await api.del('/api/admin/option-groups/' + gid + '/choices/' + cid); loadItemOptions(itemId); loadMenu(); }
-        catch (err) { toast(err.message, 'error'); }
+        try { b.disabled = true; await api.del('/api/admin/option-groups/' + gid + '/choices/' + cid); await loadItemOptions(itemId); loadMenu(); }
+        catch (err) { b.disabled = false; toast(err.message, 'error'); }
       }));
       zone.querySelectorAll('[data-choice-form]').forEach((f) => f.addEventListener('submit', async (e) => {
         e.preventDefault();
+        const button = f.querySelector('button[type=submit]');
+        if (button.disabled) return;
         const inputs = f.querySelectorAll('input');
         const priceMajor = parseFloat(inputs[1].value);
         try {
+          button.disabled = true;
           await api.post('/api/admin/option-groups/' + f.dataset.choiceForm + '/choices', {
             name: inputs[0].value.trim(),
             priceCents: Math.max(0, Math.round((Number.isFinite(priceMajor) ? priceMajor : 0) * 100)),
           });
-          loadItemOptions(itemId);
+          await loadItemOptions(itemId, undefined, { resetForm: f.dataset.choiceForm, focusId: inputs[0].id });
           loadMenu();
-        } catch (err) { toast(err.message, 'error'); }
+        } catch (err) { button.disabled = false; toast(err.message, 'error'); }
       }));
 
       const gf = document.getElementById('group-form');
@@ -1305,11 +1339,14 @@
 
         gf.addEventListener('submit', async (e) => {
           e.preventDefault();
+          const button = gf.querySelector('button[type=submit]');
+          if (button.disabled) return;
           const multiple = typeSelect.value === 'multiple';
           const required = requiredInput.checked;
           const maxPicks = multiple ? Math.max(1, Math.min(99, Number(maxInput.value) || 3)) : 1;
           try {
-            await api.post('/api/admin/option-groups', {
+            button.disabled = true;
+            const created = await api.post('/api/admin/option-groups', {
               menuItemId: itemId,
               name: document.getElementById('ng-name').value.trim(),
               isRequired: required,
@@ -1317,13 +1354,40 @@
               maxPicks: maxPicks,
               pricing: pricingSelect.value,
             });
-            loadItemOptions(itemId);
+            const groupId = created.group && created.group.id;
+            await loadItemOptions(itemId, undefined, { resetForm: 'group', focusId: groupId ? 'oc-name-' + groupId : 'ng-name' });
             loadMenu();
-          } catch (err) { toast(err.message, 'error'); }
+          } catch (err) { button.disabled = false; toast(err.message, 'error'); }
         });
       }
+      fields.forEach((saved) => {
+        const el = document.getElementById(saved.id);
+        if (!el || !zone.contains(el)) return;
+        const form = el.closest('form');
+        const reset = update && (update.resetForm === 'group' ? form && form.id === 'group-form' : form && form.dataset.choiceForm === update.resetForm);
+        if (!reset) { el.value = saved.value; el.checked = saved.checked; }
+      });
+      const type = zone.querySelector('#ng-type');
+      if (type) type.dispatchEvent(new Event('change'));
+      zone.removeAttribute('aria-busy');
+      if (scroller) scroller.scrollTop = scrollTop;
+      const target = document.getElementById(anchorId || focusedField || focusId);
+      if (target && zone.contains(target)) {
+        target.focus({ preventScroll: true });
+        if (anchorTop != null && scroller) scroller.scrollTop += target.getBoundingClientRect().top - anchorTop;
+        else if (anchorId) target.scrollIntoView({ block: 'nearest' });
+      }
     } catch (err) {
-      zone.innerHTML = '<p class="notice notice-error" role="alert">' + esc(err.message) + '</p>';
+      zone.removeAttribute('aria-busy');
+      if (initial) {
+        zone.innerHTML = '<p class="notice notice-error" role="alert">' + esc(err.message) + '</p>';
+        const panel = zone.closest('#item-step-options');
+        if (panel) delete panel.dataset.loaded;
+      }
+      else {
+        zone.querySelectorAll('button').forEach((button) => { button.disabled = false; });
+        toast(err.message, 'error');
+      }
     }
   }
 
